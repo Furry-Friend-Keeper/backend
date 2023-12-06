@@ -13,7 +13,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
     @Query(value = "select avg(Stars) from reviews where PetKeeperId = ?1",nativeQuery = true)
-    double avgStars(Integer id);
+    Double avgStars(Integer id);
 
 
     @Query("SELECT r.id AS id, r.comment AS comment, r.stars AS stars FROM Review r WHERE r.petKeeper.id = :petkeeperId")

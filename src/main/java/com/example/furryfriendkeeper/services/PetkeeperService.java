@@ -40,7 +40,10 @@ public class PetkeeperService {
         for(int i = 0; i < petkeeperList.size();i++){
             Set<String> categories = new LinkedHashSet<>();
             List<Integer> petcats = categoriesRepository.FindKeeperCategories(petkeeperList.get(i).getId());
-            double avgStars = reviewRepository.avgStars(petkeeperList.get(i).getId());
+            Double avgStars = reviewRepository.avgStars(petkeeperList.get(i).getId());
+            if(avgStars == null){
+                avgStars = 0.0;
+            }
             keepers.get(i).setReviewStars(avgStars);
 
             for(int a = 0; a < petcats.size(); a++){
