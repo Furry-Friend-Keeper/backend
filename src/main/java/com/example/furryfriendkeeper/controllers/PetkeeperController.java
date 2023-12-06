@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://cp23at3.sit.kmutt.ac.th")
+//@CrossOrigin(origins = "*")
 @RequestMapping("/api/keepers")
 public class PetkeeperController {
     @Autowired
