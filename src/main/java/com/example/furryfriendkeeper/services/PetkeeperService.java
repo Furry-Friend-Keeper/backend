@@ -63,9 +63,11 @@ public class PetkeeperService {
        Optional<Petkeeper> petkeeperDetails = petkeeperRepository.findById(petkeepersId);
        List<String> galleries = galleryRepository.findGalleriesByPetkeeperId(petkeepersId);
        PetkeeperDetailDTO petkeeperDetailDTO = modelMapper.map(petkeeperDetails, PetkeeperDetailDTO.class);
-       double avgReviewStar = reviewRepository.avgStars(petkeepersId);
+       Double avgReviewStar = reviewRepository.avgStars(petkeepersId);
        List<String> categories = categoriesRepository.FindCategoriesByPetkeeperId(petkeepersId);
-
+        if(avgReviewStar == null){
+            avgReviewStar = 0.0;
+        }
        petkeeperDetailDTO.setGallery(galleries);
        petkeeperDetailDTO.setReviewStars(avgReviewStar);
        petkeeperDetailDTO.setCategories(categories);
