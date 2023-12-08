@@ -1,6 +1,6 @@
 package com.example.furryfriendkeeper.entities;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Setter;
 import lombok.Getter;
 

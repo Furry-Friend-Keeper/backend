@@ -74,4 +74,7 @@ public class PetkeeperService {
        return petkeeperDetailDTO;
 
     }
+    public Petkeeper save(PetkeeperDetailDTO newPetkeeper){
+        return petkeeperRepository.saveAndFlush(modelMapper.map(newPetkeeper, Petkeeper.class));
+    }
 }

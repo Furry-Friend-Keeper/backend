@@ -1,14 +1,16 @@
 package com.example.furryfriendkeeper.entities;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Setter;
 import lombok.Getter;
+
+import java.io.Serializable;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false)

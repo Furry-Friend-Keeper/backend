@@ -1,6 +1,6 @@
 package com.example.furryfriendkeeper.entities;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
