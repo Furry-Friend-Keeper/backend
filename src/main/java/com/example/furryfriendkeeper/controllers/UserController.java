@@ -1,0 +1,31 @@
+package com.example.furryfriendkeeper.controllers;
+
+import com.example.furryfriendkeeper.dtos.JwtDTO;
+import com.example.furryfriendkeeper.dtos.MatchUserDTO;
+import com.example.furryfriendkeeper.entities.User;
+import com.example.furryfriendkeeper.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+@RestController
+@RequestMapping( "/api/users")
+public class UserController {
+    @Autowired
+    private UserService service;
+
+    @PostMapping("/login")
+    public ResponseEntity<JwtDTO> match(@Valid @RequestBody MatchUserDTO user){
+
+        System.out.println(user.getEmail() + " " + user.getPassword());
+        return service.match(user);
+    }
+
+    @PostMapping("/sign-up/keeper")
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createPetkeeper(@Valid @RequestBody)
+
+}
