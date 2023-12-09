@@ -24,4 +24,10 @@ public class Pet {
     @OneToMany(mappedBy = "categories")
     private Set<Petcategory> petcategories = new LinkedHashSet<>();
 
+
+
+
+    public Integer getId(){
+        return id;
+    }
 }

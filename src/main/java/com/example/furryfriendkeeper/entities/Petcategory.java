@@ -16,11 +16,18 @@ public class Petcategory {
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PetKeeperId")
-    private Petkeeper petKeeper;
+    private Petkeepers petKeeper;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "CategoriesId", nullable = false)
     private Pet categories;
 
+    public Petcategory() {
+    }
+    public Petcategory(Integer petKeeperId, Pet categories) {
+        this.petKeeper = new Petkeepers();
+        this.petKeeper.setId(petKeeperId);
+        this.categories = categories;
+    }
 
 }

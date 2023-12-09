@@ -16,7 +16,7 @@ public class Reportsdetail {
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PetKeeperId")
-    private Petkeeper petKeeper;
+    private Petkeepers petKeeper;
 
     @Column(name = "Detail", length = 200)
     private String detail;

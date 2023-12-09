@@ -1,16 +1,11 @@
 package com.example.furryfriendkeeper.services;
 
-import com.example.furryfriendkeeper.dtos.JwtDTO;
-import com.example.furryfriendkeeper.dtos.MatchUserDTO;
-import com.example.furryfriendkeeper.dtos.UserDTO;
-import com.example.furryfriendkeeper.entities.Role;
-import com.example.furryfriendkeeper.entities.User;
+import com.example.furryfriendkeeper.dtos.*;
+import com.example.furryfriendkeeper.entities.*;
 import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
 import com.example.furryfriendkeeper.jwt.JwtUserDetailsService;
-import com.example.furryfriendkeeper.repositories.RoleRepository;
-import com.example.furryfriendkeeper.repositories.UserRepository;
+import com.example.furryfriendkeeper.repositories.*;
 import com.example.furryfriendkeeper.utils.ListMapper;
-import io.jsonwebtoken.Jwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.modelmapper.ModelMapper;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import javax.transaction.Transactional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -41,9 +37,18 @@ public class UserService {
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private JwtUserDetailsService userDetailsService;
-
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private PetkeeperRepository petkeeperRepository;
+    @Autowired
+    private PetRepository petRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private CategoriesRepository categoriesRepository;
+    @Autowired
+    private OwnerRepository ownerRepository;
 
     public ResponseEntity<JwtDTO> match(MatchUserDTO user) throws ResponseStatusException {
         User user1 = userRepository.findEmail(user.getEmail());
@@ -66,7 +71,7 @@ public class UserService {
         if (match == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Email does not exist");
         }
-        match.setPassword(passwordEncoder.encode(match.getPassword()));
+//        match.setPassword(passwordEncoder.encode(match.getPassword()));
         return passwordEncoder.matches(user1.getPassword(), match.getPassword());
 
     }
@@ -117,6 +122,87 @@ public class UserService {
         User savedUser = userRepository.saveAndFlush(user);
         user.setPassword("Protected Field");
         return savedUser;
+    }
+    public List<Role> AllRole(){
+        return roleRepository.findAll();
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public SignUpPetkeeperDTO signUpPetkeeper(SignUpPetkeeperDTO signUpPetkeeperDTO){
+        try {
+
+            User user = modelMapper.map(signUpPetkeeperDTO, User.class);
+            user.setEmail(signUpPetkeeperDTO.getEmail().trim());
+            user.setPassword(passwordEncoder.encode(signUpPetkeeperDTO.getPassword()));
+            Role role = roleRepository.findById(signUpPetkeeperDTO.getRole())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
+
+            user.setRole(role);
+            List<User> email = userRepository.uniqueUserEmail(signUpPetkeeperDTO.getEmail().trim().toLowerCase());
+            for (User user1 : email) {
+                System.out.println("User{id=" + user1.getId() + ", email='" + user1.getEmail() );
+            }
+            if (email.size() != 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
+            }
+
+            User savedUser = userRepository.saveAndFlush(user);
+
+
+            Address address = modelMapper.map(signUpPetkeeperDTO.getAddress(), Address.class);
+            Address savedAddress = addressRepository.saveAndFlush(address);
+
+            Petkeepers petkeepers = modelMapper.map(signUpPetkeeperDTO, Petkeepers.class);
+
+            petkeepers.setEmail(savedUser);
+            petkeepers.setAddress(savedAddress);
+            petkeepers.setAvailable(1);
+            Petkeepers savedPetkeepers = petkeeperRepository.saveAndFlush(petkeepers);
+
+            Set<Petcategory> petcategories = signUpPetkeeperDTO.getCategoryId().stream()
+                    .map(categoryId -> new Petcategory(signUpPetkeeperDTO.getPetkeeperId(), petRepository.getById(categoryId)))
+                    .collect(Collectors.toSet());
+
+            petcategories.forEach(petcategory -> petcategory.setPetKeeper(savedPetkeepers));
+            categoriesRepository.saveAll(petcategories);
+
+            signUpPetkeeperDTO.setPassword("Protected Field");
+            return signUpPetkeeperDTO;
+        } catch (Exception e){
+            throw e;
+        }
+
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public OwnerDTO sighUpPetOwner(OwnerDTO newOwner){
+        try {
+            User user = modelMapper.map(newOwner, User.class);
+            user.setEmail(newOwner.getEmail().trim());
+            user.setPassword(passwordEncoder.encode(newOwner.getPassword()));
+            Role role = roleRepository.findById(newOwner.getRole())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
+
+            user.setRole(role);
+            List<User> email = userRepository.uniqueUserEmail(newOwner.getEmail().trim().toLowerCase());
+            for (User user1 : email) {
+                System.out.println("User{id=" + user1.getId() + ", email='" + user1.getEmail());
+            }
+            if (email.size() != 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
+            }
+            User savedUser = userRepository.saveAndFlush(user);
+
+            Petowner petowner = modelMapper.map(newOwner, Petowner.class);
+            petowner.setEmail(savedUser);
+            ownerRepository.saveAndFlush(petowner);
+
+            newOwner.setPassword("Protected Field");
+
+            return newOwner;
+        }catch (Exception e){
+            throw e;
+        }
     }
 
 }

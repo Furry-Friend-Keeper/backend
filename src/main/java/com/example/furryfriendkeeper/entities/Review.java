@@ -2,9 +2,9 @@ package com.example.furryfriendkeeper.entities;
 
 import javax.persistence.*;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Setter;
 import lombok.Getter;
 
@@ -17,9 +17,11 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ReviewId", nullable = false)
     private Integer id;
+
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PetKeeperId")
-    private Petkeeper petKeeper;
+    private Petkeepers petKeeper;
 
     @Column(name = "Comment", length = 200)
     private String comment;

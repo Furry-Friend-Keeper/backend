@@ -16,7 +16,7 @@ public class Gallery {
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PetKeeperId")
-    private Petkeeper petKeeper;
+    private Petkeepers petKeeper;
 
     @Column(name = "Gallery", length = 256)
     private String gallery;

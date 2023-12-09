@@ -4,6 +4,8 @@ import javax.persistence.*;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Setter;
 import lombok.Getter;
 
@@ -13,8 +15,9 @@ import lombok.Getter;
 @Getter
 @Setter
 @Table(name = "petkeepers")
-public class Petkeeper {
+public class Petkeepers {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PetKeeperId", nullable = false)
     private Integer id;
 
@@ -44,6 +47,7 @@ public class Petkeeper {
     @JoinColumn(name = "AddressId", nullable = false)
     private Address address;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "petKeeper")
     private Set<Review> reviews = new LinkedHashSet<>();
 
