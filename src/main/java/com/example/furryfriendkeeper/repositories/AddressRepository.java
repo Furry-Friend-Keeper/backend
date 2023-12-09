@@ -12,7 +12,12 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
 
-    @Query(value = "SELECT a.AddressId, a.Address, a.District, a.Province, a.PostalCode, a.Map FROM Address a JOIN Petkeeper p ON a.AddressId = p.AddressId where p.PetKeeperId = :petkeeperId",nativeQuery = true)
+    @Query(value = "SELECT a.AddressId, a.Address, a.District, a.Province, a.PostalCode, a.Map FROM Address a JOIN Petkeepers p ON a.AddressId = p.AddressId where p.PetKeeperId = :petkeeperId",nativeQuery = true)
     AddressDTO findAddressesByPetkeeperId(@Param("petkeeperId") Integer petkeeperId);
+
+    @Query(value = "select * from Address a JOIN Petkeepers p ON a.AddressId = p.AddressId where p.PetKeeperId = :petkeeperId",nativeQuery = true)
+    Address findAddressDetailByPetkeeperId(Integer petkeeperId);
+
+
 
 }

@@ -17,7 +17,7 @@ public class Favorite {
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PetKeeperId")
-    private Petkeeper petKeeper;
+    private Petkeepers petKeeper;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "PetOwnerId", nullable = false)

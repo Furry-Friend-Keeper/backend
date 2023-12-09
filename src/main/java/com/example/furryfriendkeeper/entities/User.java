@@ -19,7 +19,7 @@ public class User implements Serializable {
     @Column(name = "Email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "Password", nullable = false, length = 20)
+    @Column(name = "Password", nullable = false, length = 200)
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
