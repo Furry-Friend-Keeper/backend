@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PetkeeperRepository extends JpaRepository<Petkeepers, Integer> {
 
-    @Query(value= "select PetKeeperId from Petkeepers where Email = :email",nativeQuery = true)
+    @Query(value= "select PetKeeperId from petkeepers where Email = :email",nativeQuery = true)
     Integer getPetkeepersIdByEmail(String email);
 }
