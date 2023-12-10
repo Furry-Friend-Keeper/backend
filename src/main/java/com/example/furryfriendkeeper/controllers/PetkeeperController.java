@@ -41,5 +41,4 @@ public class PetkeeperController {
         return ResponseEntity.ok("Petkeeper updated successfully");
     }
 
-
 }

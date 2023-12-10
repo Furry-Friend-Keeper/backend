@@ -1,4 +1,4 @@
-package com.example.oasipserver;
+package com.example.furryfriendkeeper;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
