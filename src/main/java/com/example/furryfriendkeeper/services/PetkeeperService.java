@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -33,6 +35,7 @@ public class PetkeeperService {
 
     private final GalleryRepository galleryRepository;
 
+    private final FileService fileService;
     @Autowired
     private AddressRepository addressRepository;
 
@@ -148,6 +151,24 @@ public class PetkeeperService {
                 oldAddress.setMap(newDetail.getAddress().getMap());
             }
             return oldAddress;
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public String uploadProfile(Integer keeperId, MultipartFile file){
+
+        Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
+        try {
+            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            fileService.store(file);
+            petkeeper.setImg(fileName);
+
+            petkeeperRepository.saveAndFlush(petkeeper);
+            return "Upload Profile Succesfully!";
+        }catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
+
+
 
     }
 }
