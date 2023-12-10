@@ -66,9 +66,9 @@ public class FileService {
             throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
-    public Resource loadFileAsResource(String fileName) {
+    public Resource loadFileAsResource(String fileName,Integer keeperId) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
@@ -140,6 +140,13 @@ public class FileService {
         }
         return fileNames;
     }
-
+    public boolean doesImageExist(String fileName, Integer keeperId) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName).normalize();
+            return Files.exists(filePath) && Files.isRegularFile(filePath);
+        } catch (Exception ex) {
+            throw new RuntimeException("Error checking file existence", ex);
+        }
+    }
 
 }

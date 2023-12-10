@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 @Service
@@ -163,11 +165,14 @@ public class PetkeeperService {
 
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
 
-        if (petkeeper.getImg() != null) {
-            fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
+        if (petkeeper.getImg() != null && file != null) {
+            boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId);
+            if(isImageExist) {
+                fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
+            }
         }
         try {
-            if(file == null){
+            if(file == null || file.isEmpty()){
                 petkeeper.setImg(null);
                 petkeeperRepository.saveAndFlush(petkeeper);
             }else {
@@ -181,6 +186,8 @@ public class PetkeeperService {
             throw new RuntimeException(ex);
         }
     }
+
+
     @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files){
         try {
@@ -202,6 +209,7 @@ public class PetkeeperService {
                     galleryRepository.deleteGalleryByName(keeperId, name);
                     deletedList.add(name);
                 }
+
                 fileService.deleteGallery(delete,keeperId);
 
                 return "Deleted Successfully!" + deletedList;
