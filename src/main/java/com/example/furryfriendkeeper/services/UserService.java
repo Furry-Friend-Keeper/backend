@@ -129,7 +129,6 @@ public class UserService {
 
     @Transactional(rollbackOn = Exception.class)
     public SignUpPetkeeperDTO signUpPetkeeper(SignUpPetkeeperDTO signUpPetkeeperDTO){
-        try {
 
             User user = modelMapper.map(signUpPetkeeperDTO, User.class);
             user.setEmail(signUpPetkeeperDTO.getEmail().trim());
@@ -145,6 +144,7 @@ public class UserService {
             if (email.size() != 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
             }
+        try {
 
             User savedUser = userRepository.saveAndFlush(user);
 
@@ -169,14 +169,13 @@ public class UserService {
             signUpPetkeeperDTO.setPassword("Protected Field");
             return signUpPetkeeperDTO;
         } catch (Exception e){
-            throw e;
+            throw new RuntimeException("Cannot Sign Up, Please Try again!", e);
         }
 
     }
 
     @Transactional(rollbackOn = Exception.class)
     public OwnerDTO sighUpPetOwner(OwnerDTO newOwner){
-        try {
             User user = modelMapper.map(newOwner, User.class);
             user.setEmail(newOwner.getEmail().trim());
             user.setPassword(passwordEncoder.encode(newOwner.getPassword()));
@@ -191,6 +190,7 @@ public class UserService {
             if (email.size() != 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
             }
+            try{
             User savedUser = userRepository.saveAndFlush(user);
 
             Petowner petowner = modelMapper.map(newOwner, Petowner.class);
@@ -201,7 +201,7 @@ public class UserService {
 
             return newOwner;
         }catch (Exception e){
-            throw e;
+            throw new RuntimeException("Cannot Sign Up, Please Try again!", e);
         }
     }
 

@@ -1,6 +1,11 @@
 package com.example.furryfriendkeeper.services;
 
+import com.example.furryfriendkeeper.entities.Gallery;
+import com.example.furryfriendkeeper.entities.Petkeepers;
 import com.example.furryfriendkeeper.properties.FileStorageProperties;
+import com.example.furryfriendkeeper.repositories.GalleryRepository;
+import com.example.furryfriendkeeper.repositories.PetkeeperRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -17,10 +22,19 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FileService {
     private final Path fileStorageLocation;
+
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private PetkeeperRepository petkeeperRepository;
+
+    @Autowired
+    private GalleryRepository galleryRepository;
 
     @Autowired
     public FileService(FileStorageProperties fileStorageProperties) {
@@ -34,16 +48,18 @@ public class FileService {
 
     }
 
-    public String store(MultipartFile file) {
-// Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    public String store(MultipartFile file,Integer keeperId) {
+//        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+//        String fileExtension = StringUtils.getFilenameExtension(originalFileName);
+//        String fileName = keeperId.toString() + ".jpg";
+          String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         try {
-// Check if the file's name contains invalid characters
             if (fileName.contains("..")) {
                 throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
             }
-// Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName);
+            Files.createDirectories(targetLocation.getParent());
+
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return fileName;
         } catch (IOException ex) {
@@ -65,37 +81,63 @@ public class FileService {
     }
 
 
-    public void deleteFile(String fileName) {
+    public void deleteProfileImg(String fileName,Integer keeperId) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName);
+            Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName);
             Files.delete(filePath);
         } catch (IOException ex) {
             throw new RuntimeException("Could not delete file " + fileName + ". Please try again!", ex);
         }
     }
-    public List<String> storeMultiple(List<MultipartFile> files) {
+    public void deleteGallery(List<String> fileNames,Integer keeperId) {
+        try {
+            for (String fileName : fileNames) {
+                Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(fileName);
+                Files.delete(filePath);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not delete files. Please try again!", ex);
+        }
+    }
+    public List<String> storeMultiple(List<MultipartFile> files,Integer keeperId) {
         List<String> fileNames = new ArrayList<>();
-
+        Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId),Petkeepers.class);
         for (MultipartFile file : files) {
-            // Normalize file name
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+//            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String fileExtension = StringUtils.getFilenameExtension(originalFileName);
+            String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
 
+
+//            try {
+//                if (fileName.contains("..")) {
+//                    throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
+//                }
+//
+//                Path targetLocation = this.fileStorageLocation.resolve(fileName);
+//                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+//
+//                fileNames.add(fileName);
+//            } catch (IOException ex) {
+//                throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
+//            }
             try {
-                // Check if the file's name contains invalid characters
-                if (fileName.contains("..")) {
-                    throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
-                }
+                Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
+                Files.createDirectories(targetLocation.getParent());
 
-                // Copy file to the target location (Replacing existing file with the same name)
-                Path targetLocation = this.fileStorageLocation.resolve(fileName);
                 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-                fileNames.add(fileName);
+                Gallery gallery = new Gallery();
+                gallery.setPetKeeper(petkeeper);
+                gallery.setGallery(newFileName);
+                galleryRepository.saveAndFlush(gallery);
+
+                fileNames.add(newFileName);
+
             } catch (IOException ex) {
-                throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
+                throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
             }
         }
-
         return fileNames;
     }
 

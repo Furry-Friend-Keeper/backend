@@ -2,6 +2,7 @@ package com.example.furryfriendkeeper.services;
 
 import com.example.furryfriendkeeper.dtos.*;
 import com.example.furryfriendkeeper.entities.Address;
+import com.example.furryfriendkeeper.entities.Gallery;
 import com.example.furryfriendkeeper.entities.Pet;
 import com.example.furryfriendkeeper.entities.Petkeepers;
 import com.example.furryfriendkeeper.repositories.*;
@@ -9,9 +10,12 @@ import com.example.furryfriendkeeper.utils.ListMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -38,6 +42,7 @@ public class PetkeeperService {
     private final FileService fileService;
     @Autowired
     private AddressRepository addressRepository;
+
 
     public List<PetkeeperDTO> getPetkeeperList(){
         List<Petkeepers> petkeepersList = petkeeperRepository.findAll();
@@ -157,18 +162,53 @@ public class PetkeeperService {
     public String uploadProfile(Integer keeperId, MultipartFile file){
 
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
-        try {
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            fileService.store(file);
-            petkeeper.setImg(fileName);
 
-            petkeeperRepository.saveAndFlush(petkeeper);
+        if (petkeeper.getImg() != null) {
+            fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
+        }
+        try {
+            if(file == null){
+                petkeeper.setImg(null);
+                petkeeperRepository.saveAndFlush(petkeeper);
+            }else {
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                fileService.store(file, keeperId);
+                petkeeper.setImg(fileName);
+                petkeeperRepository.saveAndFlush(petkeeper);
+            }
             return "Upload Profile Succesfully!";
         }catch (Exception ex){
             throw new RuntimeException(ex);
         }
+    }
+    @Transactional(rollbackOn = Exception.class)
+    public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files){
+        try {
 
-
+            return new ResponseEntity<>(fileService.storeMultiple(files,keeperId), HttpStatus.OK);
+            } catch (Exception e){
+            throw new RuntimeException("There is error",e);
+        }
 
     }
+
+    @Transactional(rollbackOn = Exception.class)
+    public String deleteGalley(Integer keeperId,List<String> delete) {
+        List<String> deletedList = new ArrayList<>();
+        try {
+
+            if (delete != null) {
+                for (String name : delete) {
+                    galleryRepository.deleteGalleryByName(keeperId, name);
+                    deletedList.add(name);
+                }
+                fileService.deleteGallery(delete,keeperId);
+
+                return "Deleted Successfully!" + deletedList;
+            } else return "No images deleted!";
+        }catch (Exception ex){
+            throw new RuntimeException("There is error!",ex);
+        }
+    }
+
 }
