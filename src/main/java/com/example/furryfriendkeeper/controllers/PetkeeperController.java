@@ -7,8 +7,10 @@ import com.example.furryfriendkeeper.dtos.PetkeeperDetailDTO;
 import com.example.furryfriendkeeper.entities.Petkeepers;
 import com.example.furryfriendkeeper.services.PetkeeperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ import java.util.List;
 public class PetkeeperController {
     @Autowired
     private PetkeeperService service;
+
 
     @GetMapping("/all")
     public List<PetkeeperDTO> getAllPetkeeper(){
@@ -37,6 +40,11 @@ public class PetkeeperController {
     public ResponseEntity<String> updatePetkeeper(@PathVariable Integer keeperId, @RequestBody PetKeeperEditDTO petkeepers){
          service.updatePetkeeper(petkeepers,keeperId);
         return ResponseEntity.ok("Petkeeper updated successfully");
+    }
+    @PatchMapping("/{keeperId}/profile-img")
+    public String uploadProfile(@PathVariable Integer keeperId, @RequestParam("file") MultipartFile file){
+
+        return service.uploadProfile(keeperId,file);
     }
 
 

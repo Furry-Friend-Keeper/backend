@@ -24,6 +24,7 @@ public class PetkeeperDetailDTO {
     private String contact;
     @NotEmpty
     private Integer phone;
+    private String img;
     @NotEmpty
     private String email;
     private double reviewStars;
