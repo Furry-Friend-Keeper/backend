@@ -2,6 +2,7 @@ package com.example.furryfriendkeeper.services;
 
 import com.example.furryfriendkeeper.dtos.*;
 import com.example.furryfriendkeeper.entities.Address;
+import com.example.furryfriendkeeper.entities.Gallery;
 import com.example.furryfriendkeeper.entities.Pet;
 import com.example.furryfriendkeeper.entities.Petkeepers;
 import com.example.furryfriendkeeper.repositories.*;
@@ -9,9 +10,12 @@ import com.example.furryfriendkeeper.utils.ListMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -38,6 +42,7 @@ public class PetkeeperService {
     private final FileService fileService;
     @Autowired
     private AddressRepository addressRepository;
+
 
     public List<PetkeeperDTO> getPetkeeperList(){
         List<Petkeepers> petkeepersList = petkeeperRepository.findAll();
@@ -159,7 +164,7 @@ public class PetkeeperService {
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
         try {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            fileService.store(file);
+            fileService.store(file, keeperId);
             petkeeper.setImg(fileName);
 
             petkeeperRepository.saveAndFlush(petkeeper);
@@ -167,8 +172,26 @@ public class PetkeeperService {
         }catch (Exception ex){
             throw new RuntimeException(ex);
         }
-
-
-
     }
+
+    public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files){
+        try {
+            Gallery gallery = new Gallery();
+            Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId),Petkeepers.class);
+            gallery.setPetKeeper(petkeeper);
+            for(MultipartFile file : files) {
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                gallery.setGallery(fileName);
+                galleryRepository.saveAndFlush(gallery);
+            }
+
+        } catch (Exception e){
+            throw new RuntimeException("There is error",e);
+        }
+
+
+        return new ResponseEntity<>(fileService.storeMultiple(files,keeperId), HttpStatus.OK);
+    }
+
+
 }

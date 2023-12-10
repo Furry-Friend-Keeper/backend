@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FileService {
@@ -34,16 +35,18 @@ public class FileService {
 
     }
 
-    public String store(MultipartFile file) {
-// Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    public String store(MultipartFile file,Integer keeperId) {
+//        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+//        String fileExtension = StringUtils.getFilenameExtension(originalFileName);
+//        String fileName = keeperId.toString() + ".jpg";
+          String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         try {
-// Check if the file's name contains invalid characters
             if (fileName.contains("..")) {
                 throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
             }
-// Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName);
+            Files.createDirectories(targetLocation.getParent());
+
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return fileName;
         } catch (IOException ex) {
@@ -73,29 +76,39 @@ public class FileService {
             throw new RuntimeException("Could not delete file " + fileName + ". Please try again!", ex);
         }
     }
-    public List<String> storeMultiple(List<MultipartFile> files) {
+    public List<String> storeMultiple(List<MultipartFile> files,Integer keeperId) {
         List<String> fileNames = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            // Normalize file name
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+//            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String fileExtension = StringUtils.getFilenameExtension(originalFileName);
+            String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
 
+
+//            try {
+//                if (fileName.contains("..")) {
+//                    throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
+//                }
+//
+//                Path targetLocation = this.fileStorageLocation.resolve(fileName);
+//                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+//
+//                fileNames.add(fileName);
+//            } catch (IOException ex) {
+//                throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
+//            }
             try {
-                // Check if the file's name contains invalid characters
-                if (fileName.contains("..")) {
-                    throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
-                }
+                Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
+                Files.createDirectories(targetLocation.getParent());
 
-                // Copy file to the target location (Replacing existing file with the same name)
-                Path targetLocation = this.fileStorageLocation.resolve(fileName);
                 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-                fileNames.add(fileName);
+                fileNames.add(newFileName);
             } catch (IOException ex) {
-                throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
+                throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
             }
         }
-
         return fileNames;
     }
 

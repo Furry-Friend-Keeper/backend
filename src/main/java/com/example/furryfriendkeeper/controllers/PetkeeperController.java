@@ -46,6 +46,9 @@ public class PetkeeperController {
 
         return service.uploadProfile(keeperId,file);
     }
-
+    @PostMapping("/{keeperId}/gallery")
+    public ResponseEntity<List<String>> uploadGallery(@PathVariable Integer keeperId, @RequestParam("file") List<MultipartFile> files){
+        return service.uploadGallery(keeperId,files);
+    }
 
 }

@@ -14,8 +14,4 @@ public class CategoriesDTO {
         private Integer id;
         private String name;
 
-        private Integer getId(){
-                return id;
-        }
-
 }
