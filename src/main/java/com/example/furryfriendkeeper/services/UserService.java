@@ -60,9 +60,21 @@ public class UserService {
         }
 //        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Testttetst");
         String userRole = user1.getRole().getRole();
-        JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole);
+        if(userRole.equals("PetKeeper")){
+            Integer petkeeperId = petkeeperRepository.getPetkeepersIdByEmail(user.getEmail());
+
+            JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole,petkeeperId);
+            return ResponseEntity.ok(jwtDTO);
+        }else if(userRole.equals("Owner")) {
+            Integer ownerId = ownerRepository.getPetownerIdByEmail(user.getEmail());
+
+            JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole, ownerId);
+            return ResponseEntity.ok(jwtDTO);
+        }else {
+            JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole, null);
 //        return new JwtDTO(generateToken(user), generateRefreshToken(user), userRole);
-        return ResponseEntity.ok(jwtDTO);
+            return ResponseEntity.ok(jwtDTO);
+        }
     }
 
     public boolean matchPassword(MatchUserDTO user) {
@@ -98,7 +110,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token is from email that does not exist!!");
         }
         if(!jwtTokenUtil.tokenExpired(refreshToken)){
-            return new JwtDTO(jwtTokenUtil.generateToken(userDetail),refreshToken, userRole);
+            return new JwtDTO(jwtTokenUtil.generateToken(userDetail),refreshToken, userRole,null);
         }else return null;
     }
 
