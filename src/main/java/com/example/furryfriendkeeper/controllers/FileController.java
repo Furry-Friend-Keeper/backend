@@ -20,30 +20,29 @@ public class FileController {
     public FileController(FileService fileService) {
         this.fileService = fileService;
     }
-    @GetMapping("/{filename:.+}")
+    @GetMapping("/{keeperId}/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        Resource file = fileService.loadFileAsResource(filename);
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename,@PathVariable Integer keeperId ) {
+        Resource file = fileService.loadFileAsResource(filename, keeperId);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(file);
     }
-    @PostMapping("/keeperprofile")
-    public String fileUpload(@RequestParam("file") MultipartFile file) {
-        Integer id = null;
-        fileService.store(file,id);
+    @PostMapping("/upload/{keeperId}")
+    public String fileUpload(@RequestParam("file") MultipartFile file,@PathVariable Integer keeperId) {
+        fileService.store(file,keeperId);
         return "You successfully uploaded " + file.getOriginalFilename() + "!";
     }
 
-    @DeleteMapping("/keeperprofile/{id}")
-    public String fileDelete(@PathVariable String id){
-        Integer d = null;
-        fileService.deleteProfileImg(id,d);
+    @DeleteMapping("/keeper/{keeperId}/{imgname}")
+    public String fileDelete(@PathVariable String imgname,@PathVariable Integer keeperId){
+
+        fileService.deleteProfileImg(imgname,keeperId);
         return "delete successfully";
     }
 
-    @PostMapping("/keepers-gallery")
-    public ResponseEntity<List<String>> uploadGallery(@RequestParam("file") List<MultipartFile> files){
-        Integer id = 2;
-        List<String> fileNames = fileService.storeMultiple(files,id);
+    @PostMapping("/keepers-gallery/{keeperId}")
+    public ResponseEntity<List<String>> uploadGallery(@RequestParam("file") List<MultipartFile> files, @PathVariable Integer keeperId){
+
+        List<String> fileNames = fileService.storeMultiple(files,keeperId);
         return new ResponseEntity<>(fileNames, HttpStatus.OK);
     }
 }
