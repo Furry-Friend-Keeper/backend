@@ -1,6 +1,11 @@
 package com.example.furryfriendkeeper.services;
 
+import com.example.furryfriendkeeper.entities.Gallery;
+import com.example.furryfriendkeeper.entities.Petkeepers;
 import com.example.furryfriendkeeper.properties.FileStorageProperties;
+import com.example.furryfriendkeeper.repositories.GalleryRepository;
+import com.example.furryfriendkeeper.repositories.PetkeeperRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -22,6 +27,14 @@ import java.util.UUID;
 @Service
 public class FileService {
     private final Path fileStorageLocation;
+
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private PetkeeperRepository petkeeperRepository;
+
+    @Autowired
+    private GalleryRepository galleryRepository;
 
     @Autowired
     public FileService(FileStorageProperties fileStorageProperties) {
@@ -68,17 +81,27 @@ public class FileService {
     }
 
 
-    public void deleteFile(String fileName) {
+    public void deleteProfileImg(String fileName,Integer keeperId) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName);
+            Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName);
             Files.delete(filePath);
         } catch (IOException ex) {
             throw new RuntimeException("Could not delete file " + fileName + ". Please try again!", ex);
         }
     }
+    public void deleteGallery(List<String> fileNames,Integer keeperId) {
+        try {
+            for (String fileName : fileNames) {
+                Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(fileName);
+                Files.delete(filePath);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not delete files. Please try again!", ex);
+        }
+    }
     public List<String> storeMultiple(List<MultipartFile> files,Integer keeperId) {
         List<String> fileNames = new ArrayList<>();
-
+        Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId),Petkeepers.class);
         for (MultipartFile file : files) {
 //            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -104,7 +127,13 @@ public class FileService {
 
                 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
+                Gallery gallery = new Gallery();
+                gallery.setPetKeeper(petkeeper);
+                gallery.setGallery(newFileName);
+                galleryRepository.saveAndFlush(gallery);
+
                 fileNames.add(newFileName);
+
             } catch (IOException ex) {
                 throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
             }

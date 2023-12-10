@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -49,6 +50,16 @@ public class PetkeeperController {
     @PostMapping("/{keeperId}/gallery")
     public ResponseEntity<List<String>> uploadGallery(@PathVariable Integer keeperId, @RequestParam("file") List<MultipartFile> files){
         return service.uploadGallery(keeperId,files);
+    }
+    @PatchMapping("/{keeperId}/gallery")
+    public String deleteGallery(@PathVariable Integer keeperId, @RequestParam("delete") List<String> delete,@RequestParam("file") List<MultipartFile> files){
+        if(delete != null) {
+            service.deleteGalley(keeperId, delete);
+        }
+        if (files != null ) {
+            service.uploadGallery(keeperId, files);
+        }
+        return "Update Succesfully!";
     }
 
 }

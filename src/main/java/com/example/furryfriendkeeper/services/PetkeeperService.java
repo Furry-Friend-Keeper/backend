@@ -162,36 +162,53 @@ public class PetkeeperService {
     public String uploadProfile(Integer keeperId, MultipartFile file){
 
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
-        try {
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            fileService.store(file, keeperId);
-            petkeeper.setImg(fileName);
 
-            petkeeperRepository.saveAndFlush(petkeeper);
+        if (petkeeper.getImg() != null) {
+            fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
+        }
+        try {
+            if(file == null){
+                petkeeper.setImg(null);
+                petkeeperRepository.saveAndFlush(petkeeper);
+            }else {
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                fileService.store(file, keeperId);
+                petkeeper.setImg(fileName);
+                petkeeperRepository.saveAndFlush(petkeeper);
+            }
             return "Upload Profile Succesfully!";
         }catch (Exception ex){
             throw new RuntimeException(ex);
         }
     }
-
+    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files){
         try {
-            Gallery gallery = new Gallery();
-            Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId),Petkeepers.class);
-            gallery.setPetKeeper(petkeeper);
-            for(MultipartFile file : files) {
-                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-                gallery.setGallery(fileName);
-                galleryRepository.saveAndFlush(gallery);
-            }
 
-        } catch (Exception e){
+            return new ResponseEntity<>(fileService.storeMultiple(files,keeperId), HttpStatus.OK);
+            } catch (Exception e){
             throw new RuntimeException("There is error",e);
         }
 
-
-        return new ResponseEntity<>(fileService.storeMultiple(files,keeperId), HttpStatus.OK);
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public String deleteGalley(Integer keeperId,List<String> delete) {
+        List<String> deletedList = new ArrayList<>();
+        try {
+
+            if (delete != null) {
+                for (String name : delete) {
+                    galleryRepository.deleteGalleryByName(keeperId, name);
+                    deletedList.add(name);
+                }
+                fileService.deleteGallery(delete,keeperId);
+
+                return "Deleted Successfully!" + deletedList;
+            } else return "No images deleted!";
+        }catch (Exception ex){
+            throw new RuntimeException("There is error!",ex);
+        }
+    }
 
 }

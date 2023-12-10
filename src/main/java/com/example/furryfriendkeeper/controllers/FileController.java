@@ -35,7 +35,8 @@ public class FileController {
 
     @DeleteMapping("/keeperprofile/{id}")
     public String fileDelete(@PathVariable String id){
-        fileService.deleteFile(id);
+        Integer d = null;
+        fileService.deleteProfileImg(id,d);
         return "delete successfully";
     }
 
