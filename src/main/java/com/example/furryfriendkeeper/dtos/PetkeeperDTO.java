@@ -13,10 +13,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class PetkeeperDTO {
 
-    private Integer petkeeperId;
+    private Integer id;
     private String name;
-    private Set<String> Categories;
+    private Set<String> categories;
     private double reviewStars;
-    private String Img;
+    private String img;
 
 }
