@@ -102,11 +102,13 @@ public class FileService {
     public List<String> storeMultiple(List<MultipartFile> files,Integer keeperId) {
         List<String> fileNames = new ArrayList<>();
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId),Petkeepers.class);
-        for (MultipartFile file : files) {
+
+
+            for (MultipartFile file : files) {
 //            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
-            String fileExtension = StringUtils.getFilenameExtension(originalFileName);
-            String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
+                String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+                String fileExtension = StringUtils.getFilenameExtension(originalFileName);
+                String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
 
 
 //            try {
@@ -121,23 +123,24 @@ public class FileService {
 //            } catch (IOException ex) {
 //                throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
 //            }
-            try {
-                Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
-                Files.createDirectories(targetLocation.getParent());
+                try {
+                    Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
+                    Files.createDirectories(targetLocation.getParent());
 
-                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-                Gallery gallery = new Gallery();
-                gallery.setPetKeeper(petkeeper);
-                gallery.setGallery(newFileName);
-                galleryRepository.saveAndFlush(gallery);
+                    Gallery gallery = new Gallery();
+                    gallery.setPetKeeper(petkeeper);
+                    gallery.setGallery(newFileName);
+                    galleryRepository.saveAndFlush(gallery);
 
-                fileNames.add(newFileName);
+                    fileNames.add(newFileName);
 
-            } catch (IOException ex) {
-                throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
+                } catch (IOException ex) {
+                    throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
+                }
             }
-        }
+
         return fileNames;
     }
     public boolean doesImageExist(String fileName, Integer keeperId) {
