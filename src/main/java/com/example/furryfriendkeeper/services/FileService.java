@@ -79,6 +79,20 @@ public class FileService {
             throw new RuntimeException("File not found " + fileName, ex);
         }
     }
+    public Resource loadFileGallery(String fileName,Integer keeperId) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new RuntimeException("File not found " + fileName);
+            }
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException("File not found " + fileName, ex);
+        }
+    }
+
 
 
     public void deleteProfileImg(String fileName,Integer keeperId) {

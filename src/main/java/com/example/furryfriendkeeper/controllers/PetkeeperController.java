@@ -44,7 +44,7 @@ public class PetkeeperController {
     }
     @PatchMapping("/{keeperId}/profile-img")
     public String uploadProfile(@PathVariable Integer keeperId, @RequestParam("file") MultipartFile file){
-        
+
         return service.uploadProfile(keeperId,file);
     }
     @PostMapping("/{keeperId}/gallery")

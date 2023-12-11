@@ -26,6 +26,13 @@ public class FileController {
         Resource file = fileService.loadFileAsResource(filename, keeperId);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(file);
     }
+    @GetMapping("/{keeperId}/gallery/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveGalleryFile(@PathVariable String filename,@PathVariable Integer keeperId ) {
+        Resource file = fileService.loadFileGallery(filename, keeperId);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(file);
+    }
+
     @PostMapping("/upload/{keeperId}")
     public String fileUpload(@RequestParam("file") MultipartFile file,@PathVariable Integer keeperId) {
         fileService.store(file,keeperId);
@@ -44,5 +51,9 @@ public class FileController {
 
         List<String> fileNames = fileService.storeMultiple(files,keeperId);
         return new ResponseEntity<>(fileNames, HttpStatus.OK);
+
+
+
+
     }
 }
