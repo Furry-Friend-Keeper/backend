@@ -27,6 +27,7 @@ public class UserController {
 
 
     @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<JwtDTO> match(@Valid @RequestBody MatchUserDTO user){
 
 //        System.out.println(user.getEmail() + " " + user.getPassword());
