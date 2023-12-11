@@ -58,9 +58,11 @@ public class PetkeeperController {
         if(delete != null) {
             service.deleteGalley(keeperId, delete);
         }
-        if (files != null ) {
+//        System.out.println(files.size());
+        if (!files.get(0).isEmpty()) {
             service.uploadGallery(keeperId, files);
         }
+
         return "Update Succesfully!";
     }
 

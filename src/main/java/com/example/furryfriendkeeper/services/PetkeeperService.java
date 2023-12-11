@@ -190,9 +190,11 @@ public class PetkeeperService {
 
     @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files){
+
         try {
 
-            return new ResponseEntity<>(fileService.storeMultiple(files,keeperId), HttpStatus.OK);
+                return new ResponseEntity<>(fileService.storeMultiple(files, keeperId), HttpStatus.OK);
+
             } catch (Exception e){
             throw new RuntimeException("There is error",e);
         }
