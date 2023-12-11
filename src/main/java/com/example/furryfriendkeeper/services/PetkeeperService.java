@@ -75,8 +75,12 @@ public class PetkeeperService {
 
     public PetkeeperDetailDTO getPetkeeperDetails(Integer petkeepersId){
        Optional<Petkeepers> petkeeperDetails = petkeeperRepository.findById(petkeepersId);
+
        List<String> galleries = galleryRepository.findGalleriesByPetkeeperId(petkeepersId);
        PetkeeperDetailDTO petkeeperDetailDTO = modelMapper.map(petkeeperDetails, PetkeeperDetailDTO.class);
+        if(petkeeperDetailDTO == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Petkeeper Not Found");
+        }
        Double avgReviewStar = reviewRepository.avgStars(petkeepersId);
        List<String> categories = categoriesRepository.FindCategoriesByPetkeeperId(petkeepersId);
         if(avgReviewStar == null){

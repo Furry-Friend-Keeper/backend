@@ -9,9 +9,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.io.IOException;
@@ -73,10 +75,10 @@ public class FileService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new RuntimeException("File not found " + fileName);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new RuntimeException("File not found " + fileName, ex);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
         }
     }
     public Resource loadFileGallery(String fileName,Integer keeperId) {
@@ -86,10 +88,10 @@ public class FileService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new RuntimeException("File not found " + fileName);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new RuntimeException("File not found " + fileName, ex);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
         }
     }
 
