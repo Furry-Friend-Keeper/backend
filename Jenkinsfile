@@ -10,10 +10,9 @@ pipeline {
         stage('Clear') {
             steps {
                 script {
-                    echo "INFO: Clear image, container, network"
+                    echo "INFO: Clear image, container"
                     sh "docker rmi backendimg || true"
                     sh "docker container rm -f backend || true"
-                    sh "docker network rm FFK-network || true"
                     echo "INFO: All clear!!!"
                 }
             }
@@ -33,7 +32,6 @@ pipeline {
                 script {
                     echo "INFO: Build backend image"
                     sh "docker build -t backendimg ."
-                    sh "docker network create FFK-network || true"
                     echo "INFO: Finish build backend image"
                 }
             }
