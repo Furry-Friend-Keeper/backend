@@ -196,7 +196,6 @@ public class PetkeeperService {
     public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files){
 
         try {
-
                 return new ResponseEntity<>(fileService.storeMultiple(files, keeperId), HttpStatus.OK);
 
             } catch (Exception e){

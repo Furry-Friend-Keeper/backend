@@ -58,7 +58,6 @@ public class UserService {
         if (!matchPassword(user)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password not match >:(");
         }
-//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Testttetst");
         String userRole = user1.getRole().getRole();
         if(userRole.equals("PetKeeper")){
             Integer petkeeperId = petkeeperRepository.getPetkeepersIdByEmail(user.getEmail());
@@ -72,7 +71,6 @@ public class UserService {
             return ResponseEntity.ok(jwtDTO);
         }else {
             JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole, null);
-//        return new JwtDTO(generateToken(user), generateRefreshToken(user), userRole);
             return ResponseEntity.ok(jwtDTO);
         }
     }
@@ -115,26 +113,27 @@ public class UserService {
     }
 
 
-    public User save(UserDTO newUser) {
-        User user = modelMapper.map(newUser, User.class);
-        user.setEmail(newUser.getEmail().trim());
-        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        Role role = roleRepository.findById(newUser.getRole())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
-
-        user.setRole(role);
-        List<User> email = userRepository.uniqueUserEmail(newUser.getEmail().trim().toLowerCase());
-        if (email.size() != 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
-        }
-//       if (!(enumContains(newUser.getRole().toLowerCase()))) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no Role.");
+//    public User save(UserDTO newUser) {
+//        User user = modelMapper.map(newUser, User.class);
+//        user.setEmail(newUser.getEmail().trim());
+//        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
+//        Role role = roleRepository.findById(newUser.getRole())
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
+//
+//        user.setRole(role);
+//        List<User> email = userRepository.uniqueUserEmail(newUser.getEmail().trim().toLowerCase());
+//        if (email.size() != 0) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
 //        }
+////       if (!(enumContains(newUser.getRole().toLowerCase()))) {
+////            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no Role.");
+////        }
+//
+//        User savedUser = userRepository.saveAndFlush(user);
+//        user.setPassword("Protected Field");
+//        return savedUser;
+//    }
 
-        User savedUser = userRepository.saveAndFlush(user);
-        user.setPassword("Protected Field");
-        return savedUser;
-    }
     public List<Role> AllRole(){
         return roleRepository.findAll();
     }
@@ -159,7 +158,6 @@ public class UserService {
         try {
 
             User savedUser = userRepository.saveAndFlush(user);
-
 
             Address address = modelMapper.map(signUpPetkeeperDTO.getAddress(), Address.class);
             Address savedAddress = addressRepository.saveAndFlush(address);

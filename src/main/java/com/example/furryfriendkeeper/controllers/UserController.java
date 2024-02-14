@@ -40,7 +40,7 @@ public class UserController {
         return service.signUpPetkeeper(newPetkeeper);
     }
 
-    @GetMapping("/AllRoles")
+    @GetMapping("/all-roles")
     public List<Role> allRole(){
         return service.AllRole();
     }
@@ -54,5 +54,10 @@ public class UserController {
     @GetMapping("/owner/all")
     public List<Petowner> getAllOwners(){
         return ownerService.getAllOwners();
+    }
+
+    @RequestMapping(value = "/refreshToken", method = RequestMethod.GET)
+    public JwtDTO refreshToken(@RequestHeader String refreshToken){
+        return service.generateNewToken(refreshToken);
     }
 }
