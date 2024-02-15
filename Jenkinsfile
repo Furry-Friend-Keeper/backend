@@ -38,13 +38,14 @@ pipeline {
                     echo "INFO: Deploy backend container"
                     sh """
                     docker run -d \
-                    --name backend \
-                    --network FFK-network \
-                    -p 5000:8080 \
-                    -e SPRING_DATASOURCE_URL=jdbc:mysql://ffkdb:3306/furry-friend-keeper \
-                    --restart on-failure \
-                    backendimg"
+                        --name backend \
+                        --network FFK-network \
+                        -p 5000:8080 \
+                        -e SPRING_DATASOURCE_URL=jdbc:mysql://ffkdb:3306/furry-friend-keeper \
+                        --restart on-failure \
+                        backendimg"
                     """
+                    
                     echo "INFO: Finish deploy backend container"
                 }
             }
