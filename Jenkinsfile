@@ -45,7 +45,6 @@ pipeline {
                         --restart on-failure \
                         backendimg"
                     """
-                    
                     echo "INFO: Finish deploy backend container"
                 }
             }
