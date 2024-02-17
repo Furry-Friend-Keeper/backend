@@ -30,9 +30,9 @@ public class OwnerService {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     @Autowired
-    private OwnerRepository ownerRepository;
+    private final OwnerRepository ownerRepository;
 
     public List<Petowner> getAllOwners(){
         return ownerRepository.findAll();

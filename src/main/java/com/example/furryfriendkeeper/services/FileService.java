@@ -119,31 +119,17 @@ public class FileService {
         List<String> fileNames = new ArrayList<>();
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId),Petkeepers.class);
 
-
             for (MultipartFile file : files) {
-//            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
                 String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
                 String fileExtension = StringUtils.getFilenameExtension(originalFileName);
                 String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
 
-
-//            try {
-//                if (fileName.contains("..")) {
-//                    throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
-//                }
-//
-//                Path targetLocation = this.fileStorageLocation.resolve(fileName);
-//                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-//
-//                fileNames.add(fileName);
-//            } catch (IOException ex) {
-//                throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
-//            }
                 try {
                     Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
                     Files.createDirectories(targetLocation.getParent());
 
                     Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
 
                     Gallery gallery = new Gallery();
                     gallery.setPetKeeper(petkeeper);

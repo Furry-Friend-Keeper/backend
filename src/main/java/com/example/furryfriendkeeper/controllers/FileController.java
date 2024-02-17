@@ -33,25 +33,25 @@ public class FileController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(file);
     }
 
-    @PostMapping("/upload/{keeperId}")
-    public String fileUpload(@RequestParam("file") MultipartFile file,@PathVariable Integer keeperId) {
-        fileService.store(file,keeperId);
-        return "You successfully uploaded " + file.getOriginalFilename() + "!";
-    }
+//    @PostMapping("/upload/{keeperId}")
+//    public String fileUpload(@RequestParam("file") MultipartFile file,@PathVariable Integer keeperId) {
+//        fileService.store(file,keeperId);
+//        return "You successfully uploaded " + file.getOriginalFilename() + "!";
+//    }
 
-    @DeleteMapping("/keeper/{keeperId}/{imgname}")
-    public String fileDelete(@PathVariable String imgname,@PathVariable Integer keeperId){
+//    @DeleteMapping("/keeper/{keeperId}/{imgname}")
+//    public String fileDelete(@PathVariable String imgname,@PathVariable Integer keeperId){
+//
+//        fileService.deleteProfileImg(imgname,keeperId);
+//        return "delete successfully";
+//    }
 
-        fileService.deleteProfileImg(imgname,keeperId);
-        return "delete successfully";
-    }
-
-    @PostMapping("/keepers-gallery/{keeperId}")
-    public ResponseEntity<List<String>> uploadGallery(@RequestParam("file") List<MultipartFile> files, @PathVariable Integer keeperId){
-
-        List<String> fileNames = fileService.storeMultiple(files,keeperId);
-        return new ResponseEntity<>(fileNames, HttpStatus.OK);
-
-
-    }
+//    @PostMapping("/keepers-gallery/{keeperId}")
+//    public ResponseEntity<List<String>> uploadGallery(@RequestParam("file") List<MultipartFile> files, @PathVariable Integer keeperId){
+//
+//        List<String> fileNames = fileService.storeMultiple(files,keeperId);
+//        return new ResponseEntity<>(fileNames, HttpStatus.OK);
+//
+//
+//    }
 }

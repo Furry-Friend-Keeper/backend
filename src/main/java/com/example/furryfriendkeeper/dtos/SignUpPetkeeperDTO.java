@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 import java.util.List;
 import java.util.Set;
 
@@ -18,24 +16,31 @@ import java.util.Set;
 @AllArgsConstructor
 public class SignUpPetkeeperDTO {
     private Integer petkeeperId;
-    @NotEmpty
+    @NotEmpty(message = "Please fill this field")
+    @Size(max = 200, message = "Name length cannot exceed 200 characters!!")
     private String name;
-    @NotEmpty
+    @NotEmpty(message = "Please fill this field")
+    @Size(max = 200, message = "Detail length cannot exceed 200 characters!!")
     private String detail;
-    @NotEmpty
+    @NotEmpty(message = "Please fill this field")
+    @Size(max = 200, message = "Contact length cannot exceed 200 characters!!")
     private String contact;
-    @NotNull
+    @NotNull(message = "Please fill this field")
+    //    @Size(max = 12, message = "Invalid length of phone number!!")
     private Integer phone;
-    @NotEmpty
+    @NotEmpty(message = "Please fill this field")
     private Set<Integer> categoryId;
-    @NotEmpty
+    @NotEmpty(message = "Please fill this field")
+    @Email(message = "Invalid email, Please try again")
+    @Size(max = 200, message = "Email length cannot exceed 100 characters!!")
     private String email;
-    @NotEmpty
+    @NotEmpty(message = "Please fill this field")
+    @Size(max = 200,message = "Password cannot exceed 200 characters!!")
     private String password;
-    @NotNull
-    @Positive
+    @NotNull(message = "Please fill this field")
+    @Positive(message = "Invalid role Id")
     private Integer role;
-    @NotNull
+    @NotNull(message = "Please fill this field")
     private AddressDTO address;
 
 }

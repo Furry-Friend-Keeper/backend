@@ -4,9 +4,14 @@ import com.example.furryfriendkeeper.entities.Review;
 import com.example.furryfriendkeeper.repositories.AddressRepository;
 import com.example.furryfriendkeeper.repositories.GalleryRepository;
 import com.example.furryfriendkeeper.repositories.ReviewRepository;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
