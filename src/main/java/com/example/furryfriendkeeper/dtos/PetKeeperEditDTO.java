@@ -26,8 +26,8 @@ public class PetKeeperEditDTO {
     @Size(max = 200, message = "Detail length cannot exceed 200 characters!!")
     private String detail;
     @NotNull(message = "Please fill this field")
-    //    @Size(max = 12, message = "Invalid length of phone number!!")
-    private Integer phone;
+    @Size(max = 12, message = "Invalid length of phone number!!")
+    private String phone;
     @NotNull(message = "Please fill this field")
     private AddressDTO address;
 }
