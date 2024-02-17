@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 //@CrossOrigin(origins = "http://cp23at3.sit.kmutt.ac.th")
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 @RequestMapping( "/api/users")
 public class UserController {
     @Autowired
