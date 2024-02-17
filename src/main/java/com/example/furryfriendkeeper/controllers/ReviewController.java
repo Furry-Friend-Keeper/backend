@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/review")
 public class ReviewController {
