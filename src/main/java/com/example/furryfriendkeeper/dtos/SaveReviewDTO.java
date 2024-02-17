@@ -19,13 +19,14 @@ import java.time.ZonedDateTime;
 public class SaveReviewDTO {
 
     private Integer reviewId;
-    @NotNull
     private String comment;
-    @NotNull
+    @NotNull(message = "Please fill in date & time")
     private ZonedDateTime date;
-    @NotNull
+    @NotNull(message = "Invalid rating star ,please try again!")
     @Size(min = 1,max = 5,message = "Invalid Stars amount,please try again!")
     private Integer star;
+    @NotNull(message = "filt his field")
     private Integer petownerId;
+    @NotNull(message = "filt his field")
     private Integer petkeeperId;
 }
