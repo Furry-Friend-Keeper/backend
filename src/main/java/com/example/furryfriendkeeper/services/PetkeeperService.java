@@ -42,8 +42,8 @@ public class PetkeeperService {
     private final GalleryRepository galleryRepository;
 
     private final FileService fileService;
-    @Autowired
-    private AddressRepository addressRepository;
+
+    private final AddressRepository addressRepository;
 
 
     public List<PetkeeperDTO> getPetkeeperList(){
@@ -86,8 +86,11 @@ public class PetkeeperService {
         if(avgReviewStar == null){
             avgReviewStar = 0.0;
         }
+
+        String formatStar = String.format("%.1f",avgReviewStar);
+        Double avgStar = Double.parseDouble(formatStar);
        petkeeperDetailDTO.setGallery(galleries);
-       petkeeperDetailDTO.setReviewStars(avgReviewStar);
+       petkeeperDetailDTO.setReviewStars(avgStar);
        petkeeperDetailDTO.setCategories(categories);
        return petkeeperDetailDTO;
 

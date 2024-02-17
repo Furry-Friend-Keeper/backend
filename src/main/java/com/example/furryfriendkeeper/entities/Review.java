@@ -37,5 +37,4 @@ public class Review {
     @JoinColumn(name = "PetOwnerId", nullable = false)
     private Petowner petOwner;
 
-
 }

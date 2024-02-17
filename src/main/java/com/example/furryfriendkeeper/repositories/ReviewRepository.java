@@ -16,7 +16,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     Double avgStars(Integer id);
 
 
-    @Query("SELECT r.id AS id, r.comment AS comment, r.stars AS stars FROM Review r WHERE r.petKeeper.id = :petkeeperId")
+    @Query("SELECT r.id AS id, r.comment AS comment, r.stars AS stars, r.petOwner.id as ownerId, o.firstname AS firstname , o.lastname AS lastname, o.img AS img  FROM Review r JOIN Petowner o ON r.petOwner.id = o.id WHERE r.petKeeper.id = :petkeeperId")
     List<ReviewDTO> findReviewsByPetkeeperId(@Param("petkeeperId") Integer petkeeperId);
+
 
 }
