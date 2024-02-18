@@ -2,9 +2,9 @@ package com.example.furryfriendkeeper.services;
 
 import com.example.furryfriendkeeper.dtos.*;
 import com.example.furryfriendkeeper.entities.Address;
-import com.example.furryfriendkeeper.entities.Gallery;
 import com.example.furryfriendkeeper.entities.Pet;
 import com.example.furryfriendkeeper.entities.Petkeepers;
+import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
 import com.example.furryfriendkeeper.repositories.*;
 import com.example.furryfriendkeeper.utils.ListMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 @Service
@@ -45,6 +43,9 @@ public class PetkeeperService {
 
     private final AddressRepository addressRepository;
 
+    private final JwtTokenUtil jwtTokenUtil;
+
+    private final UserRepository userRepository;
 
     public List<PetkeeperDTO> getPetkeeperList(){
         List<Petkeepers> petkeepersList = petkeeperRepository.findAll();
@@ -105,26 +106,33 @@ public class PetkeeperService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Petkeepers updatePetkeeper(PetKeeperEditDTO updatePetkeepers, Integer petkeeperId){
-        try{
-            Petkeepers petkeeperDetail = modelMapper.map(updatePetkeepers, Petkeepers.class);
-        Petkeepers petkeepers = petkeeperRepository.findById(petkeeperId).map(oldDetail -> mapPetkeeper(oldDetail, petkeeperDetail)).orElseGet(()->
+    public Petkeepers updatePetkeeper(PetKeeperEditDTO updatePetkeepers, Integer petkeeperId,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Petkeepers keeperEmail = petkeeperRepository.getById(petkeeperId);
+
+        if(role == "PetKeeper" && emailCheck.equals(keeperEmail.getEmail())) {
+            try {
+                Petkeepers petkeeperDetail = modelMapper.map(updatePetkeepers, Petkeepers.class);
+                Petkeepers petkeepers = petkeeperRepository.findById(petkeeperId).map(oldDetail -> mapPetkeeper(oldDetail, petkeeperDetail)).orElseGet(() ->
                 {
                     petkeeperDetail.setId(petkeeperId);
                     return petkeeperDetail;
                 });
 
-        if(updatePetkeepers.getAddress() != null){
-            Address oldAddress = addressRepository.findAddressDetailByPetkeeperId(petkeeperId);
-            mapAddress(oldAddress, updatePetkeepers);
-            addressRepository.saveAndFlush(oldAddress);
+                if (updatePetkeepers.getAddress() != null) {
+                    Address oldAddress = addressRepository.findAddressDetailByPetkeeperId(petkeeperId);
+                    mapAddress(oldAddress, updatePetkeepers);
+                    addressRepository.saveAndFlush(oldAddress);
 
-        }
+                }
 
-        return petkeeperRepository.saveAndFlush(petkeepers);
-        }catch (Exception e){
-            throw e;
-        }
+                return petkeeperRepository.saveAndFlush(petkeepers);
+            } catch (Exception e) {
+                throw e;
+            }
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
     }
 
 
@@ -168,39 +176,51 @@ public class PetkeeperService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public String uploadProfile(Integer keeperId, MultipartFile file){
+    public String uploadProfile(Integer keeperId, MultipartFile file, String token){
 
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Petkeepers keeperEmail = petkeeperRepository.getById(keeperId);
 
-        if (petkeeper.getImg() != null && file != null) {
-            boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId);
-            if(isImageExist) {
-                fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
+        if(role == "PetKeeper" && emailCheck.equals(keeperEmail.getEmail())) {
+            if (petkeeper.getImg() != null && file != null) {
+                boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId);
+                if (isImageExist) {
+                    fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
+                }
             }
-        }
-        try {
-            if(file == null || file.isEmpty()){
-                petkeeper.setImg(null);
-                petkeeperRepository.saveAndFlush(petkeeper);
-            }else {
-                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-                fileService.store(file, keeperId);
-                petkeeper.setImg(fileName);
-                petkeeperRepository.saveAndFlush(petkeeper);
+            try {
+                if (file == null || file.isEmpty()) {
+                    petkeeper.setImg(null);
+                    petkeeperRepository.saveAndFlush(petkeeper);
+                } else {
+                    String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                    fileService.store(file, keeperId);
+                    petkeeper.setImg(fileName);
+                    petkeeperRepository.saveAndFlush(petkeeper);
+                }
+                return "Upload Profile Succesfully!";
+
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
-            return "Upload Profile Succesfully!";
-        }catch (Exception ex){
-            throw new RuntimeException(ex);
-        }
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
     }
 
 
     @Transactional(rollbackOn = Exception.class)
-    public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files){
+    public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files, String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Petkeepers keeperEmail = petkeeperRepository.getById(keeperId);
 
         try {
+            if(role == "PetKeeper" && emailCheck.equals(keeperEmail.getEmail())) {
                 return new ResponseEntity<>(fileService.storeMultiple(files, keeperId), HttpStatus.OK);
-
+            }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
             } catch (Exception e){
             throw new RuntimeException("There is error",e);
         }
@@ -208,20 +228,25 @@ public class PetkeeperService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public String deleteGalley(Integer keeperId,List<String> delete) {
+    public String deleteGalley(Integer keeperId,List<String> delete, String token) {
         List<String> deletedList = new ArrayList<>();
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Petkeepers keeperEmail = petkeeperRepository.getById(keeperId);
         try {
+            if(role == "PetKeeper" && emailCheck.equals(keeperEmail.getEmail())) {
+                if (delete != null) {
+                    for (String name : delete) {
+                        galleryRepository.deleteGalleryByName(keeperId, name);
+                        deletedList.add(name);
+                    }
 
-            if (delete != null) {
-                for (String name : delete) {
-                    galleryRepository.deleteGalleryByName(keeperId, name);
-                    deletedList.add(name);
-                }
+                    fileService.deleteGallery(delete, keeperId);
 
-                fileService.deleteGallery(delete,keeperId);
-
-                return "Deleted Successfully!" + deletedList;
-            } else return "No images deleted!";
+                    return "Deleted Successfully!" + deletedList;
+                } else return "No images deleted!";
+            }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
         }catch (Exception ex){
             throw new RuntimeException("There is error!",ex);
         }

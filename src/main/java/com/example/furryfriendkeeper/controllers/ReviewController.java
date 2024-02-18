@@ -20,12 +20,16 @@ public class ReviewController {
 
     @PostMapping("/save")
     public SaveReviewDTO saveReview(@RequestBody SaveReviewDTO saveReviewDTO){
-        return service.saveReview(saveReviewDTO);
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        return service.saveReview(saveReviewDTO,token);
     }
 
     @PatchMapping("/edit/{reviewId}")
     public String updateReview(@RequestBody SaveReviewDTO updateReview, @PathVariable Integer reviewId){
-        return service.updateReview(updateReview, reviewId);
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        return service.updateReview(updateReview, reviewId,token);
     }
 
     @DeleteMapping("/delete/{reviewId}")

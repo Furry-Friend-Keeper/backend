@@ -1,6 +1,7 @@
 package com.example.furryfriendkeeper.dtos;
 
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
