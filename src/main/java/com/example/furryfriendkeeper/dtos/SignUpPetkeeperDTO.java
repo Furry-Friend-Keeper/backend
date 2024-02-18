@@ -26,7 +26,7 @@ public class SignUpPetkeeperDTO {
     @Size(max = 200, message = "Contact length cannot exceed 200 characters!!")
     private String contact;
     @NotNull(message = "Please fill this field")
-    @Size(min = 12, max = 12, message = "Invalid length of phone number!!")
+    @Size(min = 10, max = 10, message = "Invalid length of phone number!!")
     private String phone;
     @NotEmpty(message = "Please fill this field")
     private Set<Integer> categoryId;

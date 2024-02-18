@@ -22,7 +22,7 @@ public class Petowner {
     private String lastname;
 
     @Column(name = "Phone", nullable = false)
-    private Integer phone;
+    private String phone;
 
     @Column(name = "Img", length = 100)
     private String img;
