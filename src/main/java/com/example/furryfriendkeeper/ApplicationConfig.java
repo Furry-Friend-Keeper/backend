@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication
+
+@Configuration
 @EnableConfigurationProperties({
         FileStorageProperties.class
 })
-@Configuration
 public class ApplicationConfig {
     @Bean
     public ModelMapper modelMapper() {

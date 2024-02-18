@@ -110,9 +110,8 @@ public class PetkeeperService {
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
-        Petkeepers keeperEmail = petkeeperRepository.getById(petkeeperId);
-
-        if(role == "PetKeeper" && emailCheck.equals(keeperEmail.getEmail())) {
+        String keeperEmail = petkeeperRepository.getPetkeeperEmailById(petkeeperId);
+        if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
             try {
                 Petkeepers petkeeperDetail = modelMapper.map(updatePetkeepers, Petkeepers.class);
                 Petkeepers petkeepers = petkeeperRepository.findById(petkeeperId).map(oldDetail -> mapPetkeeper(oldDetail, petkeeperDetail)).orElseGet(() ->
@@ -182,9 +181,8 @@ public class PetkeeperService {
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
-        Petkeepers keeperEmail = petkeeperRepository.getById(keeperId);
-
-        if(role == "PetKeeper" && emailCheck.equals(keeperEmail.getEmail())) {
+        String keeperEmail = petkeeperRepository.getPetkeeperEmailById(keeperId);
+        if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
             if (petkeeper.getImg() != null && file != null) {
                 boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId);
                 if (isImageExist) {
@@ -215,10 +213,10 @@ public class PetkeeperService {
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
-        Petkeepers keeperEmail = petkeeperRepository.getById(keeperId);
+        String keeperEmail = petkeeperRepository.getPetkeeperEmailById(keeperId);
 
         try {
-            if(role == "PetKeeper" && emailCheck.equals(keeperEmail.getEmail())) {
+            if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
                 return new ResponseEntity<>(fileService.storeMultiple(files, keeperId), HttpStatus.OK);
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
             } catch (Exception e){
@@ -233,9 +231,9 @@ public class PetkeeperService {
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
-        Petkeepers keeperEmail = petkeeperRepository.getById(keeperId);
+        String keeperEmail = petkeeperRepository.getPetkeeperEmailById(keeperId);
         try {
-            if(role == "PetKeeper" && emailCheck.equals(keeperEmail.getEmail())) {
+            if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
                 if (delete != null) {
                     for (String name : delete) {
                         galleryRepository.deleteGalleryByName(keeperId, name);

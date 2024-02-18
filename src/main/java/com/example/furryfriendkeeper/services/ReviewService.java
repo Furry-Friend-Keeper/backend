@@ -46,7 +46,7 @@ public class ReviewService {
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
-        if(role == "Owner") {
+        if(role.equals("Owner")) {
             Review review = new Review();
             review.setId(null);
             review.setPetKeeper(petkeeperRepository.getById(newReview.getPetkeeperId()));
@@ -67,7 +67,7 @@ public class ReviewService {
         String role = userRepository.findRole(emailCheck);
         Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
         Review review = reviewRepository.getById(reviewId);
-        if(role == "Owner" && ownerId == review.getPetOwner().getId()) {
+        if(role.equals("Owner") && ownerId == review.getPetOwner().getId()) {
                 review.setId(reviewId);
 //        review.setPetOwner(ownerRepository.getById(newReview.getPetownerId()));
 //        review.setPetKeeper(petkeeperRepository.getById(newReview.getPetkeeperId()));
@@ -98,7 +98,7 @@ public class ReviewService {
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
-        if(role == "Owner") {
+        if(role.equals("Owner")) {
             if (ownerId == review.getPetOwner().getId()) {
                 reviewRepository.deleteById(reviewId);
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");

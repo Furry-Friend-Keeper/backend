@@ -18,19 +18,21 @@ import java.util.Optional;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<com.example.furryfriendkeeper.entities.User> user = repository.findByEmail(email);
+        com.example.furryfriendkeeper.entities.User user = userRepository.findEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new User(user.get().getEmail(), user.get().getPassword(), getAuthority(user));
+        String role = userRepository.findRole(email);
+        user.getRole().getRole();
+        return new User(user.getEmail(), user.getPassword(), getAuthority(user));
     }
-    private List<GrantedAuthority> getAuthority(Optional<com.example.furryfriendkeeper.entities.User> user){
+    private List<GrantedAuthority> getAuthority(com.example.furryfriendkeeper.entities.User user){
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.get().getRole().getRole()));
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRole()));
         return authorities;
     }
 }
