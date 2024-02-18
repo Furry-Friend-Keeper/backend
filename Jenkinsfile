@@ -40,7 +40,7 @@ pipeline {
                     docker run -d --name backend \
                       --network FFK-network \
                       -p 5000:8080 \
-                      -e SPRING_DATASOURCE_URL=jdbc:mysql://ffkdb:3306/furry-friend-keeper \
+                      
                       --restart on-failure \
                       backendimg
                     """
@@ -52,7 +52,7 @@ pipeline {
         //     steps {
         //         script {
         //             echo "INFO: Restart backend container"
-        //             sh "docker cp imageStorage/ backend:/home/sysadmin/"
+        //             sh "docker cp imageStorage/ backend:/home/sysadmin/ -e SPRING_DATASOURCE_URL=jdbc:mysql://ffkdb:3306/furry-friend-keeper \"
         //             sh "docker container restart backend"
         //             echo "INFO: Finish restart"
         //         }
