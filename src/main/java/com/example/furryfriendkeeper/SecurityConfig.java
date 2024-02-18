@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/api/keepers/all").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/keepers/{keeperId}").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/keepers/categories/all").permitAll()
-                .antMatchers(HttpMethod.PATCH,"/api/keepers/{keeperId}").hasAnyRole("PetKeeper")
+                .antMatchers(HttpMethod.PATCH,"/api/keepers/{keeperId}").hasRole("PetKeeper")
                 .antMatchers(HttpMethod.PATCH,"/api/keepers/{keeperId}/profile-img").hasRole("PetKeeper")
                 .antMatchers(HttpMethod.POST,"/api/keepers/{keeperId}/gallery").hasRole("PetKeeper")
                 .antMatchers(HttpMethod.PATCH,"/api/keepers/{keeperId}/gallery").hasRole("PetKeeper")

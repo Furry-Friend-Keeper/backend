@@ -7,6 +7,7 @@ import com.example.furryfriendkeeper.jwt.JwtUserDetailsService;
 import com.example.furryfriendkeeper.repositories.*;
 import com.example.furryfriendkeeper.utils.ListMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,6 +51,7 @@ public class UserService {
     @Autowired
     private OwnerRepository ownerRepository;
 
+
     public ResponseEntity<JwtDTO> match(MatchUserDTO user) throws ResponseStatusException {
         User user1 = userRepository.findEmail(user.getEmail());
         if (user1 == null) {
@@ -59,20 +61,15 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password not match >:(");
         }
         String userRole = user1.getRole().getRole();
+        Integer id =null;
         if(userRole.equals("PetKeeper")){
-            Integer petkeeperId = petkeeperRepository.getPetkeepersIdByEmail(user.getEmail());
+            id = petkeeperRepository.getPetkeepersIdByEmail(user.getEmail());
 
-            JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole,petkeeperId);
-            return ResponseEntity.ok(jwtDTO);
         }else if(userRole.equals("Owner")) {
-            Integer ownerId = ownerRepository.getPetownerIdByEmail(user.getEmail());
-
-            JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole, ownerId);
-            return ResponseEntity.ok(jwtDTO);
-        }else {
-            JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole, null);
-            return ResponseEntity.ok(jwtDTO);
+            id = ownerRepository.getPetownerIdByEmail(user.getEmail());
         }
+        JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole,id);
+        return ResponseEntity.ok(jwtDTO);
     }
 
     public boolean matchPassword(MatchUserDTO user) {
@@ -109,30 +106,9 @@ public class UserService {
         }
         if(!jwtTokenUtil.tokenExpired(refreshToken)){
             return new JwtDTO(jwtTokenUtil.generateToken(userDetail),refreshToken, userRole,null);
-        }else return null;
+        }else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token has expired");
     }
 
-
-//    public User save(UserDTO newUser) {
-//        User user = modelMapper.map(newUser, User.class);
-//        user.setEmail(newUser.getEmail().trim());
-//        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-//        Role role = roleRepository.findById(newUser.getRole())
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
-//
-//        user.setRole(role);
-//        List<User> email = userRepository.uniqueUserEmail(newUser.getEmail().trim().toLowerCase());
-//        if (email.size() != 0) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
-//        }
-////       if (!(enumContains(newUser.getRole().toLowerCase()))) {
-////            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no Role.");
-////        }
-//
-//        User savedUser = userRepository.saveAndFlush(user);
-//        user.setPassword("Protected Field");
-//        return savedUser;
-//    }
 
     public List<Role> AllRole(){
         return roleRepository.findAll();

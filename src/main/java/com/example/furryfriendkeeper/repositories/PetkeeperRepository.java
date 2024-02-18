@@ -10,4 +10,7 @@ public interface PetkeeperRepository extends JpaRepository<Petkeepers, Integer> 
 
     @Query(value= "select PetKeeperId from petkeepers where Email = :email",nativeQuery = true)
     Integer getPetkeepersIdByEmail(String email);
+
+    @Query(value= "select Email from petkeepers where PetKeeperId = :id",nativeQuery = true)
+    String getPetkeeperEmailById(Integer id);
 }
