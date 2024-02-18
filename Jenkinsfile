@@ -40,7 +40,6 @@ pipeline {
                     docker run -d --name backend \
                       --network FFK-network \
                       -p 5000:8080 \
-                      
                       --restart on-failure \
                       backendimg
                     """
