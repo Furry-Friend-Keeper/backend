@@ -13,7 +13,7 @@ pipeline {
                 }
             }
         }
-        stage('MVN Package') {
+    stage('MVN Package') {
             steps {
                 script {
                     echo "INFO: Build package"
@@ -23,7 +23,7 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+    stage('Build') {
             steps {
                 script {
                     echo "INFO: Build backend image"
@@ -32,7 +32,7 @@ pipeline {
                 }
             }
         }
-       stage('Deploy') {
+    stage('Deploy') {
             steps {
                 script {
                     echo "INFO: Deploy backend container"
@@ -45,6 +45,16 @@ pipeline {
                       backendimg
                     """
                     echo "INFO: Finish deploy backend container"
+                }
+            }
+        }
+        stage('Restart') {
+            steps {
+                script {
+                    echo "INFO: Restart backend container"
+                    sh "docker cp imageStorage/ backend:/home/sysadmin/"
+                    sh "docker container restart backend"
+                    echo "INFO: Finish restart"
                 }
             }
         }
