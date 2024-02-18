@@ -48,15 +48,15 @@ pipeline {
                 }
             }
         }
-        stage('Restart') {
-            steps {
-                script {
-                    echo "INFO: Restart backend container"
-                    sh "docker cp imageStorage/ backend:/home/sysadmin/"
-                    sh "docker container restart backend"
-                    echo "INFO: Finish restart"
-                }
-            }
-        }
+        // stage('Restart') {
+        //     steps {
+        //         script {
+        //             echo "INFO: Restart backend container"
+        //             sh "docker cp imageStorage/ backend:/home/sysadmin/"
+        //             sh "docker container restart backend"
+        //             echo "INFO: Finish restart"
+        //         }
+        //     }
+        // }
     }
 }
