@@ -73,6 +73,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/api/users/refreshToken").permitAll()
                 .antMatchers(HttpMethod.POST,"/api/review/save").permitAll()
                 .antMatchers(HttpMethod.PATCH,"/api/review/edit/{reviewId}").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/files//{keeperId}/{filename:.+}").permitAll()
+                .antMatchers(HttpMethod.GET,"/{keeperId}/gallery/{filename:.+}").permitAll()
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
