@@ -37,7 +37,7 @@ public class Petkeepers {
     private Integer available;
 
     @Column(name = "Phone", nullable = false)
-    private Integer phone;
+    private String phone;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "Email", nullable = false, referencedColumnName = "Email")
