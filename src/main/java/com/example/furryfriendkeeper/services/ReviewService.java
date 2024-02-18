@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -38,36 +36,47 @@ public class ReviewService {
 
     private final UserRepository userRepository;
 
-    public SaveReviewDTO saveReview(SaveReviewDTO newReview){
+    public SaveReviewDTO saveReview(SaveReviewDTO newReview,String token){
 //        Review review = modelMapper.map(newReview, Review.class);
 //        modelMapper.createTypeMap(SaveReviewDTO.class, Review.class).addMappings(mapper -> {
 //            mapper.skip(Review::setId);
 //            mapper.map(SaveReviewDTO::getPetownerId, Review :: setPetOwner);
 //            mapper.map(SaveReviewDTO::getPetkeeperId,Review :: setPetKeeper);
 //        });
-        Review review = new Review();
-        review.setId(null);
-        review.setPetKeeper(petkeeperRepository.getById(newReview.getPetkeeperId()));
-        review.setPetOwner(ownerRepository.getById(newReview.getPetownerId()));
-        review.setComment(newReview.getComment());
-        review.setStars(newReview.getStar());
-        review.setDate(newReview.getDate());
-        repository.saveAndFlush(review);
-        newReview.setReviewId(review.getId());
-        return newReview;
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        if(role == "Owner") {
+            Review review = new Review();
+            review.setId(null);
+            review.setPetKeeper(petkeeperRepository.getById(newReview.getPetkeeperId()));
+            review.setPetOwner(ownerRepository.getById(newReview.getPetownerId()));
+            review.setComment(newReview.getComment());
+            review.setStars(newReview.getStar());
+            review.setDate(newReview.getDate());
+            repository.saveAndFlush(review);
+            newReview.setReviewId(review.getId());
+            return newReview;
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
     }
 
-    public String updateReview(SaveReviewDTO newReview, Integer reviewId){
+    public String updateReview(SaveReviewDTO newReview, Integer reviewId,String token){
 
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
         Review review = reviewRepository.getById(reviewId);
-        review.setId(reviewId);
+        if(role == "Owner" && ownerId == review.getPetOwner().getId()) {
+                review.setId(reviewId);
 //        review.setPetOwner(ownerRepository.getById(newReview.getPetownerId()));
 //        review.setPetKeeper(petkeeperRepository.getById(newReview.getPetkeeperId()));
-        review.setComment(newReview.getComment());
-        review.setStars(newReview.getStar());
-        review.setDate(newReview.getDate());
-        reviewRepository.saveAndFlush(review);
-        return "Update review successfully";
+                review.setComment(newReview.getComment());
+                review.setStars(newReview.getStar());
+                review.setDate(newReview.getDate());
+                reviewRepository.saveAndFlush(review);
+                return "Update review successfully";
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
     }
 
 

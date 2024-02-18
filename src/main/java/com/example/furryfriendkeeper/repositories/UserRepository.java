@@ -22,6 +22,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "select Role from roles r join users u on r.RoleId = u.Role where u.email = ?1",nativeQuery = true)
     String findRole(String email);
 
-    @Query(value = "select user_id from users u where u.Email = ?1",nativeQuery = true)
-    String findId(String email);
+
 }

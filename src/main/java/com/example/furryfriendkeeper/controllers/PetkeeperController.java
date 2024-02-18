@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -39,25 +41,31 @@ public class PetkeeperController {
 
     @PatchMapping("/{keeperId}")
     public ResponseEntity<String> updatePetkeeper(@PathVariable Integer keeperId, @RequestBody PetKeeperEditDTO petkeepers){
-         service.updatePetkeeper(petkeepers,keeperId);
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        service.updatePetkeeper(petkeepers,keeperId,token);
         return ResponseEntity.ok("Petkeeper updated successfully");
     }
     @PatchMapping("/{keeperId}/profile-img")
     public String uploadProfile(@PathVariable Integer keeperId, @RequestParam("file") MultipartFile file){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 
-        return service.uploadProfile(keeperId,file);
+        return service.uploadProfile(keeperId,file,token);
     }
     @PostMapping("/{keeperId}/gallery")
     public ResponseEntity<List<String>> uploadGallery(@PathVariable Integer keeperId, @RequestParam("file") List<MultipartFile> files){
-        return service.uploadGallery(keeperId,files);
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return service.uploadGallery(keeperId,files,token);
     }
     @PatchMapping("/{keeperId}/gallery")
     public String deleteGallery(@PathVariable Integer keeperId, @RequestParam("delete") List<String> delete,@RequestParam("file") List<MultipartFile> files){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
         if(delete != null) {
-            service.deleteGalley(keeperId, delete);
+            service.deleteGalley(keeperId, delete, token);
         }
         if (!files.get(0).isEmpty()) {
-            service.uploadGallery(keeperId, files);
+            service.uploadGallery(keeperId, files, token);
         }
 
         return "Update Succesfully!";
