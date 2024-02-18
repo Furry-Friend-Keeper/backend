@@ -25,7 +25,8 @@ public class OwnerDTO {
     @Size(max = 200, message = "Lastname length cannot exceed 200 characters!!")
     private String lastname;
     @NotNull(message = "Please fill this field")
-    private Integer phone;
+    @Size(min = 10, max = 10, message = "Invalid length of phone number!!")
+    private String phone;
     private String petname;
     @NotEmpty(message = "Please fill this field")
     @Size(max = 100, message = "Email length cannot exceed 100 characters!!")
