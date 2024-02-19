@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,5 +25,6 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
         });
         return  new ResponseEntity<Object>(errors , headers,status);
     }
+
 }
 

@@ -174,7 +174,7 @@ public class PetkeeperService {
             return oldAddress;
     }
 
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(rollbackOn = RuntimeException.class)
     public String uploadProfile(Integer keeperId, MultipartFile file, String token){
 
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
@@ -183,27 +183,29 @@ public class PetkeeperService {
         String role = userRepository.findRole(emailCheck);
         String keeperEmail = petkeeperRepository.getPetkeeperEmailById(keeperId);
         if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
-            if (petkeeper.getImg() != null && file != null) {
-                boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId);
-                if (isImageExist) {
-                    fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
-                }
-            }
-            try {
-                if (file == null || file.isEmpty()) {
-                    petkeeper.setImg(null);
-                    petkeeperRepository.saveAndFlush(petkeeper);
-                } else {
-                    String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-                    fileService.store(file, keeperId);
-                    petkeeper.setImg(fileName);
-                    petkeeperRepository.saveAndFlush(petkeeper);
-                }
-                return "Upload Profile Succesfully!";
+            if(fileService.isSupportedContentType(file.getContentType())) {
+                try {
+                    if (petkeeper.getImg() != null && file != null) {
+                        boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId);
+                        if (isImageExist) {
+                            fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
+                        }
+                    }
+                    if (file == null || file.isEmpty()) {
+                        petkeeper.setImg(null);
+                        petkeeperRepository.saveAndFlush(petkeeper);
+                    } else {
+                        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                        fileService.store(file, keeperId);
+                        petkeeper.setImg(fileName);
+                        petkeeperRepository.saveAndFlush(petkeeper);
+                    }
+                    return "Upload Profile Succesfully!";
 
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file type(jpg,png and jpeg only),please try again");
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
     }
 

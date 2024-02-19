@@ -20,7 +20,6 @@ public class SignUpPetkeeperDTO {
     @NotEmpty(message = "Please fill this field")
     @Size(max = 200, message = "Name length cannot exceed 200 characters!!")
     private String name;
-    @NotEmpty(message = "Please fill this field")
     @Size(max = 200, message = "Detail length cannot exceed 200 characters!!")
     private String detail;
     @NotEmpty(message = "Please fill this field")
