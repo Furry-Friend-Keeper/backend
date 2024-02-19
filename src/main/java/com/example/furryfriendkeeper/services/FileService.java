@@ -55,6 +55,9 @@ public class FileService {
 //        String fileExtension = StringUtils.getFilenameExtension(originalFileName);
 //        String fileName = keeperId.toString() + ".jpg";
           String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+          String contentType = file.getContentType();
+
+          if(isSupportedContentType(contentType)){
         try {
             if (fileName.contains("..")) {
                 throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
@@ -67,6 +70,8 @@ public class FileService {
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
         }
+          }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file typeInvalid file type(jpg,png and jpeg only),please try again");
+
     }
     public Resource loadFileAsResource(String fileName,Integer keeperId) {
         try {
@@ -123,24 +128,26 @@ public class FileService {
                 String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
                 String fileExtension = StringUtils.getFilenameExtension(originalFileName);
                 String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
+                String contentType = file.getContentType();
+                if(isSupportedContentType(contentType)) {
+                    try {
+                        Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
+                        Files.createDirectories(targetLocation.getParent());
 
-                try {
-                    Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
-                    Files.createDirectories(targetLocation.getParent());
-
-                    Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
 
-                    Gallery gallery = new Gallery();
-                    gallery.setPetKeeper(petkeeper);
-                    gallery.setGallery(newFileName);
-                    galleryRepository.saveAndFlush(gallery);
+                        Gallery gallery = new Gallery();
+                        gallery.setPetKeeper(petkeeper);
+                        gallery.setGallery(newFileName);
+                        galleryRepository.saveAndFlush(gallery);
 
-                    fileNames.add(newFileName);
+                        fileNames.add(newFileName);
 
-                } catch (IOException ex) {
-                    throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
-                }
+                    } catch (IOException ex) {
+                        throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
+                    }
+                }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file type(jpg,png and jpeg only),please try again");
             }
 
         return fileNames;
@@ -152,6 +159,12 @@ public class FileService {
         } catch (Exception ex) {
             throw new RuntimeException("Error checking file existence", ex);
         }
+    }
+
+    public boolean isSupportedContentType(String contentType) {
+        return contentType.equals("image/png")
+                || contentType.equals("image/jpg")
+                || contentType.equals("image/jpeg");
     }
 
 }
