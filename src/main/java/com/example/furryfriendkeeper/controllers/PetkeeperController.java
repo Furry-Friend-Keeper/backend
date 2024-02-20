@@ -4,17 +4,18 @@ import com.example.furryfriendkeeper.dtos.CategoriesDTO;
 import com.example.furryfriendkeeper.dtos.PetKeeperEditDTO;
 import com.example.furryfriendkeeper.dtos.PetkeeperDTO;
 import com.example.furryfriendkeeper.dtos.PetkeeperDetailDTO;
-import com.example.furryfriendkeeper.entities.Petkeepers;
+
 import com.example.furryfriendkeeper.services.PetkeeperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -42,12 +43,13 @@ public class PetkeeperController {
     }
 
     @PatchMapping("/{keeperId}")
-    public ResponseEntity<String> updatePetkeeper(@PathVariable Integer keeperId, @RequestBody PetKeeperEditDTO petkeepers){
+    public ResponseEntity<String> updatePetkeeper( @PathVariable Integer keeperId, @Valid @RequestBody PetKeeperEditDTO petkeepers){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 
         service.updatePetkeeper(petkeepers,keeperId,token);
         return ResponseEntity.ok("Petkeeper updated successfully");
     }
+
     @PatchMapping("/{keeperId}/profile-img")
     public String uploadProfile(@PathVariable Integer keeperId, @RequestParam("file") MultipartFile file){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");

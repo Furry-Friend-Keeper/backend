@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 
 @Service
@@ -26,7 +26,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        String role = userRepository.findRole(email);
+
         user.getRole().getRole();
         return new User(user.getEmail(), user.getPassword(), getAuthority(user));
     }
