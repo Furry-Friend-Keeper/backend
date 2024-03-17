@@ -42,6 +42,7 @@ pipeline {
                       -p 5000:8080 \
                       --restart on-failure \
                       -v /home/sysadmin/imageStorage:/home/sysadmin/imageStorage \
+                      -e spring.datasource.url=jdbc:mysql://ffkdb:3306/furry-friend-keeper \
                       backendimg
                     """
                     echo "INFO: Finish deploy backend container"
