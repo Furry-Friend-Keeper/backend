@@ -3,6 +3,7 @@ package com.example.furryfriendkeeper.services;
 import com.example.furryfriendkeeper.dtos.*;
 import com.example.furryfriendkeeper.entities.Address;
 import com.example.furryfriendkeeper.entities.Pet;
+import com.example.furryfriendkeeper.entities.Petcategory;
 import com.example.furryfriendkeeper.entities.Petkeepers;
 import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
 import com.example.furryfriendkeeper.repositories.*;
@@ -10,6 +11,8 @@ import com.example.furryfriendkeeper.utils.ListMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,7 +54,6 @@ public class PetkeeperService {
         List<Petkeepers> petkeepersList = petkeeperRepository.findAll();
         List<PetkeeperDTO> keepers = listMapper.mapList(petkeepersList, PetkeeperDTO.class, modelMapper);
 
-
         for(int i = 0; i < petkeepersList.size(); i++){
             Set<String> categories = new LinkedHashSet<>();
             List<Integer> petcats = categoriesRepository.FindKeeperCategories(petkeepersList.get(i).getId());
@@ -70,8 +72,8 @@ public class PetkeeperService {
 
         }
 
-
         return keepers;
+
     }
 
     public PetkeeperDetailDTO getPetkeeperDetails(Integer petkeepersId){
@@ -111,6 +113,18 @@ public class PetkeeperService {
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         String keeperEmail = petkeeperRepository.getPetkeeperEmailById(petkeeperId);
+
+            if (updatePetkeepers.getCategories() != null) {
+                categoriesRepository.DeleteCategoriesByPetkeeperId(petkeeperId);
+                for (Integer category : updatePetkeepers.getCategories()) {
+                    Pet petcategory = petRepository.getById(category);
+                    Petcategory newPetCategory = new Petcategory(petkeeperId, petcategory);
+                    categoriesRepository.saveAndFlush(newPetCategory);
+                }
+
+            }
+
+
         if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
             try {
                 Petkeepers petkeeperDetail = modelMapper.map(updatePetkeepers, Petkeepers.class);
@@ -136,10 +150,10 @@ public class PetkeeperService {
 
 
     private Petkeepers mapPetkeeper(Petkeepers oldDetail, Petkeepers newDetail){
-        if(!newDetail.getName().isEmpty()) {
+        if(newDetail.getName() != null) {
             oldDetail.setName(newDetail.getName());
         }
-        if(!newDetail.getContact().isEmpty()) {
+        if(newDetail.getContact() != null) {
             oldDetail.setContact(newDetail.getContact());
         }
         if (newDetail.getDetail() != null) {
@@ -173,6 +187,7 @@ public class PetkeeperService {
             }
             return oldAddress;
     }
+
 
     @Transactional(rollbackOn = RuntimeException.class)
     public String uploadProfile(Integer keeperId, MultipartFile file, String token){

@@ -24,6 +24,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         com.example.furryfriendkeeper.entities.User user = userRepository.findEmail(email);
         if (user == null) {
+            System.out.println(user);
             throw new UsernameNotFoundException("User not found");
         }
 
