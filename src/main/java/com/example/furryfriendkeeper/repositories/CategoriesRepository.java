@@ -3,6 +3,7 @@ package com.example.furryfriendkeeper.repositories;
 
 import com.example.furryfriendkeeper.entities.Petcategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,8 @@ public interface CategoriesRepository extends JpaRepository<Petcategory, Integer
 
     @Query(value = "select c.Name from petcategories p join pets c on p.CategoriesId = c.CategoriesId where p.PetKeeperId = :id",nativeQuery = true)
     List<String> FindCategoriesByPetkeeperId(Integer id);
+
+    @Modifying
+    @Query(value = "delete from petcategories where PetkeeperId = ?1",nativeQuery = true)
+    void DeleteCategoriesByPetkeeperId(Integer petkeeperId);
 }

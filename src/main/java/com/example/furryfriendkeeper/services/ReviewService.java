@@ -37,12 +37,7 @@ public class ReviewService {
     private final UserRepository userRepository;
 
     public SaveReviewDTO saveReview(SaveReviewDTO newReview,String token){
-//        Review review = modelMapper.map(newReview, Review.class);
-//        modelMapper.createTypeMap(SaveReviewDTO.class, Review.class).addMappings(mapper -> {
-//            mapper.skip(Review::setId);
-//            mapper.map(SaveReviewDTO::getPetownerId, Review :: setPetOwner);
-//            mapper.map(SaveReviewDTO::getPetkeeperId,Review :: setPetKeeper);
-//        });
+
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
@@ -67,30 +62,26 @@ public class ReviewService {
         String role = userRepository.findRole(emailCheck);
         Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
         Review review = reviewRepository.getById(reviewId);
+        if(review.equals(null)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no review!");
+        }
         if(role.equals("Owner") && ownerId == review.getPetOwner().getId()) {
                 review.setId(reviewId);
-//        review.setPetOwner(ownerRepository.getById(newReview.getPetownerId()));
-//        review.setPetKeeper(petkeeperRepository.getById(newReview.getPetkeeperId()));
-                review.setComment(newReview.getComment());
-                review.setStars(newReview.getStar());
-                review.setDate(newReview.getDate());
+                if(newReview.getComment() != null) {
+                    review.setComment(newReview.getComment());
+                }
+                if(newReview.getStar() != null) {
+                    review.setStars(newReview.getStar());
+                }
+                    review.setDate(newReview.getDate());
+
+
                 reviewRepository.saveAndFlush(review);
                 return "Update review successfully";
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
     }
 
 
-    public Review mapReview(Review oldReview,Review newReview){
-
-        if(!oldReview.getStars().equals(oldReview.getStars())){
-            oldReview.setStars(newReview.getStars());
-        }
-        if(!oldReview.getComment().equals(oldReview.getComment())){
-            oldReview.setComment(newReview.getComment());
-        }
-        oldReview.setDate(newReview.getDate());
-        return oldReview;
-    }
 
     public void deleteReview(Integer reviewId,Integer ownerId,String token){
         Review review = reviewRepository.findById(reviewId).orElseThrow(()-> new ResponseStatusException
