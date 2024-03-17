@@ -41,6 +41,7 @@ pipeline {
                       --network FFK-network \
                       -p 5000:8080 \
                       --restart on-failure \
+                      -v /home/sysadmin/imageStorage:/home/sysadmin/imageStorage \
                       backendimg
                     """
                     echo "INFO: Finish deploy backend container"
