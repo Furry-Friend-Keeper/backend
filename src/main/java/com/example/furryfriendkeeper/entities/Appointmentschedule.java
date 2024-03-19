@@ -4,7 +4,8 @@ import lombok.Setter;
 import lombok.Getter;
 
 import javax.persistence.*;
-import java.time.Instant;
+
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -26,10 +27,10 @@ public class Appointmentschedule {
     private String message;
 
     @Column(name = "StartDate", nullable = false)
-    private Instant startDate;
+    private ZonedDateTime startDate;
 
     @Column(name = "EndDate", nullable = false)
-    private Instant endDate;
+    private ZonedDateTime endDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "PetOwnerId", nullable = false)
@@ -40,78 +41,11 @@ public class Appointmentschedule {
     private Petkeepers petKeeper;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "CategoryId", nullable = false)
-    private Petcategory category;
+    @JoinColumn(name = "StatusId", nullable = false)
+    private Schedulestatus status;
 
-    public Petcategory getCategory() {
-        return category;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CategoryId")
+    private Pet category;
 
-    public void setCategory(Petcategory category) {
-        this.category = category;
-    }
-
-    public Petkeepers getPetKeeper() {
-        return petKeeper;
-    }
-
-    public void setPetKeeper(Petkeepers petKeeper) {
-        this.petKeeper = petKeeper;
-    }
-
-    public Petowner getPetOwner() {
-        return petOwner;
-    }
-
-    public void setPetOwner(Petowner petOwner) {
-        this.petOwner = petOwner;
-    }
-
-    public Instant getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Instant endDate) {
-        this.endDate = endDate;
-    }
-
-    public Instant getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Instant startDate) {
-        this.startDate = startDate;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getPetName() {
-        return petName;
-    }
-
-    public void setPetName(String petName) {
-        this.petName = petName;
-    }
-
-    public String getOwnerPhone() {
-        return ownerPhone;
-    }
-
-    public void setOwnerPhone(String ownerPhone) {
-        this.ownerPhone = ownerPhone;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 }

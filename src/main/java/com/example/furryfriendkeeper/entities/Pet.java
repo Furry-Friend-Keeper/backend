@@ -1,16 +1,15 @@
 package com.example.furryfriendkeeper.entities;
 
-import javax.persistence.*;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 import lombok.Setter;
 import lombok.Getter;
 
+import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-@Entity
 @Getter
 @Setter
+@Entity
 @Table(name = "pets")
 public class Pet {
     @Id
@@ -24,10 +23,38 @@ public class Pet {
     @OneToMany(mappedBy = "categories")
     private Set<Petcategory> petcategories = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "category")
+    private Set<Appointmentschedule> appointmentschedules = new LinkedHashSet<>();
 
+    public Set<Appointmentschedule> getAppointmentschedules() {
+        return appointmentschedules;
+    }
 
+    public void setAppointmentschedules(Set<Appointmentschedule> appointmentschedules) {
+        this.appointmentschedules = appointmentschedules;
+    }
 
-    public Integer getId(){
+    public Set<Petcategory> getPetcategories() {
+        return petcategories;
+    }
+
+    public void setPetcategories(Set<Petcategory> petcategories) {
+        this.petcategories = petcategories;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

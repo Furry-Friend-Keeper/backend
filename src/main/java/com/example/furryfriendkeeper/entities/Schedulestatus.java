@@ -18,5 +18,4 @@ public class Schedulestatus {
         this.id = id;
     }
 
-    //TODO Reverse Engineering! Migrate other columns to the entity
 }

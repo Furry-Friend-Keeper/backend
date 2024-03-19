@@ -12,8 +12,14 @@ import java.util.List;
 public interface AppointmentScheduleRepository extends JpaRepository<Appointmentschedule,Integer> {
 
     @Query(value = "select a.AppointmentId, o.OwnerPhone, o.PetName, a.Message, a.StartDate, a.EndDate, concat(o.Firstname,' ',Lastname) as petOwner, p.Name as petKeeper , c.Name as category  from appointmentschedule a join petkeepers p on a.petkeeperId = p.petkeeperId " +
-            "join petowners o on a.petownerId = o.petownerId join pets c on a.categoryId = c.categoriesId where a.petkeeperId = ?1",nativeQuery = true)
+            "join petowners o on a.petownerId = o.petownerId join pets c on a.categoryId = c.categoriesId" +
+            "join schedulestatus s on a.StatusId = s.StatusId where a.petkeeperId = ?1",nativeQuery = true)
     List<AppointmentScheduleDTO> getAppointmentByPetkeeper(Integer petkeeperId);
+
+    @Query(value = "select a.AppointmentId, o.OwnerPhone, o.PetName, a.Message, a.StartDate, a.EndDate, concat(o.Firstname,' ',Lastname) as petOwner, p.Name as petKeeper , c.Name as category  from appointmentschedule a join petkeepers p on a.petkeeperId = p.petkeeperId " +
+            "join petowners o on a.petownerId = o.petownerId join pets c on a.categoryId = c.categoriesId" +
+            "join schedulestatus s on a.StatusId = s.StatusId where a.petownerId = ?1",nativeQuery = true)
+    List<AppointmentScheduleDTO> getAppointmentByPetOwner(Integer petownerId);
 
 
 }

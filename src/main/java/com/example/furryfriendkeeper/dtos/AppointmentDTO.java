@@ -1,6 +1,5 @@
 package com.example.furryfriendkeeper.dtos;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,16 +11,16 @@ import java.time.ZonedDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppointmentScheduleDTO {
+public class AppointmentDTO {
     private Integer appointmentId;
     private String ownerPhone;
     private String petName;
-    private String category;
     private String message;
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;
-    private String petOwner;
-    private String petKeeper;
-    private String status;
+    private Integer petOwnerId;
+    private Integer petKeeperId;
+    private Integer categoryId;
+    private Integer statusId;
 
 }
