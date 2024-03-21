@@ -27,5 +27,6 @@ public class PetKeeperEditDTO {
     @Pattern(regexp = "\\d{10}",message = "Phone numbers must be 10 digits(0-9) only.")
     private String phone;
     private AddressDTO address;
+    @NotNull
     private List<Integer> categories;
 }

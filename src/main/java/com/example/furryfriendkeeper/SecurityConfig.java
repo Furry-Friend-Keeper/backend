@@ -76,6 +76,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH,"/api/review/delete/{reviewId}").hasAnyRole("Owner","Admin")
                 .antMatchers(HttpMethod.GET,"/api/files//{keeperId}/{filename:.+}").permitAll()
                 .antMatchers(HttpMethod.GET,"/{keeperId}/gallery/{filename:.+}").permitAll()
+                .antMatchers("/api/appointment/create").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/appointment//owner/{petownerId}").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/appointment/keeper/{petkeeperId}").permitAll()
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
