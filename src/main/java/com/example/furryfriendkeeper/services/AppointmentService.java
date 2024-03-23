@@ -96,8 +96,8 @@ public class AppointmentService {
 
         if(role.equals("Owner") && ownerId == newAppointment.getPetOwnerId()) {
             List<Disableappointmentschedule> checkDate = disableScheduleRepository.getDisableScheduleByPetkeeper(newAppointment.getPetKeeperId());
-            LocalDate startDateAppointment = LocalDate.from(newAppointment.getStartDate().toInstant());
-            LocalDate endDateAppointment = LocalDate.from(newAppointment.getEndDate().toInstant());
+            LocalDate startDateAppointment = newAppointment.getStartDate().toLocalDate();
+            LocalDate endDateAppointment = newAppointment.getEndDate().toLocalDate();
             for (Disableappointmentschedule checkDate1: checkDate) {
                 if((startDateAppointment.isBefore(checkDate1.getStartDate()) && endDateAppointment.isBefore(checkDate1.getStartDate()))
                         || startDateAppointment.isAfter(checkDate1.getEndDate())) {
