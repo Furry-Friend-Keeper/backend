@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppointmentScheduleDTO {
+
     private Integer appointmentId;
     private String ownerPhone;
     private String petName;

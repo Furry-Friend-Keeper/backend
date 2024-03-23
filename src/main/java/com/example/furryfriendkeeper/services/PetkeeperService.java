@@ -56,11 +56,12 @@ public class PetkeeperService {
             Set<String> categories = new LinkedHashSet<>();
             List<Integer> petcats = categoriesRepository.FindKeeperCategories(petkeepersList.get(i).getId());
             Double avgStars = reviewRepository.avgStars(petkeepersList.get(i).getId());
+            List<String> map = addressRepository.getMapByPetkeeperId(petkeepersList.get(i).getId());
             if(avgStars == null){
                 avgStars = 0.0;
             }
             keepers.get(i).setReviewStars(avgStars);
-
+            keepers.get(i).setMap(map);
             for(int a = 0; a < petcats.size(); a++){
                 String name = petRepository.CateName(petcats.get(a));
                 categories.add(name);

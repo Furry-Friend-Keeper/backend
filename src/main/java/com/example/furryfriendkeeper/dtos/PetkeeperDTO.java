@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -18,5 +19,7 @@ public class PetkeeperDTO {
     private Set<String> categories;
     private double reviewStars;
     private String img;
+    private List<String> map;
+    private Boolean available;
 
 }
