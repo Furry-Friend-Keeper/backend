@@ -38,6 +38,7 @@ public class PetkeeperDetailDTO {
     private AddressDTO address;
     private List<String> categories;
 
+    private Boolean available;
     public void setReviewFromPetkeeperId(Integer id, ReviewRepository repository){
         this.reviews = repository.findReviewsByPetkeeperId(id);
     }

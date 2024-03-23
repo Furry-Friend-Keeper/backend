@@ -20,4 +20,5 @@ public interface CategoriesRepository extends JpaRepository<Petcategory, Integer
     @Modifying
     @Query(value = "delete from petcategories where PetkeeperId = ?1",nativeQuery = true)
     void DeleteCategoriesByPetkeeperId(Integer petkeeperId);
+
 }

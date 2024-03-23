@@ -18,6 +18,7 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
     @Query(value = "select * from address a JOIN petkeepers p ON a.AddressId = p.AddressId where p.PetKeeperId = :petkeeperId",nativeQuery = true)
     Address findAddressDetailByPetkeeperId(Integer petkeeperId);
 
-
+    @Query(value = "select a.Map from address a join petkeepers p on a.AddressId = p.AddressId where p.PetKeeperId =:petkeeperId",nativeQuery = true)
+    List<String> getMapByPetkeeperId(Integer petkeeperId);
 
 }
