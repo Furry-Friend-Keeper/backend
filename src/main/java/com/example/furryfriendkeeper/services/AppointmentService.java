@@ -87,8 +87,8 @@ public class AppointmentService {
         if(newAppointment.getEndDate().isBefore(newAppointment.getStartDate())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End Date Cannot be before Start Date.");
         }
-        if(newAppointment.getStartDate().isBefore(ZonedDateTime.now())){
-
+        if(newAppointment.getStartDate().isBefore(ZonedDateTime.now()) || newAppointment.getStartDate().isAfter(ZonedDateTime.now().plusDays(3))){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date input.");
         }
         if(!checkCategories.contains(newAppointment.getCategoryId())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Category,Please try again.");
