@@ -55,8 +55,9 @@ public class AppointmentService {
         String role = userRepository.findRole(emailCheck);
         Integer petkeeper = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         if(role.equals("PetKeeper") && petkeeper == petkeeperId) {
-            List<AppointmentScheduleDTO> listAppointment = appointmentScheduleRepository.getAppointmentByPetkeeper(petkeeperId);
-            return listAppointment;
+            List<Appointmentschedule> listAppointment = appointmentScheduleRepository.getAppointmentByPetkeeper(petkeeperId);
+            List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment,AppointmentScheduleDTO.class,modelMapper);
+            return listDto;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
     }
 
@@ -96,8 +97,8 @@ public class AppointmentService {
 
         if(role.equals("Owner") && ownerId == newAppointment.getPetOwnerId()) {
             List<Disableappointmentschedule> checkDate = disableScheduleRepository.getDisableScheduleByPetkeeper(newAppointment.getPetKeeperId());
-            LocalDate startDateAppointment = LocalDate.from(newAppointment.getStartDate().toInstant());
-            LocalDate endDateAppointment = LocalDate.from(newAppointment.getEndDate().toInstant());
+            LocalDate startDateAppointment = newAppointment.getStartDate().toLocalDate();
+            LocalDate endDateAppointment = newAppointment.getEndDate().toLocalDate();
             for (Disableappointmentschedule checkDate1: checkDate) {
                 if((startDateAppointment.isBefore(checkDate1.getStartDate()) && endDateAppointment.isBefore(checkDate1.getStartDate()))
                         || startDateAppointment.isAfter(checkDate1.getEndDate())) {

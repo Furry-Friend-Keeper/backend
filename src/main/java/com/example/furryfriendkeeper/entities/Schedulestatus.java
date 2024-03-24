@@ -1,7 +1,14 @@
 package com.example.furryfriendkeeper.entities;
 
-import javax.persistence.*;
+import lombok.Setter;
+import lombok.Getter;
 
+import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "schedulestatus")
 public class Schedulestatus {
@@ -10,12 +17,17 @@ public class Schedulestatus {
     @Column(name = "StatusId", nullable = false)
     private Integer id;
 
-    public Integer getId() {
-        return id;
-    }
+    @Column(name = "Status", nullable = false, length = 30)
+    private String status;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "status")
+    private Set<Petkeepernotification> petkeepernotifications = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "status")
+    private Set<Petownernotification> petownernotifications = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "status")
+    private Set<Appointmentschedule> appointmentschedules = new LinkedHashSet<>();
+
 
 }
