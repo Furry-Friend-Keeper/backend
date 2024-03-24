@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -28,6 +29,8 @@ public class OwnerService {
 
     private final UserRepository userRepository;
 
+    private final ModelMapper modelMapper;
+
     public List<Petowner> getAllOwners(){
         return ownerRepository.findAll();
     }
@@ -38,7 +41,10 @@ public class OwnerService {
         String role = userRepository.findRole(emailCheck);
         Integer petOwner = ownerRepository.getPetownerIdByEmail(emailCheck);
         if(role.equals("Owner") && petOwner == petOwnerId) {
-            return ownerRepository.getOwnerDetail(petOwnerId);
+            Petowner owner = ownerRepository.getOwnerDetail(petOwnerId);
+            OwnerDetailDTO ownerDetail = modelMapper.map(owner,OwnerDetailDTO.class);
+            ownerDetail.setPetOwnerId(owner.getId());
+            return ownerDetail;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission.");
     }
 

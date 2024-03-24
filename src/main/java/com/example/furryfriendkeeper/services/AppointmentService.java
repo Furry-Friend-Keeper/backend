@@ -55,8 +55,9 @@ public class AppointmentService {
         String role = userRepository.findRole(emailCheck);
         Integer petkeeper = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         if(role.equals("PetKeeper") && petkeeper == petkeeperId) {
-            List<AppointmentScheduleDTO> listAppointment = appointmentScheduleRepository.getAppointmentByPetkeeper(petkeeperId);
-            return listAppointment;
+            List<Appointmentschedule> listAppointment = appointmentScheduleRepository.getAppointmentByPetkeeper(petkeeperId);
+            List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment,AppointmentScheduleDTO.class,modelMapper);
+            return listDto;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
     }
 

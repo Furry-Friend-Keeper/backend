@@ -4,8 +4,7 @@ import lombok.Setter;
 import lombok.Getter;
 
 import javax.persistence.*;
-
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -27,10 +26,10 @@ public class Appointmentschedule {
     private String message;
 
     @Column(name = "StartDate", nullable = false)
-    private ZonedDateTime startDate;
+    private Instant startDate;
 
     @Column(name = "EndDate", nullable = false)
-    private ZonedDateTime endDate;
+    private Instant endDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "PetOwnerId", nullable = false)
@@ -41,11 +40,12 @@ public class Appointmentschedule {
     private Petkeepers petKeeper;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "CategoryId", nullable = false)
+    private Pet category;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "StatusId", nullable = false)
     private Schedulestatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CategoryId")
-    private Pet category;
 
 }

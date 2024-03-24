@@ -2,7 +2,6 @@ package com.example.furryfriendkeeper.controllers;
 
 import com.example.furryfriendkeeper.dtos.AppointmentDTO;
 import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
-import com.example.furryfriendkeeper.entities.Appointmentschedule;
 import com.example.furryfriendkeeper.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,15 +20,15 @@ public class AppointmentController {
 
 
     @GetMapping("/owner/{petownerId}")
-    private List<AppointmentScheduleDTO> getSchedulebyOwner(@PathVariable Integer petOwnerId){
+    private List<AppointmentScheduleDTO> getSchedulebyOwner(@PathVariable Integer petownerId){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
-        return service.getAllScheduleByPetOwner(petOwnerId,token);
+        return service.getAllScheduleByPetOwner(petownerId,token);
     }
     @GetMapping("/keeper/{petkeeperId}")
-    private List<AppointmentScheduleDTO> getSchedulebyKeeper(@PathVariable Integer petKeeperId){
+    private List<AppointmentScheduleDTO> getSchedulebyKeeper(@PathVariable Integer petkeeperId){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 
-        return service.getAllScheduleByPetkeeper(petKeeperId,token);
+        return service.getAllScheduleByPetkeeper(petkeeperId,token);
     }
 
     @PostMapping("/create")
