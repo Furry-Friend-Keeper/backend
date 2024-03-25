@@ -3,6 +3,7 @@ package com.example.furryfriendkeeper.repositories;
 import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
 import com.example.furryfriendkeeper.entities.Appointmentschedule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -38,5 +39,8 @@ public interface AppointmentScheduleRepository extends JpaRepository<Appointment
             "WHERE po.id = :petownerId")
     List<Appointmentschedule> getAppointmentByPetOwner(@Param("petownerId") Integer petownerId);
 
+    @Modifying
+    @Query(value = "update appointmentschedule set StatusId = :status where AppointmentId = :appointmentId",nativeQuery = true)
+    void updateStatus(@Param("status")Integer status,@Param("appointmentId")Integer Id);
 
 }

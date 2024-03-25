@@ -107,6 +107,7 @@ public class AppointmentService {
         String startDay = newAppointment.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
         String endDay = newAppointment.getEndDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
         if(closedList.contains(startDay) || closedList.contains(endDay)){
+            //Closed Day
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid Day.(Petkeeper closed!)");
         }
         if(role.equals("Owner") && ownerId == newAppointment.getPetOwnerId()) {
@@ -136,6 +137,16 @@ public class AppointmentService {
 
     }
 
+    public String confirmAppointment(Integer appointmentId,Integer petkeeperId,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+
+
+
+        return "Confirm Appointment Successfully!";
+
+    }
 
 
 
