@@ -266,4 +266,21 @@ public class PetkeeperService {
         }
     }
 
+    @Transactional
+    public String updateClosedDay(Integer keeperId,List<String> closedDay,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Integer keeper = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
+        String closedDays = "";
+        if(!(role.equals("PetKeeper") && keeper == keeperId)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission!");
+        }
+        for (String day : closedDay){
+            closedDays = closedDays + ", "+ day;
+        }
+        petkeeperRepository.updateClosedDay(closedDays,keeperId);
+        return "update " + keeperId + ": " + closedDays;
+    }
+
 }

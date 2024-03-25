@@ -17,8 +17,11 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +60,7 @@ public class AppointmentService {
         if(role.equals("PetKeeper") && petkeeper == petkeeperId) {
             List<Appointmentschedule> listAppointment = appointmentScheduleRepository.getAppointmentByPetkeeper(petkeeperId);
             List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment,AppointmentScheduleDTO.class,modelMapper);
+
             return listDto;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
     }
@@ -65,9 +69,13 @@ public class AppointmentService {
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
+        Integer petowner = ownerRepository.getPetownerIdByEmail(emailCheck);
+        if(role.equals("Owner") && petowner ==  petownerId) {
+            List<Appointmentschedule> listAppointment = appointmentScheduleRepository.getAppointmentByPetOwner(petownerId);
+            List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment,AppointmentScheduleDTO.class,modelMapper);
+            return listDto;
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
 
-        List<AppointmentScheduleDTO> listAppointment = appointmentScheduleRepository.getAppointmentByPetOwner(petownerId);
-        return listAppointment;
     }
 
     @Transactional
@@ -88,13 +96,19 @@ public class AppointmentService {
         if(newAppointment.getEndDate().isBefore(newAppointment.getStartDate())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End Date Cannot be before Start Date.");
         }
-        if(newAppointment.getStartDate().isBefore(ZonedDateTime.now()) || newAppointment.getStartDate().isAfter(ZonedDateTime.now().plusDays(3))){
+        if(!(newAppointment.getStartDate().isBefore(ZonedDateTime.now()) || newAppointment.getStartDate().isAfter(ZonedDateTime.now().plusDays(3)))){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date input.");
         }
         if(!checkCategories.contains(newAppointment.getCategoryId())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Category,Please try again.");
         }
-
+        String[] days = checkKeeper.getClosedDay().toLowerCase().split(",\\s*");
+        List<String> closedList = Arrays.asList(days);
+        String startDay = newAppointment.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
+        String endDay = newAppointment.getEndDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
+        if(closedList.contains(startDay) || closedList.contains(endDay)){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid Day.(Petkeeper closed!)");
+        }
         if(role.equals("Owner") && ownerId == newAppointment.getPetOwnerId()) {
             List<Disableappointmentschedule> checkDate = disableScheduleRepository.getDisableScheduleByPetkeeper(newAppointment.getPetKeeperId());
             LocalDate startDateAppointment = newAppointment.getStartDate().toLocalDate();

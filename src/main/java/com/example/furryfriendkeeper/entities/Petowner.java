@@ -34,5 +34,9 @@ public class Petowner {
     @JoinColumn(name = "Email", nullable = false, referencedColumnName = "Email")
     private User email;
 
+    @Override
+    public String toString() {
+        return firstname + " " + lastname;
+    }
 
 }

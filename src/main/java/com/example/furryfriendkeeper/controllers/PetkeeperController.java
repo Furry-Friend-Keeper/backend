@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 //@CrossOrigin(origins = "http://cp23at3.sit.kmutt.ac.th")
@@ -73,6 +74,13 @@ public class PetkeeperController {
         }
 
         return "Update Succesfully!";
+    }
+
+    @PatchMapping("/closed/{keeperId}")
+    public String updateClosedDay(@PathVariable Integer keeperId, @RequestBody List<String> closedDays){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        return service.updateClosedDay(keeperId,closedDays,token);
     }
 
 }

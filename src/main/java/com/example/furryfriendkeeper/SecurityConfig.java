@@ -80,6 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/api/appointment//owner/{petownerId}").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/appointment/keeper/{petkeeperId}").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/owner/{petOwnerId}").hasRole("Owner")
+                .antMatchers(HttpMethod.PATCH,"/api/keepers/closed/{keeperId}").hasRole("PetKeeper")
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
