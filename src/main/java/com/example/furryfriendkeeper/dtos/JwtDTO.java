@@ -14,4 +14,5 @@ public class JwtDTO {
     private String refreshToken;
     private String role;
     private Integer id;
+    private String name;
 }

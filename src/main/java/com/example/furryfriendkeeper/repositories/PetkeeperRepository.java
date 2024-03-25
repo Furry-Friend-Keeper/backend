@@ -19,4 +19,8 @@ public interface PetkeeperRepository extends JpaRepository<Petkeepers, Integer> 
     @Modifying
     @Query(value = "update petkeepers set ClosedDay = :closedDay where PetKeeperId = :petkeeperId",nativeQuery = true)
     void updateClosedDay(@Param("closedDay")String closedDay, @Param("petkeeperId")Integer petkeeperId);
+
+    @Modifying
+    @Query(value = "update petkeepers set Available = :available where PetKeeperId = :petkeeperId",nativeQuery = true)
+    void updateAvailable(@Param("available")Integer available,@Param("petkeeperId")Integer petkeeperId);
 }

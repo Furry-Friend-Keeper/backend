@@ -4,6 +4,7 @@ import com.example.furryfriendkeeper.dtos.AppointmentDTO;
 import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
 import com.example.furryfriendkeeper.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -35,6 +36,19 @@ public class AppointmentController {
     private AppointmentDTO createSchedule(@RequestBody AppointmentDTO newAppointment){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
         return service.createRequest(newAppointment,token);
+    }
+
+    @PatchMapping("/confirm/{appointmentId}")
+    private String confirmAppointment(@PathVariable Integer appointmentId){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        return service.confirmAppointment(appointmentId,token);
+    }
+
+    @PatchMapping("/cancel/{appointmentId}")
+    private String cancelAppointment(@PathVariable Integer appointmentId){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return service.cancelAppointment(appointmentId,token);
     }
 
 

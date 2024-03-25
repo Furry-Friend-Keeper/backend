@@ -13,12 +13,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
 import java.util.*;
 
 @Service
@@ -281,6 +284,26 @@ public class PetkeeperService {
         }
         petkeeperRepository.updateClosedDay(closedDays,keeperId);
         return "update " + keeperId + ": " + closedDays;
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public String updateAvailableDay(){
+        List<Petkeepers> petkeepers = petkeeperRepository.findAll();
+        String today = ZonedDateTime.now().getDayOfWeek().getDisplayName(TextStyle.FULL,Locale.getDefault()).toLowerCase();
+        for (Petkeepers keepers: petkeepers) {
+            if(keepers.getClosedDay() != null || !keepers.getClosedDay().isEmpty()){
+                String[] closedDays = keepers.getClosedDay().toLowerCase().split("\\s*");
+                List<String> closedList = Arrays.asList(closedDays);
+                if(closedList.contains(today) && keepers.getAvailable() == 1){
+                    petkeeperRepository.updateAvailable(0, keepers.getId());
+                }else if(!closedList.contains(today) && keepers.getAvailable() == 0){
+                    petkeeperRepository.updateAvailable(1, keepers.getId());
+                }
+            }
+
+        }
+        return "updated";
     }
 
 }
