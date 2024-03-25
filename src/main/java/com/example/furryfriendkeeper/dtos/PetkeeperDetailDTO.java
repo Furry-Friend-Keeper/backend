@@ -39,6 +39,7 @@ public class PetkeeperDetailDTO {
     private List<String> categories;
 
     private Boolean available;
+    private String closedDay;
     public void setReviewFromPetkeeperId(Integer id, ReviewRepository repository){
         this.reviews = repository.findReviewsByPetkeeperId(id);
     }
