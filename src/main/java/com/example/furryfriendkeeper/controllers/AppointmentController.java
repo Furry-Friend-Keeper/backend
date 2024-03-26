@@ -49,6 +49,22 @@ public class AppointmentController {
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
         return service.cancelAppointment(appointmentId,token);
     }
+    @PatchMapping("/in-care/{appointmentId}")
+    private String inCareAppointment(@PathVariable Integer appointmentId){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return service.inCareAppointment(appointmentId,token);
+    }
+
+    @PatchMapping("/keeper-completed/{appointmentId}")
+    private String keeperCompletedAppointment(@PathVariable Integer appointmentId){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return service.keeperCompletedAppointment(appointmentId,token);
+    }
+    @PatchMapping("/owner-completed/{appointmentId}")
+    private String ownerCompletedAppointment(@PathVariable Integer appointmentId){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return service.ownerCompletedAppointment(appointmentId,token);
+    }
 
 
 }
