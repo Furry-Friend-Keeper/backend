@@ -3,6 +3,7 @@ package com.example.furryfriendkeeper.services;
 
 import com.example.furryfriendkeeper.dtos.AppointmentDTO;
 import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
+import com.example.furryfriendkeeper.dtos.DisableAppointmentDTO;
 import com.example.furryfriendkeeper.entities.*;
 import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
 import com.example.furryfriendkeeper.repositories.*;
@@ -19,7 +20,6 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -60,7 +60,6 @@ public class AppointmentService {
         if(role.equals("PetKeeper") && petkeeper == petkeeperId) {
             List<Appointmentschedule> listAppointment = appointmentScheduleRepository.getAppointmentByPetkeeper(petkeeperId);
             List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment,AppointmentScheduleDTO.class,modelMapper);
-
             return listDto;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
     }
@@ -70,10 +69,17 @@ public class AppointmentService {
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer petowner = ownerRepository.getPetownerIdByEmail(emailCheck);
+
         if(role.equals("Owner") && petowner ==  petownerId) {
             List<Appointmentschedule> listAppointment = appointmentScheduleRepository.getAppointmentByPetOwner(petownerId);
-            List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment,AppointmentScheduleDTO.class,modelMapper);
-            return listDto;
+            if(!listAppointment.isEmpty()) {
+                List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment, AppointmentScheduleDTO.class, modelMapper);
+                for (int i = 0 ; i < listAppointment.size(); i++) {
+                    listDto.get(i).setKeeperImg(listAppointment.get(i).getPetKeeper().getImg());
+
+                }
+                return listDto;
+            }else throw  new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found!");
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
 
     }
@@ -218,6 +224,11 @@ public class AppointmentService {
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
         return "Appointment :" + appointmentId + " - Keeper Completed";
+    }
+
+    public DisableAppointmentDTO addDisableAppointment(){
+
+        return new DisableAppointmentDTO();
     }
 
 }
