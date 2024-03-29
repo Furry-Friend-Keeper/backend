@@ -1,6 +1,8 @@
 package com.example.furryfriendkeeper.entities;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
+
 import lombok.Setter;
 import lombok.Getter;
 

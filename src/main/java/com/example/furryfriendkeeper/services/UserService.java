@@ -147,6 +147,7 @@ public class UserService {
             petkeepers.setEmail(savedUser);
             petkeepers.setAddress(savedAddress);
             petkeepers.setAvailable(1);
+            petkeepers.setClosedDay("");
             Petkeepers savedPetkeepers = petkeeperRepository.saveAndFlush(petkeepers);
 
             Set<Petcategory> petcategories = signUpPetkeeperDTO.getCategoryId().stream()

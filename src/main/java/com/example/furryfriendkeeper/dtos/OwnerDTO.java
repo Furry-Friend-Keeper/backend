@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Getter
 @Setter
@@ -25,7 +22,7 @@ public class OwnerDTO {
     @Size(max = 200, message = "Lastname length cannot exceed 200 characters!!")
     private String lastname;
     @NotNull(message = "Please fill this field")
-    @Size(min = 10, max = 10, message = "Invalid length of phone number!!")
+    @Pattern(regexp = "\\d{10}",message = "Phone numbers must be 10 digits(0-9) only.")
     private String phone;
     private String petname;
     @NotEmpty(message = "Please fill this field")

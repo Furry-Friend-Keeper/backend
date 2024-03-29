@@ -2,6 +2,8 @@ package com.example.furryfriendkeeper.services;
 
 
 import com.example.furryfriendkeeper.dtos.OwnerDetailDTO;
+import com.example.furryfriendkeeper.dtos.OwnerEditDTO;
+import com.example.furryfriendkeeper.entities.Petkeepers;
 import com.example.furryfriendkeeper.entities.Petowner;
 import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
 import com.example.furryfriendkeeper.repositories.OwnerRepository;
@@ -48,4 +50,30 @@ public class OwnerService {
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission.");
     }
 
+    public OwnerEditDTO editOwner(OwnerEditDTO newPetOwner , Integer ownerId, String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Petowner oldPetOwner = ownerRepository.getOwnerDetail(ownerId);
+
+        return new OwnerEditDTO();
+
+    }
+
+    private Petowner mapPetowner(Petowner oldDetail, Petowner newDetail){
+        if(newDetail.getFirstname() != null) {
+            oldDetail.setFirstname(newDetail.getFirstname());
+        }
+        if(newDetail.getLastname() != null) {
+            oldDetail.setLastname(newDetail.getLastname());
+        }
+        if (newDetail.getPetname() != null) {
+            oldDetail.setPetname(newDetail.getPetname());
+        }
+        if (newDetail.getPhone() != null) {
+            oldDetail.setPhone(newDetail.getPhone());
+        }
+
+        return oldDetail;
+    }
 }

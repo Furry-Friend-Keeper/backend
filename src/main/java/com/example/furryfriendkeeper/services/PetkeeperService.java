@@ -279,31 +279,40 @@ public class PetkeeperService {
         if(!(role.equals("PetKeeper") && keeper == keeperId)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission!");
         }
-        for (String day : closedDay){
-            closedDays = closedDays + ", "+ day;
+        for (int i = 0; i < closedDay.size(); i++){
+            if(i != closedDay.size()-1) {
+                closedDays = closedDays + closedDay.get(i) + ", ";
+            }else closedDays = closedDays + closedDay.get(i);
         }
         petkeeperRepository.updateClosedDay(closedDays,keeperId);
         return "update " + keeperId + ": " + closedDays;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     @Transactional
     public String updateAvailableDay(){
         List<Petkeepers> petkeepers = petkeeperRepository.findAll();
-        String today = ZonedDateTime.now().getDayOfWeek().getDisplayName(TextStyle.FULL,Locale.getDefault()).toLowerCase();
-        for (Petkeepers keepers: petkeepers) {
-            if(keepers.getClosedDay() != null || !keepers.getClosedDay().isEmpty()){
-                String[] closedDays = keepers.getClosedDay().toLowerCase().split("\\s*");
+        String today = ZonedDateTime.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
+
+        if (petkeepers.isEmpty()) {
+            return "No petkeepers found.";
+        }
+
+        for (Petkeepers keepers : petkeepers) {
+            String closedDay = keepers.getClosedDay();
+            if (closedDay != null) {
+                String[] closedDays = closedDay.toLowerCase().split("\\s*,\\s*");
                 List<String> closedList = Arrays.asList(closedDays);
-                if(closedList.contains(today) && keepers.getAvailable() == 1){
+                if (closedList.contains(today) && keepers.getAvailable() == 1) {
                     petkeeperRepository.updateAvailable(0, keepers.getId());
-                }else if(!closedList.contains(today) && keepers.getAvailable() == 0){
+                } else if (!closedList.contains(today) && keepers.getAvailable() == 0) {
                     petkeeperRepository.updateAvailable(1, keepers.getId());
                 }
+            } else {
+                System.out.println("No update for Petkeeper ID: " + keepers.getId());
             }
-
         }
-        return "updated";
+        return "Availability updated successfully.";
     }
 
 }

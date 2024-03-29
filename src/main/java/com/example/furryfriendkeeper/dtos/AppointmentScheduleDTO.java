@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 public class AppointmentScheduleDTO {
 
-    private Integer appointmentId;
+    private Integer id;
     private String ownerPhone;
     private String petName;
     private String category;
@@ -24,6 +24,7 @@ public class AppointmentScheduleDTO {
     private ZonedDateTime endDate;
     private String petOwner;
     private String petKeeper;
+    private String keeperImg;
     private String status;
 
 }
