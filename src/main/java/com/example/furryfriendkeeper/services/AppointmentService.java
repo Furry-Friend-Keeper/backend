@@ -252,7 +252,7 @@ public class AppointmentService {
         } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission");
         return "Delete Successfully";
     }
-    
+
 
 
 

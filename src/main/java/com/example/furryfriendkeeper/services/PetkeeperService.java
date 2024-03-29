@@ -1,10 +1,7 @@
 package com.example.furryfriendkeeper.services;
 
 import com.example.furryfriendkeeper.dtos.*;
-import com.example.furryfriendkeeper.entities.Address;
-import com.example.furryfriendkeeper.entities.Pet;
-import com.example.furryfriendkeeper.entities.Petcategory;
-import com.example.furryfriendkeeper.entities.Petkeepers;
+import com.example.furryfriendkeeper.entities.*;
 import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
 import com.example.furryfriendkeeper.repositories.*;
 import com.example.furryfriendkeeper.utils.ListMapper;
@@ -51,6 +48,8 @@ public class PetkeeperService {
 
     private final UserRepository userRepository;
 
+    private final DisableScheduleRepository disableScheduleRepository;
+
     public List<PetkeeperDTO> getPetkeeperList(){
         List<Petkeepers> petkeepersList = petkeeperRepository.findAll();
         List<PetkeeperDTO> keepers = listMapper.mapList(petkeepersList, PetkeeperDTO.class, modelMapper);
@@ -80,9 +79,10 @@ public class PetkeeperService {
 
     public PetkeeperDetailDTO getPetkeeperDetails(Integer petkeepersId){
        Optional<Petkeepers> petkeeperDetails = petkeeperRepository.findById(petkeepersId);
-
        List<String> galleries = galleryRepository.findGalleriesByPetkeeperId(petkeepersId);
        PetkeeperDetailDTO petkeeperDetailDTO = modelMapper.map(petkeeperDetails, PetkeeperDetailDTO.class);
+       List<Disableappointmentschedule> disableappointmentschedule = disableScheduleRepository.getDisableScheduleByPetkeeper(petkeepersId);
+       List<DisableAppointmentDTO> disableDto = listMapper.mapList(disableappointmentschedule,DisableAppointmentDTO.class,modelMapper);
         if(petkeeperDetailDTO == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Petkeeper Not Found");
         }
@@ -97,6 +97,7 @@ public class PetkeeperService {
        petkeeperDetailDTO.setGallery(galleries);
        petkeeperDetailDTO.setReviewStars(avgStar);
        petkeeperDetailDTO.setCategories(categories);
+       petkeeperDetailDTO.setDisableAppointment(disableDto);
        return petkeeperDetailDTO;
 
     }

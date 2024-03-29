@@ -12,6 +12,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -40,6 +41,9 @@ public class PetkeeperDetailDTO {
 
     private Boolean available;
     private String closedDay;
+
+    private List<DisableAppointmentDTO> disableAppointment;
+
     public void setReviewFromPetkeeperId(Integer id, ReviewRepository repository){
         this.reviews = repository.findReviewsByPetkeeperId(id);
     }

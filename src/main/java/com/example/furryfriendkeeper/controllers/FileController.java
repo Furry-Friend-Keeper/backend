@@ -22,11 +22,7 @@ public class FileController {
     @Autowired
     private final FileService fileService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private UserRepository userRepository;
 
 
     public FileController(FileService fileService) {
@@ -35,11 +31,14 @@ public class FileController {
     @GetMapping("/{keeperId}/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename,@PathVariable Integer keeperId ) {
-        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
-        token = token.replace("Bearer " , "");
-        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
-        String role = userRepository.findRole(emailCheck);
-        Resource file = fileService.loadFileAsResource(filename, keeperId,role);
+
+        Resource file = fileService.loadFileAsResource(filename, keeperId);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(file);
+    }
+    @GetMapping("/owner/{ownerId}/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFileOwner(@PathVariable String filename,@PathVariable Integer ownerId ) {
+        Resource file = fileService.loadProfileOwner(filename, ownerId);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(file);
     }
     @GetMapping("/{keeperId}/gallery/{filename:.+}")
