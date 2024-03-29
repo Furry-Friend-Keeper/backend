@@ -50,10 +50,8 @@ public class FileService {
 
     }
 
-    public String store(MultipartFile file,Integer keeperId) {
-//        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
-//        String fileExtension = StringUtils.getFilenameExtension(originalFileName);
-//        String fileName = keeperId.toString() + ".jpg";
+    public String store(MultipartFile file,Integer userId,String role) {
+
           String fileName = StringUtils.cleanPath(file.getOriginalFilename());
           String contentType = file.getContentType();
 
@@ -62,10 +60,16 @@ public class FileService {
             if (fileName.contains("..")) {
                 throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
             }
-            Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName);
-            Files.createDirectories(targetLocation.getParent());
-
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            if(role.equals("PetKeeper")) {
+                Path targetLocation = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName);
+                Files.createDirectories(targetLocation.getParent());
+                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            }
+            if(role.equals("Owner")){
+                Path targetLocation = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName);
+                Files.createDirectories(targetLocation.getParent());
+                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            }
             return fileName;
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
@@ -73,10 +77,21 @@ public class FileService {
           }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file typeInvalid file type(jpg,png and jpeg only),please try again");
 
     }
-    public Resource loadFileAsResource(String fileName,Integer keeperId) {
+
+
+
+    public Resource loadFileAsResource(String fileName,Integer userId,String role) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
+            Path filePath = null;
+            Resource resource = null;
+            if(role.equals("PetKeeper")){
+                filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName).normalize();
+                resource = new UrlResource(filePath.toUri());
+            }
+            if(role.equals("Owner")){
+                filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName).normalize();
+                resource = new UrlResource(filePath.toUri());
+            }
             if (resource.exists()) {
                 return resource;
             } else {
@@ -102,10 +117,16 @@ public class FileService {
 
 
 
-    public void deleteProfileImg(String fileName,Integer keeperId) {
+    public void deleteProfileImg(String fileName,Integer userId,String role) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName);
-            Files.delete(filePath);
+            if(role.equals("PetKeeper")) {
+                Path filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName);
+                Files.delete(filePath);
+            }
+            if(role.equals("Owner")){
+                Path filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName);
+                Files.delete(filePath);
+            }
         } catch (IOException ex) {
             throw new RuntimeException("Could not delete file " + fileName + ". Please try again!", ex);
         }
@@ -152,9 +173,15 @@ public class FileService {
 
         return fileNames;
     }
-    public boolean doesImageExist(String fileName, Integer keeperId) {
+    public boolean doesImageExist(String fileName, Integer userId, String role) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve(fileName).normalize();
+            Path filePath = null;
+            if (role.equals("PetKeeper")) {
+               filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName).normalize();
+            }
+            if(role.equals("Owner")){
+               filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName).normalize();
+            }
             return Files.exists(filePath) && Files.isRegularFile(filePath);
         } catch (Exception ex) {
             throw new RuntimeException("Error checking file existence", ex);

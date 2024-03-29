@@ -227,9 +227,33 @@ public class AppointmentService {
         return "Appointment :" + appointmentId + " - Keeper Completed";
     }
 
-    public DisableAppointmentDTO addDisableAppointment(){
-
-        return new DisableAppointmentDTO();
+    public DisableAppointmentDTO addDisableAppointment(Integer petkeeperId, DisableAppointmentDTO disableAppointment,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
+        if(role.equals("PetKeeper") && petkeeperId == keeperId) {
+            Disableappointmentschedule disableSchedule = modelMapper.map(disableAppointment, Disableappointmentschedule.class);
+            Petkeepers petkeeper = petkeeperRepository.getById(petkeeperId);
+            disableSchedule.setPetKeeper(petkeeper);
+            disableScheduleRepository.saveAndFlush(disableSchedule);
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission.");
+        return disableAppointment;
     }
+
+    public String deleteDisableAppointment(Integer disableScheduleId,String token) {
+        token = token.replace("Bearer ", "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
+        Disableappointmentschedule disableappointmentschedule = disableScheduleRepository.getById(disableScheduleId);
+        if (role.equals("PetKeeper") && keeperId == disableappointmentschedule.getPetKeeper().getId()) {
+            disableScheduleRepository.deleteById(disableScheduleId);
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission");
+        return "Delete Successfully";
+    }
+    
+
+
 
 }

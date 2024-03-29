@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
@@ -15,7 +16,9 @@ import java.time.ZonedDateTime;
 public class DisableAppointmentDTO {
 
     private Integer id;
+    @NotNull
     private LocalDate startDate;
+    @NotNull
     private LocalDate endDate;
-    private Integer petKeeperId;
+
 }
