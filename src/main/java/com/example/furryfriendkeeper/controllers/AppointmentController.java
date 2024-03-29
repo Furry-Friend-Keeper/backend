@@ -2,6 +2,7 @@ package com.example.furryfriendkeeper.controllers;
 
 import com.example.furryfriendkeeper.dtos.AppointmentDTO;
 import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
+import com.example.furryfriendkeeper.dtos.DisableAppointmentDTO;
 import com.example.furryfriendkeeper.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,7 +34,7 @@ public class AppointmentController {
     }
 
     @PostMapping("/create")
-    private AppointmentDTO createSchedule(@RequestBody AppointmentDTO newAppointment){
+    private AppointmentDTO createSchedule(@Valid @RequestBody AppointmentDTO newAppointment){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
         return service.createRequest(newAppointment,token);
     }
@@ -65,6 +67,16 @@ public class AppointmentController {
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
         return service.ownerCompletedAppointment(appointmentId,token);
     }
+    @PostMapping("/disable-schedule/{petkeeperId}")
+    private DisableAppointmentDTO addDisableSchedule(@PathVariable Integer petkeeperId,@RequestBody @Valid DisableAppointmentDTO disableSchedule){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return service.addDisableAppointment(petkeeperId,disableSchedule,token);
+    }
 
+    @DeleteMapping("/disable-schedule/{disableId}")
+    private String deleteDisableSchedule(@PathVariable Integer disableId){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return service.deleteDisableAppointment(disableId,token);
+    }
 
 }

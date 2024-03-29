@@ -203,9 +203,9 @@ public class PetkeeperService {
             if(fileService.isSupportedContentType(file.getContentType())) {
                 try {
                     if (petkeeper.getImg() != null && file != null) {
-                        boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId);
+                        boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId,role);
                         if (isImageExist) {
-                            fileService.deleteProfileImg(petkeeper.getImg(), keeperId);
+                            fileService.deleteProfileImg(petkeeper.getImg(), keeperId,role);
                         }
                     }
                     if (file == null || file.isEmpty()) {
@@ -213,7 +213,7 @@ public class PetkeeperService {
                         petkeeperRepository.saveAndFlush(petkeeper);
                     } else {
                         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-                        fileService.store(file, keeperId);
+                        fileService.store(file, keeperId, role);
                         petkeeper.setImg(fileName);
                         petkeeperRepository.saveAndFlush(petkeeper);
                     }
@@ -288,7 +288,7 @@ public class PetkeeperService {
         return "update " + keeperId + ": " + closedDays;
     }
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public String updateAvailableDay(){
         List<Petkeepers> petkeepers = petkeeperRepository.findAll();
@@ -314,5 +314,7 @@ public class PetkeeperService {
         }
         return "Availability updated successfully.";
     }
+
+
 
 }
