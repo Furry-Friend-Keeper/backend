@@ -23,8 +23,10 @@ public class AppointmentScheduleDTO {
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;
     private String petOwner;
+    private Integer keeperId;
     private String petKeeper;
     private String keeperImg;
+    private String keeperPhone;
     private String status;
 
 }

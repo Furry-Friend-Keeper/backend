@@ -76,7 +76,8 @@ public class AppointmentService {
                 List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment, AppointmentScheduleDTO.class, modelMapper);
                 for (int i = 0 ; i < listAppointment.size(); i++) {
                     listDto.get(i).setKeeperImg(listAppointment.get(i).getPetKeeper().getImg());
-
+                    listDto.get(i).setKeeperId(listAppointment.get(i).getPetKeeper().getId());
+                    listDto.get(i).setKeeperPhone(listAppointment.get(i).getPetKeeper().getPhone());
                 }
                 return listDto;
             }else throw  new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found!");
