@@ -80,18 +80,11 @@ public class FileService {
 
 
 
-    public Resource loadFileAsResource(String fileName,Integer userId,String role) {
+    public Resource loadFileAsResource(String fileName,Integer userId) {
         try {
-            Path filePath = null;
-            Resource resource = null;
-            if(role.equals("PetKeeper")){
-                filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName).normalize();
-                resource = new UrlResource(filePath.toUri());
-            }
-            if(role.equals("Owner")){
-                filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName).normalize();
-                resource = new UrlResource(filePath.toUri());
-            }
+               Path filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName).normalize();
+               Resource resource = new UrlResource(filePath.toUri());
+
             if (resource.exists()) {
                 return resource;
             } else {
@@ -101,7 +94,22 @@ public class FileService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
         }
     }
-    public Resource loadFileGallery(String fileName,Integer keeperId) {
+
+    public Resource loadProfileOwner(String fileName,Integer userId) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+            return resource;
+            } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
+        }
+    } catch (MalformedURLException ex) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
+        }
+    }
+        public Resource loadFileGallery(String fileName,Integer keeperId) {
         try {
             Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
