@@ -1,5 +1,6 @@
 package com.example.furryfriendkeeper.controllers;
 
+import com.example.furryfriendkeeper.dtos.FavoriteDTO;
 import com.example.furryfriendkeeper.dtos.OwnerDetailDTO;
 import com.example.furryfriendkeeper.dtos.OwnerEditDTO;
 import com.example.furryfriendkeeper.entities.Petowner;
@@ -36,5 +37,11 @@ public class OwnerController {
     public String uploadProfile(@PathVariable Integer ownerId, @RequestParam("file") MultipartFile file){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
         return ownerService.uploadProfile(ownerId,file,token);
+    }
+
+    @PutMapping("/favorite/{ownerId}")
+    public String updateFavorite(@PathVariable Integer ownerId, @RequestBody FavoriteDTO favoriteDTO){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return ownerService.updateFavorite(ownerId,favoriteDTO,token);
     }
 }

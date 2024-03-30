@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,4 +22,5 @@ public class OwnerDetailDTO {
     private String img;
     private String petName;
     private String email;
+    private List<FavoriteDTO> favorites;
 }

@@ -1,15 +1,16 @@
 package com.example.furryfriendkeeper.services;
 
 
+import com.example.furryfriendkeeper.dtos.FavoriteDTO;
 import com.example.furryfriendkeeper.dtos.OwnerDetailDTO;
 import com.example.furryfriendkeeper.dtos.OwnerEditDTO;
 import com.example.furryfriendkeeper.entities.Address;
+import com.example.furryfriendkeeper.entities.Favorite;
 import com.example.furryfriendkeeper.entities.Petkeepers;
 import com.example.furryfriendkeeper.entities.Petowner;
 import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
-import com.example.furryfriendkeeper.repositories.OwnerRepository;
-import com.example.furryfriendkeeper.repositories.RoleRepository;
-import com.example.furryfriendkeeper.repositories.UserRepository;
+import com.example.furryfriendkeeper.repositories.*;
+import com.example.furryfriendkeeper.utils.ListMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,13 @@ public class OwnerService {
 
     private final ModelMapper modelMapper;
 
+    private final ListMapper listMapper;
+
     private final FileService fileService;
+
+    private final FavoriteRepository favoriteRepository;
+
+    private final PetkeeperRepository petkeeperRepository;
 
     public List<Petowner> getAllOwners(){
         return ownerRepository.findAll();
@@ -48,10 +55,14 @@ public class OwnerService {
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer petOwner = ownerRepository.getPetownerIdByEmail(emailCheck);
+
+        List<Favorite> favoriteList = favoriteRepository.findAllByPetOwnerId(petOwnerId);
+        List<FavoriteDTO> favoriteDTOList = listMapper.mapList(favoriteList,FavoriteDTO.class,modelMapper);
         if(role.equals("Owner") && petOwner == petOwnerId) {
             Petowner owner = ownerRepository.getOwnerDetail(petOwnerId);
             OwnerDetailDTO ownerDetail = modelMapper.map(owner,OwnerDetailDTO.class);
             ownerDetail.setPetOwnerId(owner.getId());
+            ownerDetail.setFavorites(favoriteDTOList);
             return ownerDetail;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission.");
     }
@@ -126,5 +137,28 @@ public class OwnerService {
     }
 
 
+    @Transactional
+    public String updateFavorite(Integer ownerId, FavoriteDTO favorite, String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Integer checkId = ownerRepository.getPetownerIdByEmail(emailCheck);
+        Favorite checkFavorite = favoriteRepository.findFavorite(favorite.getPetOwnerId(), favorite.getPetKeeperId());
 
+        if(role.equals("Owner") && checkId == ownerId && checkId == favorite.getPetOwnerId()){
+            if(checkFavorite == null){
+                Petkeepers petkeeper = petkeeperRepository.getById(favorite.getPetKeeperId());
+                Petowner owner = ownerRepository.getById(favorite.getPetOwnerId());
+                Favorite saveFavorite = modelMapper.map(favorite, Favorite.class);
+                saveFavorite.setPetOwner(owner);
+                saveFavorite.setPetKeeper(petkeeper);
+                favoriteRepository.saveAndFlush(saveFavorite);
+                return "Update favorite successfully.";
+            }else {
+                favoriteRepository.deleteFavorite(favorite.getPetOwnerId(), favorite.getPetKeeperId());
+                return "Update favorite successfully.(Delete)";
+
+            }
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
+    }
 }
