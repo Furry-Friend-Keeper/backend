@@ -90,6 +90,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH,"/api/owner/{ownerId}/profile-img").hasRole("Owner")
                 .antMatchers(HttpMethod.PATCH,"/api/keepers/closed/{keeperId}").hasRole("PetKeeper")
                 .antMatchers(HttpMethod.POST,"/api/appointment/disable-schedule/{petKeeperId}").hasRole("PetKeeper")
+                .antMatchers(HttpMethod.PATCH,"/api/keepers/available/{keeperId}").hasRole("PetKeeper")
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
