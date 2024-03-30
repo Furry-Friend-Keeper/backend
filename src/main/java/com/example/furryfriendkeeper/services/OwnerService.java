@@ -124,4 +124,7 @@ public class OwnerService {
             }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file type(jpg,png and jpeg only),please try again");
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
     }
+
+
+
 }

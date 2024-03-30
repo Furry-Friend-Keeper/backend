@@ -316,6 +316,22 @@ public class PetkeeperService {
         return "Availability updated successfully.";
     }
 
+    @Transactional
+    public String closedPetkeeper(Integer keeperId,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Integer checkId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
+        Petkeepers keeper = petkeeperRepository.getById(keeperId);
+        if(role.equals("PetKeeper") && keeperId == checkId){
+            if(keeper.getAvailable() == 0){
+                petkeeperRepository.updateAvailable(1, keeperId);
+            }else petkeeperRepository.updateAvailable(0, keeperId);
+
+        }
+        return "Availability updated successfully.";
+    }
+
 
 
 }

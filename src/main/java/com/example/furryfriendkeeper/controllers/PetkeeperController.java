@@ -83,4 +83,11 @@ public class PetkeeperController {
         return service.updateClosedDay(keeperId,closedDays,token);
     }
 
+    @PatchMapping("/available/{keeperId}")
+    public String updateAvailable(@PathVariable Integer keeperId){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        return service.closedPetkeeper(keeperId,token);
+    }
+
 }
