@@ -16,9 +16,7 @@ import java.time.ZonedDateTime;
 public class DisableDateDTO {
 
     private Integer id;
-    @NotNull
     private ZonedDateTime startDate;
-    @NotNull
     private ZonedDateTime endDate;
 
 }
