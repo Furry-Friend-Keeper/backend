@@ -220,7 +220,7 @@ public class AppointmentService {
         Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
         if(appointmentschedule.getStatus().getId() == 5){
-            if(role.equals("Owner") && ownerId == appointmentschedule.getPetKeeper().getId()){
+            if(role.equals("Owner") && ownerId == appointmentschedule.getPetOwner().getId()){
                 appointmentScheduleRepository.updateStatus(6, appointmentId);
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
