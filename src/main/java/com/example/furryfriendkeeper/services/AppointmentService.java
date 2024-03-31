@@ -1,6 +1,5 @@
 package com.example.furryfriendkeeper.services;
 
-
 import com.example.furryfriendkeeper.dtos.AppointmentDTO;
 import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
 import com.example.furryfriendkeeper.dtos.DisableAppointmentDTO;

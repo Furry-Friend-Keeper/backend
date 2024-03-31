@@ -79,33 +79,33 @@ public class PetkeeperService {
     }
 
     public PetkeeperDetailDTO getPetkeeperDetails(Integer petkeepersId){
-       Optional<Petkeepers> petkeeperDetails = petkeeperRepository.findById(petkeepersId);
-       List<String> galleries = galleryRepository.findGalleriesByPetkeeperId(petkeepersId);
-       PetkeeperDetailDTO petkeeperDetailDTO = modelMapper.map(petkeeperDetails, PetkeeperDetailDTO.class);
-       List<Disableappointmentschedule> disableappointmentschedule = disableScheduleRepository.getDisableScheduleByPetkeeper(petkeepersId);
-       List<DisableDateDTO> disableDto = listMapper.mapList(disableappointmentschedule,DisableDateDTO.class,modelMapper);
+        Optional<Petkeepers> petkeeperDetails = petkeeperRepository.findById(petkeepersId);
+        List<String> galleries = galleryRepository.findGalleriesByPetkeeperId(petkeepersId);
+        PetkeeperDetailDTO petkeeperDetailDTO = modelMapper.map(petkeeperDetails, PetkeeperDetailDTO.class);
+        List<Disableappointmentschedule> disableappointmentschedule = disableScheduleRepository.getDisableScheduleByPetkeeper(petkeepersId);
+        List<DisableDateDTO> disableDto = listMapper.mapList(disableappointmentschedule,DisableDateDTO.class,modelMapper);
         if(petkeeperDetailDTO == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Petkeeper Not Found");
         }
-       Double avgReviewStar = reviewRepository.avgStars(petkeepersId);
-       List<String> categories = categoriesRepository.FindCategoriesByPetkeeperId(petkeepersId);
+        Double avgReviewStar = reviewRepository.avgStars(petkeepersId);
+        List<String> categories = categoriesRepository.FindCategoriesByPetkeeperId(petkeepersId);
         if(avgReviewStar == null){
             avgReviewStar = 0.0;
         }
 
         String formatStar = String.format("%.1f",avgReviewStar);
         Double avgStar = Double.parseDouble(formatStar);
-       petkeeperDetailDTO.setGallery(galleries);
-       petkeeperDetailDTO.setReviewStars(avgStar);
-       petkeeperDetailDTO.setCategories(categories);
-       for(int i = 0; i < disableDto.size() ; i++){
-           ZonedDateTime a = disableappointmentschedule.get(i).getStartDate().atStartOfDay(ZoneId.systemDefault());
-           ZonedDateTime b = disableappointmentschedule.get(i).getEndDate().atStartOfDay(ZoneId.systemDefault());
-           disableDto.get(i).setStartDate(a);
-           disableDto.get(i).setEndDate(b);
-       }
-       petkeeperDetailDTO.setDisableAppointment(disableDto);
-       return petkeeperDetailDTO;
+        petkeeperDetailDTO.setGallery(galleries);
+        petkeeperDetailDTO.setReviewStars(avgStar);
+        petkeeperDetailDTO.setCategories(categories);
+        for(int i = 0; i < disableDto.size() ; i++){
+            ZonedDateTime a = disableappointmentschedule.get(i).getStartDate().atStartOfDay(ZoneId.systemDefault());
+            ZonedDateTime b = disableappointmentschedule.get(i).getEndDate().atStartOfDay(ZoneId.systemDefault());
+            disableDto.get(i).setStartDate(a);
+            disableDto.get(i).setEndDate(b);
+        }
+        petkeeperDetailDTO.setDisableAppointment(disableDto);
+        return petkeeperDetailDTO;
 
     }
     public Petkeepers save(PetkeeperDetailDTO newPetkeeper){
@@ -124,15 +124,15 @@ public class PetkeeperService {
         String role = userRepository.findRole(emailCheck);
         String keeperEmail = petkeeperRepository.getPetkeeperEmailById(petkeeperId);
 
-            if (updatePetkeepers.getCategories() != null) {
-                categoriesRepository.DeleteCategoriesByPetkeeperId(petkeeperId);
-                for (Integer category : updatePetkeepers.getCategories()) {
-                    Pet petcategory = petRepository.getById(category);
-                    Petcategory newPetCategory = new Petcategory(petkeeperId, petcategory);
-                    categoriesRepository.saveAndFlush(newPetCategory);
-                }
-
+        if (updatePetkeepers.getCategories() != null) {
+            categoriesRepository.DeleteCategoriesByPetkeeperId(petkeeperId);
+            for (Integer category : updatePetkeepers.getCategories()) {
+                Pet petcategory = petRepository.getById(category);
+                Petcategory newPetCategory = new Petcategory(petkeeperId, petcategory);
+                categoriesRepository.saveAndFlush(newPetCategory);
             }
+
+        }
 
 
         if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
@@ -180,22 +180,22 @@ public class PetkeeperService {
     public Address mapAddress(Address oldAddress, PetKeeperEditDTO newDetail){
 
 
-            if(newDetail.getAddress().getAddress() != null){
-                oldAddress.setAddress(newDetail.getAddress().getAddress());
-            }
-            if (newDetail.getAddress().getDistrict() != null){
-                oldAddress.setDistrict(newDetail.getAddress().getDistrict());
-            }
-            if(newDetail.getAddress().getProvince() != null){
-                oldAddress.setProvince(newDetail.getAddress().getProvince());
-            }
-            if(newDetail.getAddress().getPostalCode() != null){
-                oldAddress.setPostalCode(newDetail.getAddress().getPostalCode());
-            }
-            if(newDetail.getAddress().getMap() != null){
-                oldAddress.setMap(newDetail.getAddress().getMap());
-            }
-            return oldAddress;
+        if(newDetail.getAddress().getAddress() != null){
+            oldAddress.setAddress(newDetail.getAddress().getAddress());
+        }
+        if (newDetail.getAddress().getDistrict() != null){
+            oldAddress.setDistrict(newDetail.getAddress().getDistrict());
+        }
+        if(newDetail.getAddress().getProvince() != null){
+            oldAddress.setProvince(newDetail.getAddress().getProvince());
+        }
+        if(newDetail.getAddress().getPostalCode() != null){
+            oldAddress.setPostalCode(newDetail.getAddress().getPostalCode());
+        }
+        if(newDetail.getAddress().getMap() != null){
+            oldAddress.setMap(newDetail.getAddress().getMap());
+        }
+        return oldAddress;
     }
 
 
@@ -246,7 +246,7 @@ public class PetkeeperService {
             if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
                 return new ResponseEntity<>(fileService.storeMultiple(files, keeperId), HttpStatus.OK);
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
-            } catch (Exception e){
+        } catch (Exception e){
             throw new RuntimeException("There is error",e);
         }
 
@@ -296,25 +296,28 @@ public class PetkeeperService {
         return "update " + keeperId + ": " + closedDays;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *", zone="Asia/Bangkok")
     @Transactional
     public String updateAvailableDay(){
         List<Petkeepers> petkeepers = petkeeperRepository.findAll();
-        String today = ZonedDateTime.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
+        String today = ZonedDateTime.now(ZoneId.of("Asia/Bangkok")).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
 
         if (petkeepers.isEmpty()) {
             return "No petkeepers found.";
         }
-
         for (Petkeepers keepers : petkeepers) {
             String closedDay = keepers.getClosedDay();
             if (closedDay != null) {
                 String[] closedDays = closedDay.toLowerCase().split("\\s*,\\s*");
                 List<String> closedList = Arrays.asList(closedDays);
+                System.out.println("Date" + today);
+                System.out.println("Close" + closedList);
                 if (closedList.contains(today) && keepers.getAvailable() == 1) {
                     petkeeperRepository.updateAvailable(0, keepers.getId());
+                    System.out.println("Update for Petkeeper ID:" + keepers.getId() + " - Closed");
                 } else if (!closedList.contains(today) && keepers.getAvailable() == 0) {
                     petkeeperRepository.updateAvailable(1, keepers.getId());
+                    System.out.println("Update for Petkeeper ID:" + keepers.getId() + " - Opened");
                 }
             } else {
                 System.out.println("No update for Petkeeper ID: " + keepers.getId());
@@ -338,9 +341,4 @@ public class PetkeeperService {
         }
         return "Availability updated successfully.";
     }
-
-
-
-
-
 }
