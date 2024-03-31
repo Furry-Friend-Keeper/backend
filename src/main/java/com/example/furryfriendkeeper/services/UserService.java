@@ -62,17 +62,20 @@ public class UserService {
         String userRole = user1.getRole().getRole();
         Integer id =null;
         String name = "";
+        String img = "";
         if(userRole.equals("PetKeeper")){
             id = petkeeperRepository.getPetkeepersIdByEmail(user.getEmail());
             Petkeepers keeper = petkeeperRepository.getById(id);
             name = keeper.getName();
+            img = keeper.getImg();
 
         }else if(userRole.equals("Owner")) {
             id = ownerRepository.getPetownerIdByEmail(user.getEmail());
             Petowner owner = ownerRepository.getById(id);
             name = owner.getFirstname();
+            img = owner.getImg();
         }
-        JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole,id, name);
+        JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole,id, name, img);
         return ResponseEntity.ok(jwtDTO);
     }
 
@@ -109,7 +112,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token is from email that does not exist!!");
         }
         if(!jwtTokenUtil.tokenExpired(refreshToken)){
-            return new JwtDTO(jwtTokenUtil.generateToken(userDetail),refreshToken, userRole,null,null);
+            return new JwtDTO(jwtTokenUtil.generateToken(userDetail),refreshToken, userRole,null,null,null);
         }else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token has expired");
     }
 
