@@ -18,8 +18,8 @@ public class DisableAppointmentDTO {
 
     private Integer id;
     @NotNull
-    private ZonedDateTime startDate;
+    private LocalDate startDate;
     @NotNull
-    private ZonedDateTime endDate;
+    private LocalDate endDate;
 
 }
