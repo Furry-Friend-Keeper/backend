@@ -42,7 +42,7 @@ public class PetkeeperDetailDTO {
     private Boolean available;
     private String closedDay;
 
-    private List<DisableAppointmentDTO> disableAppointment;
+    private List<DisableDateDTO> disableAppointment;
 
     public void setReviewFromPetkeeperId(Integer id, ReviewRepository repository){
         this.reviews = repository.findReviewsByPetkeeperId(id);
