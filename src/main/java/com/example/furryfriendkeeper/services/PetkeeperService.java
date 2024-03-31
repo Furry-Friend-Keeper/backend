@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -82,7 +83,7 @@ public class PetkeeperService {
        List<String> galleries = galleryRepository.findGalleriesByPetkeeperId(petkeepersId);
        PetkeeperDetailDTO petkeeperDetailDTO = modelMapper.map(petkeeperDetails, PetkeeperDetailDTO.class);
        List<Disableappointmentschedule> disableappointmentschedule = disableScheduleRepository.getDisableScheduleByPetkeeper(petkeepersId);
-       List<DisableAppointmentDTO> disableDto = listMapper.mapList(disableappointmentschedule,DisableAppointmentDTO.class,modelMapper);
+       List<DisableDateDTO> disableDto = listMapper.mapList(disableappointmentschedule,DisableDateDTO.class,modelMapper);
         if(petkeeperDetailDTO == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Petkeeper Not Found");
         }
@@ -97,6 +98,12 @@ public class PetkeeperService {
        petkeeperDetailDTO.setGallery(galleries);
        petkeeperDetailDTO.setReviewStars(avgStar);
        petkeeperDetailDTO.setCategories(categories);
+       for(int i = 0; i < disableDto.size() ; i++){
+           ZonedDateTime a = disableappointmentschedule.get(i).getStartDate().atStartOfDay(ZoneId.systemDefault());
+           ZonedDateTime b = disableappointmentschedule.get(i).getEndDate().atStartOfDay(ZoneId.systemDefault());
+           disableDto.get(i).setStartDate(a);
+           disableDto.get(i).setEndDate(b);
+       }
        petkeeperDetailDTO.setDisableAppointment(disableDto);
        return petkeeperDetailDTO;
 
