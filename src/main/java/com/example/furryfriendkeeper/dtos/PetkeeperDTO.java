@@ -1,9 +1,8 @@
 package com.example.furryfriendkeeper.dtos;
 
-import com.example.furryfriendkeeper.repositories.ReviewRepository;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.util.List;
 import java.util.Set;

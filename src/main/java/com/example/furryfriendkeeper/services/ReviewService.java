@@ -43,10 +43,10 @@ public class ReviewService {
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer checkOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
-        System.out.println("PetKeeper : " + newReview.getPetkeeperId());
-        System.out.println("PetOwner : " + newReview.getPetownerId());
+//        System.out.println("PetKeeper : " + newReview.getPetkeeperId());
+//        System.out.println("PetOwner : " + newReview.getPetownerId());
         Review checkReview = reviewRepository.findReviewByPetowner(newReview.getPetkeeperId(), newReview.getPetownerId());
-        System.out.println(checkReview);
+//        System.out.println(checkReview);
         if(role.equals("Owner") && newReview.getPetownerId() == checkOwnerId) {
             if(checkReview == null) {
                 Review review = new Review();
