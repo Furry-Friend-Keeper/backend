@@ -92,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH,"/api/keepers/closed/{keeperId}").hasRole("PetKeeper")
                 .antMatchers(HttpMethod.POST,"/api/appointment/disable-schedule/{petKeeperId}").hasRole("PetKeeper")
                 .antMatchers(HttpMethod.PATCH,"/api/keepers/available/{keeperId}").hasRole("PetKeeper")
-                .antMatchers(HttpMethod.GET,"/api/check-review/{ownerId}").hasRole("Owner")
+                .antMatchers(HttpMethod.GET,"/api/review/check-review/{ownerId}").hasRole("Owner")
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
