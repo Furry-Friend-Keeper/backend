@@ -1,6 +1,7 @@
 package com.example.furryfriendkeeper.services;
 
 
+import com.example.furryfriendkeeper.dtos.ReviewDTO;
 import com.example.furryfriendkeeper.dtos.SaveReviewDTO;
 import com.example.furryfriendkeeper.entities.Review;
 import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
@@ -103,13 +104,18 @@ public class ReviewService {
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
     }
 
-//    public Review checkIfReviewExist(Integer keeperId,Integer ownerId,String token){
-//        token = token.replace("Bearer " , "");
-//        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
-//        String role = userRepository.findRole(emailCheck);
-//        Integer checkOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
-//        if(role.equals("Owner") && checkOwnerId == ownerId) {
-//            return reviewRepository.findReviewByPetowner(keeperId, ownerId);
-//        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
-//    }
+    public ReviewDTO checkIfReviewExist(Integer keeperId, Integer ownerId, String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Integer checkOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
+        if(role.equals("Owner") && checkOwnerId == ownerId) {
+            Review review = reviewRepository.findReviewByPetowner(keeperId, ownerId);
+            if (review != null) {
+                ReviewDTO reviewDTO = modelMapper.map(review,ReviewDTO.class);
+                return reviewDTO;
+            }else return null;
+
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
+    }
 }

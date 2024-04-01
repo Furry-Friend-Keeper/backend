@@ -2,6 +2,7 @@ package com.example.furryfriendkeeper.controllers;
 
 
 
+import com.example.furryfriendkeeper.dtos.ReviewDTO;
 import com.example.furryfriendkeeper.dtos.SaveReviewDTO;
 import com.example.furryfriendkeeper.entities.Review;
 import com.example.furryfriendkeeper.services.ReviewService;
@@ -38,9 +39,9 @@ public class ReviewController {
         service.deleteReview(reviewId,ownerId,token);
     }
 
-//    @GetMapping("/check-review/{ownerId}")
-//    public Review checkReview(@PathVariable Integer ownerId,@RequestParam Integer keeperId){
-//        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
-//        return service.checkIfReviewExist(keeperId,ownerId,token);
-//    }
+    @GetMapping("/check-review/{ownerId}")
+    public ReviewDTO checkReview(@PathVariable Integer ownerId, @RequestParam Integer keeperId){
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+        return service.checkIfReviewExist(keeperId,ownerId,token);
+    }
 }
