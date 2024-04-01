@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -296,12 +297,12 @@ public class PetkeeperService {
         return "update " + keeperId + ": " + closedDays;
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone="Asia/Bangkok")
+    @Scheduled(cron = "0 0 0 * * *",zone ="Asia/Bangkok")
     @Transactional
     public String updateAvailableDay(){
         List<Petkeepers> petkeepers = petkeeperRepository.findAll();
         String today = ZonedDateTime.now(ZoneId.of("Asia/Bangkok")).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
-
+        System.out.println("start");
         if (petkeepers.isEmpty()) {
             return "No petkeepers found.";
         }
@@ -316,6 +317,7 @@ public class PetkeeperService {
                     petkeeperRepository.updateAvailable(0, keepers.getId());
                     System.out.println("Update for Petkeeper ID:" + keepers.getId() + " - Closed");
                 } else if (!closedList.contains(today) && keepers.getAvailable() == 0) {
+                    System.out.println("Update for Petkeeper ID:" + keepers.getId() + " - Opened");
                     petkeeperRepository.updateAvailable(1, keepers.getId());
                     System.out.println("Update for Petkeeper ID:" + keepers.getId() + " - Opened");
                 }
