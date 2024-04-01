@@ -19,5 +19,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     @Query("SELECT r.id AS id, r.comment AS comment, r.stars AS stars, r.petOwner.id as ownerId, o.firstname AS firstname , o.lastname AS lastname, o.img AS img  FROM Review r JOIN Petowner o ON r.petOwner.id = o.id WHERE r.petKeeper.id = :petkeeperId")
     List<ReviewDTO> findReviewsByPetkeeperId(@Param("petkeeperId") Integer petkeeperId);
 
+    @Query(value = "select * from reviews r where r.PetKeeperId = :keeperId and r.PetOwnerId = :ownerId",nativeQuery = true)
+    Review findReviewByPetowner(@Param("keeperId")Integer keeperId,@Param("ownerId")Integer ownerId);
+
 
 }

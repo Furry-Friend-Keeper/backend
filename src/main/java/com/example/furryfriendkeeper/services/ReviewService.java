@@ -41,17 +41,21 @@ public class ReviewService {
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
-        if(role.equals("Owner")) {
-            Review review = new Review();
-            review.setId(null);
-            review.setPetKeeper(petkeeperRepository.getById(newReview.getPetkeeperId()));
-            review.setPetOwner(ownerRepository.getById(newReview.getPetownerId()));
-            review.setComment(newReview.getComment());
-            review.setStars(newReview.getStar());
-            review.setDate(newReview.getDate());
-            repository.saveAndFlush(review);
-            newReview.setReviewId(review.getId());
-            return newReview;
+        Integer checkOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
+        Review checkReview = reviewRepository.findReviewByPetowner(newReview.getPetkeeperId(), newReview.getPetownerId());
+        if(role.equals("Owner") && newReview.getPetownerId() == checkOwnerId) {
+            if(checkReview == null) {
+                Review review = new Review();
+                review.setId(null);
+                review.setPetKeeper(petkeeperRepository.getById(newReview.getPetkeeperId()));
+                review.setPetOwner(ownerRepository.getById(newReview.getPetownerId()));
+                review.setComment(newReview.getComment());
+                review.setStars(newReview.getStar());
+                review.setDate(newReview.getDate());
+                repository.saveAndFlush(review);
+                newReview.setReviewId(review.getId());
+                return newReview;
+            }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This owner already reviewed this petkeeper.");
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
     }
 
@@ -93,6 +97,16 @@ public class ReviewService {
             if (ownerId == review.getPetOwner().getId()) {
                 reviewRepository.deleteById(reviewId);
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
+    }
+
+    public Review checkIfReviewExist(Integer keeperId,Integer ownerId,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        String role = userRepository.findRole(emailCheck);
+        Integer checkOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
+        if(role.equals("Owner") && checkOwnerId == ownerId) {
+            return reviewRepository.findReviewByPetowner(keeperId, ownerId);
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
     }
 }

@@ -5,7 +5,7 @@ import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
 import com.example.furryfriendkeeper.dtos.DisableAppointmentDTO;
 import com.example.furryfriendkeeper.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

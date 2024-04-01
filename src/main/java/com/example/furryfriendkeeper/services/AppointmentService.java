@@ -242,6 +242,8 @@ public class AppointmentService {
     }
 
     public String deleteDisableAppointment(Integer disableScheduleId,String token) {
+        Disableappointmentschedule disableappointmentscheduleCheck = disableScheduleRepository.findById(disableScheduleId).orElseThrow(()-> new ResponseStatusException
+                (HttpStatus.NOT_FOUND, "This disableschedule does not exist!"));
         token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
