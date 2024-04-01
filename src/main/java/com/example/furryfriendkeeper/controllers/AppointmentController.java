@@ -3,6 +3,7 @@ package com.example.furryfriendkeeper.controllers;
 import com.example.furryfriendkeeper.dtos.AppointmentDTO;
 import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
 import com.example.furryfriendkeeper.dtos.DisableAppointmentDTO;
+import com.example.furryfriendkeeper.dtos.ReviewDTO;
 import com.example.furryfriendkeeper.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -63,7 +64,7 @@ public class AppointmentController {
         return service.keeperCompletedAppointment(appointmentId,token);
     }
     @PatchMapping("/owner-completed/{appointmentId}")
-    private String ownerCompletedAppointment(@PathVariable Integer appointmentId){
+    private ReviewDTO ownerCompletedAppointment(@PathVariable Integer appointmentId){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
         return service.ownerCompletedAppointment(appointmentId,token);
     }

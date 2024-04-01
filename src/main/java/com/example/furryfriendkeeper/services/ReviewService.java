@@ -42,7 +42,10 @@ public class ReviewService {
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer checkOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
+        System.out.println("PetKeeper : " + newReview.getPetkeeperId());
+        System.out.println("PetOwner : " + newReview.getPetownerId());
         Review checkReview = reviewRepository.findReviewByPetowner(newReview.getPetkeeperId(), newReview.getPetownerId());
+        System.out.println(checkReview);
         if(role.equals("Owner") && newReview.getPetownerId() == checkOwnerId) {
             if(checkReview == null) {
                 Review review = new Review();
@@ -55,7 +58,7 @@ public class ReviewService {
                 repository.saveAndFlush(review);
                 newReview.setReviewId(review.getId());
                 return newReview;
-            }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"This owner already reviewed this petkeeper.");
+            }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"You have already reviewed this petkeeper.");
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
     }
 
@@ -100,13 +103,13 @@ public class ReviewService {
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
     }
 
-    public Review checkIfReviewExist(Integer keeperId,Integer ownerId,String token){
-        token = token.replace("Bearer " , "");
-        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
-        String role = userRepository.findRole(emailCheck);
-        Integer checkOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
-        if(role.equals("Owner") && checkOwnerId == ownerId) {
-            return reviewRepository.findReviewByPetowner(keeperId, ownerId);
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
-    }
+//    public Review checkIfReviewExist(Integer keeperId,Integer ownerId,String token){
+//        token = token.replace("Bearer " , "");
+//        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+//        String role = userRepository.findRole(emailCheck);
+//        Integer checkOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
+//        if(role.equals("Owner") && checkOwnerId == ownerId) {
+//            return reviewRepository.findReviewByPetowner(keeperId, ownerId);
+//        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission");
+//    }
 }
