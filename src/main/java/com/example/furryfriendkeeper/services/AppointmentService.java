@@ -104,7 +104,7 @@ public class AppointmentService {
         if(newAppointment.getEndDate().isBefore(newAppointment.getStartDate())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End Date Cannot be before Start Date.");
         }
-        if(newAppointment.getStartDate().isBefore(ZonedDateTime.now()) || !(newAppointment.getStartDate().isAfter(ZonedDateTime.now().plusDays(3)))){
+        if(newAppointment.getStartDate().isBefore(ZonedDateTime.now()) || !(newAppointment.getStartDate().toLocalDate().isAfter(ZonedDateTime.now().plusDays(3).toLocalDate()))){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date input.");
         }
         if(!checkCategories.contains(newAppointment.getCategoryId())){
@@ -124,7 +124,8 @@ public class AppointmentService {
             LocalDate endDateAppointment = newAppointment.getEndDate().toLocalDate();
             for (Disableappointmentschedule checkDate1: checkDate) {
                 if((startDateAppointment.isBefore(checkDate1.getStartDate()) && endDateAppointment.isBefore(checkDate1.getStartDate()))
-                        || startDateAppointment.isAfter(checkDate1.getEndDate())) {
+                        || startDateAppointment.isAfter(checkDate1.getEndDate())
+                        || (startDateAppointment.isBefore(checkDate1.getStartDate()) && endDateAppointment.isAfter(checkDate1.getEndDate()))) {
                     //No Overlap
                 }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot make appointment at these period.");
             }         
@@ -133,7 +134,6 @@ public class AppointmentService {
                     newAppointment.setStatusId(1);
                     modelMapper.getConfiguration().setAmbiguityIgnored(true);
                     Appointmentschedule appointmentschedule = modelMapper.map(newAppointment, Appointmentschedule.class);
-                    appointmentschedule.setId(null);
                     appointmentScheduleRepository.saveAndFlush(appointmentschedule);
                 } catch (Exception e) {
                     throw e;
