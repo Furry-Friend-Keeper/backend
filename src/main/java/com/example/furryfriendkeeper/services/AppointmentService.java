@@ -3,6 +3,7 @@ package com.example.furryfriendkeeper.services;
 import com.example.furryfriendkeeper.dtos.AppointmentDTO;
 import com.example.furryfriendkeeper.dtos.AppointmentScheduleDTO;
 import com.example.furryfriendkeeper.dtos.DisableAppointmentDTO;
+import com.example.furryfriendkeeper.dtos.ReviewDTO;
 import com.example.furryfriendkeeper.entities.*;
 import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
 import com.example.furryfriendkeeper.repositories.*;
@@ -45,6 +46,7 @@ public class AppointmentService {
 
     private final PetkeeperRepository petkeeperRepository;
 
+    private final ReviewRepository reviewRepository;
 
     public List<Appointmentschedule> getAllSchedule(){
         List<Appointmentschedule> appointmentschedule = appointmentScheduleRepository.findAll();
@@ -212,7 +214,7 @@ public class AppointmentService {
     }
 
     @Transactional
-    public String ownerCompletedAppointment(Integer appointmentId, String token){
+    public ReviewDTO ownerCompletedAppointment(Integer appointmentId, String token){
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
@@ -223,7 +225,11 @@ public class AppointmentService {
                 appointmentScheduleRepository.updateStatus(6, appointmentId);
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
-        return "Appointment :" + appointmentId + " - Keeper Completed";
+        
+        Review review = reviewRepository.findReviewByPetowner(appointmentschedule.getPetKeeper().getId(),appointmentschedule.getPetOwner().getId());
+        ReviewDTO reviewDTO = modelMapper.map(review,ReviewDTO.class);
+        return reviewDTO;
+//        return "Appointment :" + appointmentId + " - Keeper Completed";
     }
 
     public DisableAppointmentDTO addDisableAppointment(Integer petkeeperId, DisableAppointmentDTO disableAppointment,String token){

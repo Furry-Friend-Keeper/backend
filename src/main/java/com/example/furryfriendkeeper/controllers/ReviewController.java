@@ -38,9 +38,9 @@ public class ReviewController {
         service.deleteReview(reviewId,ownerId,token);
     }
 
-    @GetMapping("/check-review/{ownerId}")
-    public Review checkReview(@PathVariable Integer ownerId,@RequestBody Integer keeperId){
-        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
-        return service.checkIfReviewExist(keeperId,ownerId,token);
-    }
+//    @GetMapping("/check-review/{ownerId}")
+//    public Review checkReview(@PathVariable Integer ownerId,@RequestParam Integer keeperId){
+//        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+//        return service.checkIfReviewExist(keeperId,ownerId,token);
+//    }
 }
