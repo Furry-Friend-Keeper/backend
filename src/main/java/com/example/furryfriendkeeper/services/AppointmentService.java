@@ -226,11 +226,12 @@ public class AppointmentService {
                 appointmentScheduleRepository.updateStatus(6, appointmentId);
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
-        
+
         Review review = reviewRepository.findReviewByPetowner(appointmentschedule.getPetKeeper().getId(),appointmentschedule.getPetOwner().getId());
-        ReviewDTO reviewDTO = modelMapper.map(review,ReviewDTO.class);
-        return reviewDTO;
-//        return "Appointment :" + appointmentId + " - Keeper Completed";
+        if(review != null) {
+            ReviewDTO reviewDTO = modelMapper.map(review, ReviewDTO.class);
+            return reviewDTO;
+        }else return null;
     }
 
     public DisableAppointmentDTO addDisableAppointment(Integer petkeeperId, DisableAppointmentDTO disableAppointment,String token){
