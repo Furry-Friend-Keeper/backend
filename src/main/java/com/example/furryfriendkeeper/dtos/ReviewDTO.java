@@ -21,5 +21,6 @@ public class ReviewDTO {
     private String petownerFirstname;
     private String petownerLastname;
     private String petownerImg;
+    private Integer petKeeperId;
 
 }
