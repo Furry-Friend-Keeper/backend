@@ -40,6 +40,8 @@ function connect() {
         stompClient.subscribe('/user/topic/private-notifications', function (message) {
             notificationCount = notificationCount + 1;
             updateNotificationDisplay();
+            showMessage(JSON.parse(message.body).content);
+
         });
     });
 }
