@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.HtmlUtils;
-import com.example.furryfriendkeeper.WebSocketConfigCors;
 
 import java.security.Principal;
 
-@WebSocketConfigCors
 @RestController
 public class WebSocketController {
     
