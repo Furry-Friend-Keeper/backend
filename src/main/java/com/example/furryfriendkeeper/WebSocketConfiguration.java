@@ -13,12 +13,11 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic","/specific");
         config.setApplicationDestinationPrefixes("/ws");
-
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/web-s")
+        registry.addEndpoint("api/at3-socket/web-s")
                 .setHandshakeHandler(new UserHandshakeHandler())
                 .withSockJS();
     }

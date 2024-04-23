@@ -19,7 +19,7 @@ $(document).ready(function() {
 });
 
 function connect() {
-    var socket = new SockJS('/web-s');
+    var socket = new SockJS('https://capstone23.sit.kmutt.ac.th/api/at3-socket/web-s');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
