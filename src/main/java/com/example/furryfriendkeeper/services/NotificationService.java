@@ -33,8 +33,34 @@ public class NotificationService {
         ResponseMessage message = new ResponseMessage("Global Notification");
         simpMessagingTemplate.convertAndSend("/topic/global-notifications",message);
     }
+
     public void sendPrivateNotification(final String userId){
         ResponseMessage message = new ResponseMessage("Private Notification");
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    }
+
+    public void sendRequestNotification(final String userId){
+        ResponseMessage message = new ResponseMessage("You got new request.");
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    }
+    public void sendRequestCancelNotification(final String userId, String reponseMessage){
+        ResponseMessage message = new ResponseMessage(reponseMessage);
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    }
+    public void sendConfirmNotification(final String userId, String reponseMessage){
+        ResponseMessage message = new ResponseMessage(reponseMessage);
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    }
+    public void sendIncareNotification(final String userId, String reponseMessage){
+        ResponseMessage message = new ResponseMessage(reponseMessage);
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    }
+    public void sendKeeperCompleteNotification(final String userId, String reponseMessage){
+        ResponseMessage message = new ResponseMessage(reponseMessage);
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    }
+    public void sendOwnerCompleteNotification(final String userId, String reponseMessage){
+        ResponseMessage message = new ResponseMessage(reponseMessage);
         simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
     }
 }
