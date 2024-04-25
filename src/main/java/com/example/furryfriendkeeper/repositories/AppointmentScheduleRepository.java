@@ -45,4 +45,8 @@ public interface AppointmentScheduleRepository extends JpaRepository<Appointment
 
     @Query(value = "select * from appointmentschedule a where a.AppointmentId = ?1",nativeQuery = true)
     Appointmentschedule getAppointmentscheduleById(Integer appointmentId);
+
+    @Modifying
+    @Query(value = "update appointmentschedule set Message = :message where AppointmentId = :appointmentId",nativeQuery = true)
+    void updateMessage(@Param("message")String message,@Param("appointmentId")Integer appointmentId);
 }
