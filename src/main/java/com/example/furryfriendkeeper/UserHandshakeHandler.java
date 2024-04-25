@@ -38,7 +38,7 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
 //        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 //        String userId = request.getHeaders().getFirst("userId-for-handshake");
         MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUri(request.getURI()).build().getQueryParams();
-        String userId = queryParams.getFirst("email");
+        String userId = queryParams.getFirst("userId");
 
         if (userId != null) {
             // Perform any necessary operations with the email
