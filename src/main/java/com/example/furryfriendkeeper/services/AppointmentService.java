@@ -163,7 +163,6 @@ public class AppointmentService {
         String response = "Appointment: " + appointmentschedule.getPetKeeper().getName() + " - Confirmed";
         notificationService.sendConfirmNotification(checkOwner.getEmail().getEmail(),response);
         return keeperId +  " has confirm Appointment from "+ appointmentschedule.getPetOwner().getId() + " Successfully!";
-
     }
 
     @Transactional
