@@ -35,7 +35,7 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 
-        String email = "test4@example.com";
+        String email = "keepertest2@mail.com";
         LOG.info("User guest id: {}", email);
         return new UserPrincipal(email);
 
