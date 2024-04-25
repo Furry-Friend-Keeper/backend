@@ -15,5 +15,6 @@ public class JwtDTO {
     private String role;
     private Integer id;
     private String name;
+    private Integer userId;
     private String img;
 }

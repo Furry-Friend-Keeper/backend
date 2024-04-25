@@ -39,10 +39,9 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
         LOG.info("User guest id: {}", email);
         return new UserPrincipal(email);
 
-//            String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
-//            String role = userRepository.findRole(emailCheck);
+//            String email = jwtTokenUtil.getUsernameFromToken(token);
 //            LOG.info("User email: {}", emailCheck);
-//            return new UserPrincipal(emailCheck);
-//
+//            return new UserPrincipal(email);
+
     }
 }
