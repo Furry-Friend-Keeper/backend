@@ -19,5 +19,7 @@ public class DisableAppointmentDTO {
     private LocalDate startDate;
     @NotNull
     private LocalDate endDate;
+    @NotNull
+    private String message;
 
 }

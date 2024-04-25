@@ -48,9 +48,9 @@ public class AppointmentController {
     }
 
     @PatchMapping("/cancel/{appointmentId}")
-    private String cancelAppointment(@PathVariable Integer appointmentId){
+    private String cancelAppointment(@PathVariable Integer appointmentId,@RequestBody String message){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
-        return service.cancelAppointment(appointmentId,token);
+        return service.cancelAppointment(appointmentId,message,token);
     }
     @PatchMapping("/in-care/{appointmentId}")
     private String inCareAppointment(@PathVariable Integer appointmentId){

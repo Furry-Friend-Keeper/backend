@@ -26,5 +26,8 @@ public class Disableappointmentschedule {
     @JoinColumn(name = "PetKeeperId", nullable = false)
     private Petkeepers petKeeper;
 
+    @Column(name = "Message",nullable = false)
+    private String message;
+
 
 }

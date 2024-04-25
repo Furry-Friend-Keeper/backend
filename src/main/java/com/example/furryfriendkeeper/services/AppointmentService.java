@@ -113,13 +113,15 @@ public class AppointmentService {
         if(!checkCategories.contains(newAppointment.getCategoryId())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Category,Please try again.");
         }
-        String[] days = checkKeeper.getClosedDay().toLowerCase().split(",\\s*");
-        List<String> closedList = Arrays.asList(days);
-        String startDay = newAppointment.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
-        String endDay = newAppointment.getEndDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
-        if(closedList.contains(startDay) || closedList.contains(endDay)){
-            //Closed Day
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid Day.(Petkeeper closed!)");
+        if(checkKeeper.getClosedDay() != null && !checkKeeper.getClosedDay().isEmpty()) {
+            String[] days = checkKeeper.getClosedDay().toLowerCase().split(",\\s*");
+            List<String> closedList = Arrays.asList(days);
+            String startDay = newAppointment.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
+            String endDay = newAppointment.getEndDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
+            if (closedList.contains(startDay) || closedList.contains(endDay)) {
+                //Closed Day
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Day.(Petkeeper closed!)");
+            }
         }
         if(role.equals("Owner") && ownerId == newAppointment.getPetOwnerId()) {
             List<Disableappointmentschedule> checkDate = disableScheduleRepository.getDisableScheduleByPetkeeper(newAppointment.getPetKeeperId());
@@ -168,7 +170,7 @@ public class AppointmentService {
     }
 
     @Transactional
-    public String cancelAppointment(Integer appointmentId, String token){
+    public String cancelAppointment(Integer appointmentId,String message, String token){
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
@@ -179,11 +181,13 @@ public class AppointmentService {
             if (role.equals("PetKeeper")) {
                 Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
                 if (keeperId == appointmentschedule.getPetKeeper().getId()) {
+                    appointmentScheduleRepository.updateMessage(message,appointmentId);
                     appointmentScheduleRepository.updateStatus(3, appointmentId);
                 } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
             } else if (role.equals("Owner")) {
                 Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
                 if (ownerId == appointmentschedule.getPetOwner().getId()) {
+                    appointmentScheduleRepository.updateMessage(message,appointmentId);
                     appointmentScheduleRepository.updateStatus(3, appointmentId);
                 } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
             }
