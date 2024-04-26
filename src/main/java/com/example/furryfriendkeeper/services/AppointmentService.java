@@ -144,7 +144,7 @@ public class AppointmentService {
                 }
 
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission.");
-        notificationService.sendRequestNotification(checkKeeper.getEmail().getEmail());
+        notificationService.sendRequestNotification(checkKeeper.getEmail().getId().toString());
         return newAppointment;
 
     }
@@ -163,7 +163,7 @@ public class AppointmentService {
             } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }
         String response = "Appointment: " + appointmentschedule.getPetKeeper().getName() + " - Confirmed";
-        notificationService.sendConfirmNotification(checkOwner.getEmail().getEmail(),response);
+        notificationService.sendConfirmNotification(checkOwner.getEmail().getId().toString(),response);
         return keeperId +  " has confirm Appointment from "+ appointmentschedule.getPetOwner().getId() + " Successfully!";
     }
 
@@ -192,8 +192,8 @@ public class AppointmentService {
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
         String response1 = "Appointment : " + checkKeeper.getName() + " - Cancelled";
         String response2 = "Appointment : " + checkOwner.toString() + " - Cancelled";
-        notificationService.sendRequestCancelNotification(checkKeeper.getEmail().getEmail(),response2);
-        notificationService.sendRequestCancelNotification(checkOwner.getEmail().getEmail(),response1);
+        notificationService.sendRequestCancelNotification(checkKeeper.getEmail().getId().toString(),response2);
+        notificationService.sendRequestCancelNotification(checkOwner.getEmail().getId().toString(),response1);
         return "Appointment : " + appointmentId + " - Cancelled";
     }
 
@@ -212,7 +212,7 @@ public class AppointmentService {
             }
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
         String response = "Appointment : " + appointmentschedule.getPetKeeper().getName() + " - In care";
-        notificationService.sendIncareNotification(checkOwner.getEmail().getEmail(),response);
+        notificationService.sendIncareNotification(checkOwner.getEmail().getId().toString(),response);
         return "Appointment :" + appointmentId + " - In Care";
     }
 
@@ -230,7 +230,7 @@ public class AppointmentService {
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
         String response = "Appointment :" + appointmentschedule.getPetKeeper().getName() + " - Keeper Completed";
-        notificationService.sendKeeperCompleteNotification(checkOwner.getEmail().getEmail(),response);
+        notificationService.sendKeeperCompleteNotification(checkOwner.getEmail().getId().toString(),response);
         return "Appointment :" + appointmentId + " - Keeper Completed";
     }
 
