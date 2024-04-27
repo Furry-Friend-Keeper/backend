@@ -31,7 +31,7 @@ public class Petownernotification {
     @Column(name = "ReadStatus",nullable = false)
     @Min(value = 0, message = "ReadStatus must be either 0 or 1")
     @Max(value = 1, message = "ReadStatus must be either 0 or 1")
-    private Boolean readStatus;
+    private Integer readStatus;
 
     @Column(name = "DateStart",nullable = false)
     private ZonedDateTime dateStart;

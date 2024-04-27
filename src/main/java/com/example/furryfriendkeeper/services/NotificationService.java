@@ -2,14 +2,29 @@ package com.example.furryfriendkeeper.services;
 
 
 import com.example.furryfriendkeeper.dtos.ResponseMessage;
+import com.example.furryfriendkeeper.entities.Petkeepernotification;
+import com.example.furryfriendkeeper.entities.Petownernotification;
+import com.example.furryfriendkeeper.repositories.PetkeeperNotificationRepository;
+import com.example.furryfriendkeeper.repositories.PetownerNotificationRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.model.IModel;
+
+import java.util.List;
 
 @Service
 public class NotificationService {
 
     private SimpMessagingTemplate simpMessagingTemplate;
+
+
+    private PetkeeperNotificationRepository petkeeperNotificationRepository;
+
+    private PetownerNotificationRepository petownerNotificationRepository;
+
+    private ModelMapper modelMapper;
 
     @Autowired
     public NotificationService(SimpMessagingTemplate simpMessagingTemplate){
@@ -50,24 +65,34 @@ public class NotificationService {
 
         simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",reponseMessage);
     }
-    public void sendIncareNotification(final String userId, String reponseMessage){
-        ResponseMessage message = new ResponseMessage(reponseMessage);
-        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    public void sendIncareNotification(final String userId, ResponseMessage reponseMessage){
+
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",reponseMessage);
     }
-    public void sendKeeperCompleteNotification(final String userId, String reponseMessage){
-        ResponseMessage message = new ResponseMessage(reponseMessage);
-        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    public void sendKeeperCompleteNotification(final String userId, ResponseMessage reponseMessage){
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",reponseMessage);
     }
-    public void sendOwnerCompleteNotification(final String userId, String reponseMessage){
-        ResponseMessage message = new ResponseMessage(reponseMessage);
-        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    public void sendOwnerCompleteNotification(final String userId, ResponseMessage reponseMessage){
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",reponseMessage);
     }
 
 
     public void updateKeeperNotification(Integer keeperNotificationId){
-
+        petkeeperNotificationRepository.updatePetkeeperRead(keeperNotificationId);
     }
     public void updateOwnerNotification(Integer ownerNotificationId){
+        petownerNotificationRepository.updatePetownerRead(ownerNotificationId);
+    }
 
+    public ResponseMessage getKeeperNoti(Integer keeperId){
+        List<Petkeepernotification> petkeepernotifications = petkeeperNotificationRepository.getAllNotiByKeeperId(keeperId);
+        ResponseMessage responseNoti = modelMapper.map(petkeepernotifications,ResponseMessage.class);
+        return responseNoti;
+    }
+
+    public ResponseMessage getOwnerNoti(Integer ownerId){
+        List<Petownernotification> petownernotifications = petownerNotificationRepository.getAllNotiByOwnerId(ownerId);
+        ResponseMessage responseNoti = modelMapper.map(petownernotifications,ResponseMessage.class);
+        return responseNoti;
     }
 }
