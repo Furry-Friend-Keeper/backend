@@ -333,11 +333,18 @@ public class PetkeeperService {
         String role = userRepository.findRole(emailCheck);
         Integer checkId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         Petkeepers keeper = petkeeperRepository.getById(keeperId);
-        if(role.equals("PetKeeper") && keeperId == checkId){
-            if(keeper.getAvailable() == 0){
-                petkeeperRepository.updateAvailable(1, keeperId);
-            }else petkeeperRepository.updateAvailable(0, keeperId);
-
+        String today = ZonedDateTime.now(ZoneId.of("Asia/Bangkok")).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
+        String closedDay = keeper.getClosedDay();
+        if (closedDay != null) {
+            String[] closedDays = closedDay.toLowerCase().split("\\s*,\\s*");
+            List<String> closedList = Arrays.asList(closedDays);
+            if (role.equals("PetKeeper") && keeperId == checkId) {
+                if (keeper.getAvailable() == 0 && !closedList.contains(today)) {
+                    petkeeperRepository.updateAvailable(1, keeperId);
+                } else if(keeper.getAvailable() == 1 && closedList.contains(today)) {
+                    petkeeperRepository.updateAvailable(0, keeperId);
+                    }
+            }
         }
         return "Availability updated successfully.";
     }
