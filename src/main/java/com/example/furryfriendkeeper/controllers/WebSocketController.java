@@ -15,6 +15,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.security.Principal;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/notification")
 public class WebSocketController {
@@ -22,7 +23,7 @@ public class WebSocketController {
     @Autowired
     private NotificationService notificationService;
 
-    
+
 //    @PostMapping("/send-message")
 //    public void sendMessage(@RequestBody Message message){
 //        notificationService.notifyFrontend(message.getMessageContent());
