@@ -3,6 +3,9 @@ package com.example.furryfriendkeeper.entities;
 import lombok.Setter;
 import lombok.Getter;
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -24,6 +27,14 @@ public class Petownernotification {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "PetOwnerId", nullable = false)
     private Petowner petOwner;
+
+    @Column(name = "ReadStatus",nullable = false)
+    @Min(value = 0, message = "ReadStatus must be either 0 or 1")
+    @Max(value = 1, message = "ReadStatus must be either 0 or 1")
+    private Boolean readStatus;
+
+    @Column(name = "DateStart",nullable = false)
+    private ZonedDateTime dateStart;
 
 
 }

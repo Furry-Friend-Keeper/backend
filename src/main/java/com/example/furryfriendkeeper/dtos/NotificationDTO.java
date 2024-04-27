@@ -1,5 +1,6 @@
 package com.example.furryfriendkeeper.dtos;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +12,12 @@ import java.time.ZonedDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DisableDateDTO {
-
+public class NotificationDTO {
     private Integer id;
-    private ZonedDateTime startDate;
-    private ZonedDateTime endDate;
     private String message;
+    private Integer statusId;
+    private Integer petkeeperId;
+    private Integer readStatus;
+    private ZonedDateTime dateStart;
 
 }

@@ -22,12 +22,6 @@ public interface AppointmentScheduleRepository extends JpaRepository<Appointment
         "WHERE pk.id = :petkeeperId")
     List<Appointmentschedule> getAppointmentByPetkeeper(@Param("petkeeperId") Integer petkeeperId);
 
-//    List<AppointmentScheduleDTO> getAppointmentByPetkeeper(@Param("petkeeperId") Integer petkeeperId);
-//       @Query(value = "SELECT a.AppointmentId, a.OwnerPhone, a.PetName, a.Message, a.StartDate, a.EndDate, " +
-//        "a.PetOwner.firstname AS petOwnerFirstName, a.PetOwner.lastname AS petOwnerLastName, " +
-//        "a.PetKeeper.name AS petKeeperName, a.CategoriesId AS categoryId, a.StatusId AS statusId " +
-//        "FROM appointmentschedule a WHERE a.petKeeperId = :petkeeperId", nativeQuery = true)
-//        List<Appointmentschedule> getAppointmentByPetkeeper(@Param("petkeeperId") Integer petkeeperId);
 
 
 
