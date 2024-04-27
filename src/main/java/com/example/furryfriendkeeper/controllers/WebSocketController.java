@@ -14,6 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.HtmlUtils;
 
 import java.security.Principal;
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -66,13 +67,13 @@ public class WebSocketController {
     }
 
     @GetMapping("/keeper/all/{keeperId}")
-    public ResponseMessage getAllKeeperNoti(@PathVariable Integer keeperId){
+    public List<ResponseMessage> getAllKeeperNoti(@PathVariable Integer keeperId){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 
         return notificationService.getKeeperNoti(keeperId,token);
     }
     @GetMapping("/owner/all/{ownerId}")
-    public ResponseMessage getAllOwnerNoti(@PathVariable Integer ownerId){
+    public List<ResponseMessage> getAllOwnerNoti(@PathVariable Integer ownerId){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 
         return notificationService.getOwnerNoti(ownerId,token);

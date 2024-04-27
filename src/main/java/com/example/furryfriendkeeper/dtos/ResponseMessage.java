@@ -1,6 +1,7 @@
 package com.example.furryfriendkeeper.dtos;
 
 
+import com.example.furryfriendkeeper.entities.Schedulestatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class ResponseMessage {
     private ZonedDateTime date;
     private Integer readStatus;
     private String name;
+    private Schedulestatus statusId;
 
 
 
