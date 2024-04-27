@@ -102,6 +102,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/web-s/**").permitAll()
                 .antMatchers("/topic/**").permitAll()
                 .antMatchers("/ws/**").permitAll()
+                .antMatchers("/api/notification/keeper/{notiId}").hasRole("PetKeeper")
+                .antMatchers("/api/notification/owner/{notiId}").hasRole("Owner")
+                .antMatchers("/api/notification/keeper/all/{keeperId}").hasRole("PetKeeper")
+                .antMatchers("/api/notification/owner/all/{ownerId}").hasRole("Owner")
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

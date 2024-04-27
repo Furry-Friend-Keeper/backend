@@ -4,12 +4,17 @@ package com.example.furryfriendkeeper.services;
 import com.example.furryfriendkeeper.dtos.ResponseMessage;
 import com.example.furryfriendkeeper.entities.Petkeepernotification;
 import com.example.furryfriendkeeper.entities.Petownernotification;
+import com.example.furryfriendkeeper.jwt.JwtTokenUtil;
+import com.example.furryfriendkeeper.repositories.OwnerRepository;
 import com.example.furryfriendkeeper.repositories.PetkeeperNotificationRepository;
+import com.example.furryfriendkeeper.repositories.PetkeeperRepository;
 import com.example.furryfriendkeeper.repositories.PetownerNotificationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.thymeleaf.model.IModel;
 
 import java.util.List;
@@ -19,12 +24,20 @@ public class NotificationService {
 
     private SimpMessagingTemplate simpMessagingTemplate;
 
-
+    @Autowired
     private PetkeeperNotificationRepository petkeeperNotificationRepository;
-
+    @Autowired
     private PetownerNotificationRepository petownerNotificationRepository;
 
+    @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    private PetkeeperRepository petkeeperRepository;
+
+    private OwnerRepository ownerRepository;
 
     @Autowired
     public NotificationService(SimpMessagingTemplate simpMessagingTemplate){
@@ -77,22 +90,49 @@ public class NotificationService {
     }
 
 
-    public void updateKeeperNotification(Integer keeperNotificationId){
-        petkeeperNotificationRepository.updatePetkeeperRead(keeperNotificationId);
+    public void updateKeeperNotification(Integer keeperNotificationId,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
+        Petkeepernotification petkeepernotification = petkeeperNotificationRepository.getById(keeperNotificationId);
+        if(petkeepernotification != null) {
+            if(keeperId == petkeepernotification.getPetKeeper().getId()) {
+                petkeeperNotificationRepository.updatePetkeeperRead(keeperNotificationId);
+            }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission");
+        }else throw new ResponseStatusException(HttpStatus.NOT_FOUND,"there is no notification found");
     }
-    public void updateOwnerNotification(Integer ownerNotificationId){
-        petownerNotificationRepository.updatePetownerRead(ownerNotificationId);
+    public void updateOwnerNotification(Integer ownerNotificationId,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
+        Petownernotification petownernotification = petownerNotificationRepository.getById(ownerNotificationId);
+        if(petownernotification != null) {
+            if(ownerId == petownernotification.getPetOwner().getId()) {
+                petownerNotificationRepository.updatePetownerRead(ownerNotificationId);
+            }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission");
+
+        }else throw new ResponseStatusException(HttpStatus.NOT_FOUND,"there is no notification found");
     }
 
-    public ResponseMessage getKeeperNoti(Integer keeperId){
-        List<Petkeepernotification> petkeepernotifications = petkeeperNotificationRepository.getAllNotiByKeeperId(keeperId);
-        ResponseMessage responseNoti = modelMapper.map(petkeepernotifications,ResponseMessage.class);
-        return responseNoti;
+    public ResponseMessage getKeeperNoti(Integer keeperId,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        Integer checkKeeper = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
+        if(checkKeeper == keeperId) {
+            List<Petkeepernotification> petkeepernotifications = petkeeperNotificationRepository.getAllNotiByKeeperId(keeperId);
+            ResponseMessage responseNoti = modelMapper.map(petkeepernotifications, ResponseMessage.class);
+            return responseNoti;
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission");
     }
 
-    public ResponseMessage getOwnerNoti(Integer ownerId){
-        List<Petownernotification> petownernotifications = petownerNotificationRepository.getAllNotiByOwnerId(ownerId);
-        ResponseMessage responseNoti = modelMapper.map(petownernotifications,ResponseMessage.class);
-        return responseNoti;
+    public ResponseMessage getOwnerNoti(Integer ownerId,String token){
+        token = token.replace("Bearer " , "");
+        String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
+        Integer checkOwner = ownerRepository.getPetownerIdByEmail(emailCheck);
+        if(checkOwner == ownerId) {
+            List<Petownernotification> petownernotifications = petownerNotificationRepository.getAllNotiByOwnerId(ownerId);
+            ResponseMessage responseNoti = modelMapper.map(petownernotifications, ResponseMessage.class);
+            return responseNoti;
+        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission");
     }
 }

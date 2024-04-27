@@ -9,6 +9,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.HtmlUtils;
 
 import java.security.Principal;
@@ -50,21 +52,29 @@ public class WebSocketController {
 
     @PatchMapping("/keeper/{notiId}")
     public void updateKeeperNoti(@PathVariable Integer notiId){
-        notificationService.updateKeeperNotification(notiId);
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        notificationService.updateKeeperNotification(notiId,token);
     }
 
     @PatchMapping("/owner/{notiId}")
     public void updateOwnerNoti(@PathVariable Integer notiId){
-        notificationService.updateOwnerNotification(notiId);
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        notificationService.updateOwnerNotification(notiId,token);
     }
 
     @GetMapping("/keeper/all/{keeperId}")
     public ResponseMessage getAllKeeperNoti(@PathVariable Integer keeperId){
-        return notificationService.getKeeperNoti(keeperId);
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        return notificationService.getKeeperNoti(keeperId,token);
     }
     @GetMapping("/owner/all/{ownerId}")
     public ResponseMessage getAllOwnerNoti(@PathVariable Integer ownerId){
-        return notificationService.getOwnerNoti(ownerId);
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+
+        return notificationService.getOwnerNoti(ownerId,token);
     }
 
 }
