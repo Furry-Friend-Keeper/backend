@@ -18,4 +18,7 @@ public interface PetkeeperNotificationRepository extends JpaRepository<Petkeeper
 
     @Query(value = "Select * from petkeepernotification p where p.PetKeeperId = :keeperId",nativeQuery = true)
     List<Petkeepernotification> getAllNotiByKeeperId(@Param("keeperId")Integer keeperId);
+
+    @Query(value = "Select * from petkeepernotification p where p.PetKeeperId = :keeperId And p.PetKeeperNotiId = :notiId",nativeQuery = true)
+    Petkeepernotification getNotiByKeeperIdAndNotiId(@Param("keeperId")Integer keeperId ,@Param("notiId")Integer notiId);
 }
