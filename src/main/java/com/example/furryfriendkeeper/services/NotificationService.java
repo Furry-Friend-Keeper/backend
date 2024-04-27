@@ -9,6 +9,7 @@ import com.example.furryfriendkeeper.repositories.OwnerRepository;
 import com.example.furryfriendkeeper.repositories.PetkeeperNotificationRepository;
 import com.example.furryfriendkeeper.repositories.PetkeeperRepository;
 import com.example.furryfriendkeeper.repositories.PetownerNotificationRepository;
+import com.example.furryfriendkeeper.utils.ListMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,8 @@ public class NotificationService {
     private PetkeeperRepository petkeeperRepository;
 
     private OwnerRepository ownerRepository;
+
+    private ListMapper listMapper;
 
     @Autowired
     public NotificationService(SimpMessagingTemplate simpMessagingTemplate){
@@ -114,24 +117,24 @@ public class NotificationService {
         }else throw new ResponseStatusException(HttpStatus.NOT_FOUND,"there is no notification found");
     }
 
-    public ResponseMessage getKeeperNoti(Integer keeperId,String token){
+    public List<ResponseMessage> getKeeperNoti(Integer keeperId,String token){
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         Integer checkKeeper = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         if(checkKeeper == keeperId) {
             List<Petkeepernotification> petkeepernotifications = petkeeperNotificationRepository.getAllNotiByKeeperId(keeperId);
-            ResponseMessage responseNoti = modelMapper.map(petkeepernotifications, ResponseMessage.class);
+            List<ResponseMessage> responseNoti = listMapper.mapList(petkeepernotifications, ResponseMessage.class,modelMapper);
             return responseNoti;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission");
     }
 
-    public ResponseMessage getOwnerNoti(Integer ownerId,String token){
+    public List<ResponseMessage> getOwnerNoti(Integer ownerId,String token){
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         Integer checkOwner = ownerRepository.getPetownerIdByEmail(emailCheck);
         if(checkOwner == ownerId) {
             List<Petownernotification> petownernotifications = petownerNotificationRepository.getAllNotiByOwnerId(ownerId);
-            ResponseMessage responseNoti = modelMapper.map(petownernotifications, ResponseMessage.class);
+            List<ResponseMessage> responseNoti = listMapper.mapList(petownernotifications,ResponseMessage.class,modelMapper);
             return responseNoti;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission");
     }

@@ -146,7 +146,7 @@ public class AppointmentService {
                 }
 
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission.");
-        ResponseMessage message = new ResponseMessage("You got new request from " + checkOwner.toString(),ZonedDateTime.now(),0,checkOwner.toString());
+        ResponseMessage message = new ResponseMessage("You got new request from " + checkOwner.toString(),ZonedDateTime.now(),0,checkOwner.toString(),modelMapper.map(1,Schedulestatus.class));
         NotificationDTO notificationDTO = new NotificationDTO();
         notificationDTO.setDateStart(ZonedDateTime.now());
         notificationDTO.setMessage("You got new request from" + checkOwner.toString());
@@ -173,7 +173,7 @@ public class AppointmentService {
                 appointmentScheduleRepository.updateStatus(2, appointmentId);
             } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }
-        ResponseMessage response = new ResponseMessage("Appointment: " + appointmentschedule.getPetKeeper().getName() + " - Confirmed",ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName());
+        ResponseMessage response = new ResponseMessage("Appointment: " + appointmentschedule.getPetKeeper().getName() + " - Confirmed",ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(),modelMapper.map(2,Schedulestatus.class));
         notificationService.sendConfirmNotification(checkOwner.getEmail().getId().toString(),response);
         NotificationDTO notificationDTO = new NotificationDTO();
         notificationDTO.setMessage(response.getMessage());
@@ -210,8 +210,8 @@ public class AppointmentService {
             }
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
 
-        ResponseMessage response1 = new ResponseMessage("Appointment : " + checkKeeper.getName() + " - Cancelled",ZonedDateTime.now(),0,checkKeeper.getName());
-        ResponseMessage response2 = new ResponseMessage("Appointment : " + checkOwner.toString() + " - Cancelled",ZonedDateTime.now(),0,checkOwner.toString());
+        ResponseMessage response1 = new ResponseMessage("Appointment : " + checkKeeper.getName() + " - Cancelled",ZonedDateTime.now(),0,checkKeeper.getName(),modelMapper.map(3,Schedulestatus.class));
+        ResponseMessage response2 = new ResponseMessage("Appointment : " + checkOwner.toString() + " - Cancelled",ZonedDateTime.now(),0,checkOwner.toString(),modelMapper.map(3,Schedulestatus.class));
         NotificationDTO notificationDTO1 = new NotificationDTO();
         notificationDTO1.setReadStatus(0);
         notificationDTO1.setDateStart(ZonedDateTime.now());
@@ -250,7 +250,7 @@ public class AppointmentService {
                 appointmentScheduleRepository.updateStatus(4, appointmentId);
             }
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
-        ResponseMessage response = new ResponseMessage("Appointment : " + appointmentschedule.getPetKeeper().getName() + " - In care",ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName());
+        ResponseMessage response = new ResponseMessage("Appointment : " + appointmentschedule.getPetKeeper().getName() + " - In care",ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(),modelMapper.map(4,Schedulestatus.class));
         notificationService.sendIncareNotification(checkOwner.getEmail().getId().toString(),response);
         Petownernotification petownernotification = new Petownernotification();
         petownernotification.setDateStart(ZonedDateTime.now());
@@ -277,7 +277,7 @@ public class AppointmentService {
             }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
         String response = "Appointment :" + appointmentschedule.getPetKeeper().getName() + " - Keeper Completed";
-        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName());
+        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(),modelMapper.map(5,Schedulestatus.class));
         notificationService.sendKeeperCompleteNotification(checkOwner.getEmail().getId().toString(),responseMessage);
         Petownernotification petownernotification = new Petownernotification();
         petownernotification.setMessage(response);
@@ -300,7 +300,7 @@ public class AppointmentService {
             if(role.equals("Owner") && ownerId == appointmentschedule.getPetOwner().getId()){
                 appointmentScheduleRepository.updateStatus(6, appointmentId);
                 String response = "Appointment :" + appointmentschedule.getPetOwner().toString() + " - Owner Completed";
-                ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetOwner().toString());
+                ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetOwner().toString(),modelMapper.map(6,Schedulestatus.class));
                 notificationService.sendOwnerCompleteNotification(appointmentschedule.getPetOwner().getId().toString(),responseMessage);
                 NotificationDTO notificationDTO = new NotificationDTO();
                 notificationDTO.setStatusId(6);
