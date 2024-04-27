@@ -16,40 +16,39 @@ public class NotificationService {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
-    public void notifyFrontend(String message){
-        ResponseMessage response = new ResponseMessage(message);
+//    public void notifyFrontend(String message){
+//        ResponseMessage response = new ResponseMessage(message);
+//
+//        simpMessagingTemplate.convertAndSend("/topic/messages",response);
+//    }
+//
+//    public void notifyUser(String message,String id){
+//        ResponseMessage response = new ResponseMessage(message);
+//
+//        simpMessagingTemplate.convertAndSendToUser(id,"/topic/private-messages",response);
+//    }
+//
+//
+//    public void sendGlobalNotification(){
+//        ResponseMessage message = new ResponseMessage("Global Notification");
+//        simpMessagingTemplate.convertAndSend("/topic/global-notifications",message);
+//    }
+//
+//    public void sendPrivateNotification(final String userId){
+//        ResponseMessage message = new ResponseMessage("Private Notification");
+//        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+//    }
 
-        simpMessagingTemplate.convertAndSend("/topic/messages",response);
+    public void sendRequestNotification(final String userId,ResponseMessage responseMessage){
+
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",responseMessage);
     }
-
-    public void notifyUser(String message,String id){
-        ResponseMessage response = new ResponseMessage(message);
-
-        simpMessagingTemplate.convertAndSendToUser(id,"/topic/private-messages",response);
+    public void sendRequestCancelNotification(final String userId, ResponseMessage reponseMessage){
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",reponseMessage);
     }
+    public void sendConfirmNotification(final String userId, ResponseMessage reponseMessage){
 
-
-    public void sendGlobalNotification(){
-        ResponseMessage message = new ResponseMessage("Global Notification");
-        simpMessagingTemplate.convertAndSend("/topic/global-notifications",message);
-    }
-
-    public void sendPrivateNotification(final String userId){
-        ResponseMessage message = new ResponseMessage("Private Notification");
-        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
-    }
-
-    public void sendRequestNotification(final String userId){
-        ResponseMessage message = new ResponseMessage("You got new request.");
-        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
-    }
-    public void sendRequestCancelNotification(final String userId, String reponseMessage){
-        ResponseMessage message = new ResponseMessage(reponseMessage);
-        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
-    }
-    public void sendConfirmNotification(final String userId, String reponseMessage){
-        ResponseMessage message = new ResponseMessage(reponseMessage);
-        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+        simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",reponseMessage);
     }
     public void sendIncareNotification(final String userId, String reponseMessage){
         ResponseMessage message = new ResponseMessage(reponseMessage);
@@ -62,5 +61,13 @@ public class NotificationService {
     public void sendOwnerCompleteNotification(final String userId, String reponseMessage){
         ResponseMessage message = new ResponseMessage(reponseMessage);
         simpMessagingTemplate.convertAndSendToUser(userId,"/topic/private-notifications",message);
+    }
+
+
+    public void updateKeeperNotification(Integer keeperNotificationId){
+
+    }
+    public void updateOwnerNotification(Integer ownerNotificationId){
+
     }
 }

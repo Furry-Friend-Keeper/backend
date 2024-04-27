@@ -19,6 +19,8 @@ public class PetkeeperDTO {
     private double reviewStars;
     private String img;
     private List<String> map;
+    private String detail;
     private Boolean available;
+
 
 }
