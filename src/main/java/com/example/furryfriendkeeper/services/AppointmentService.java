@@ -220,9 +220,9 @@ public class AppointmentService {
         petownerNotificationRepository.saveAndFlush(petownernotification);
 
         NotificationDTO notificationDTO2 = new NotificationDTO();
-        notificationDTO1.setReadStatus(0);
-        notificationDTO1.setDateStart(ZonedDateTime.now());
-        notificationDTO1.setStatusId(3);
+        notificationDTO2.setReadStatus(0);
+        notificationDTO2.setDateStart(ZonedDateTime.now());
+        notificationDTO2.setStatusId(3);
         notificationDTO2.setMessage(response2.getMessage());
         notificationDTO2.setPetkeeperId(checkKeeper.getId());
 
