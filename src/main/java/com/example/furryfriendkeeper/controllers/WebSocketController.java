@@ -1,19 +1,13 @@
 package com.example.furryfriendkeeper.controllers;
 
-import com.example.furryfriendkeeper.dtos.Message;
-import com.example.furryfriendkeeper.dtos.NotificationDTO;
+import com.example.furryfriendkeeper.dtos.NotificationUserDTO;
 import com.example.furryfriendkeeper.dtos.ResponseMessage;
 import com.example.furryfriendkeeper.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.util.HtmlUtils;
 
-import java.security.Principal;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -67,13 +61,13 @@ public class WebSocketController {
     }
 
     @GetMapping("/keeper/all/{keeperId}")
-    public List<ResponseMessage> getAllKeeperNoti(@PathVariable Integer keeperId){
+    public List<NotificationUserDTO> getAllKeeperNoti(@PathVariable Integer keeperId){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 
         return notificationService.getKeeperNoti(keeperId,token);
     }
     @GetMapping("/owner/all/{ownerId}")
-    public List<ResponseMessage> getAllOwnerNoti(@PathVariable Integer ownerId){
+    public List<NotificationUserDTO> getAllOwnerNoti(@PathVariable Integer ownerId){
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
 
         return notificationService.getOwnerNoti(ownerId,token);
