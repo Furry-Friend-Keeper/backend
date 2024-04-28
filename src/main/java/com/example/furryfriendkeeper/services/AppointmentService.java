@@ -51,6 +51,8 @@ public class AppointmentService {
 
     private final PetownerNotificationRepository petownerNotificationRepository;
 
+    private final StatusRepository statusRepository;
+
     public List<Appointmentschedule> getAllSchedule(){
         List<Appointmentschedule> appointmentschedule = appointmentScheduleRepository.findAll();
         return appointmentschedule;
@@ -152,8 +154,10 @@ public class AppointmentService {
         notificationDTO.setStatusId(1);
         notificationDTO.setPetkeeperId(newAppointment.getPetKeeperId());
         notificationDTO.setReadStatus(0);
+        Schedulestatus schedulestatus  = statusRepository.getById(1);
         Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO,Petkeepernotification.class);
-        ResponseMessage message = new ResponseMessage("You got new request from " + checkOwner.toString(),ZonedDateTime.now(),0,checkOwner.toString(),petkeepernotification.getStatus().getStatus());
+        ResponseMessage message = new ResponseMessage("You got new request from " + checkOwner.toString(),ZonedDateTime.now(),0,checkOwner.toString(), schedulestatus.getStatus());
+
 
         petkeeperNotificationRepository.saveAndFlush(petkeepernotification);
         notificationService.sendRequestNotification(checkKeeper.getEmail().getId().toString(),message);
@@ -181,10 +185,12 @@ public class AppointmentService {
         notificationDTO.setDateStart(ZonedDateTime.now());
         notificationDTO.setReadStatus(0);
         notificationDTO.setStatusId(2);
+        Schedulestatus schedulestatus  = statusRepository.getById(2);
 
         Petownernotification petownernotification = modelMapper.map(notificationDTO,Petownernotification.class);
         petownernotification.setPetOwner(checkOwner);
-        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(),petownernotification.getStatus().getStatus());
+        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(),schedulestatus.getStatus());
+
         notificationService.sendConfirmNotification(checkOwner.getEmail().getId().toString(),responseMessage);
         petownerNotificationRepository.saveAndFlush(petownernotification);
         return keeperId +  " has confirm Appointment from "+ appointmentschedule.getPetOwner().getId() + " Successfully!";
@@ -235,8 +241,9 @@ public class AppointmentService {
 
         Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO2,Petkeepernotification.class);
         petkeeperNotificationRepository.saveAndFlush(petkeepernotification);
-        ResponseMessage responseMessage1 = new ResponseMessage(response1,ZonedDateTime.now(),0,checkKeeper.getName(),petownernotification.getStatus().getStatus());
-        ResponseMessage responseMessage2 = new ResponseMessage(response2,ZonedDateTime.now(),0,checkOwner.toString(),petkeepernotification.getStatus().getStatus());
+        Schedulestatus schedulestatus  = statusRepository.getById(3);
+        ResponseMessage responseMessage1 = new ResponseMessage(response1,ZonedDateTime.now(),0,checkKeeper.getName(), schedulestatus.getStatus());
+        ResponseMessage responseMessage2 = new ResponseMessage(response2,ZonedDateTime.now(),0,checkOwner.toString(), schedulestatus.getStatus());
         notificationService.sendRequestCancelNotification(checkKeeper.getEmail().getId().toString(),responseMessage2);
         notificationService.sendRequestCancelNotification(checkOwner.getEmail().getId().toString(),responseMessage1);
         return "Appointment : " + appointmentId + " - Cancelled";
@@ -263,7 +270,8 @@ public class AppointmentService {
         notificationDTO.setStatusId(4);
         notificationDTO.setDateStart(ZonedDateTime.now());
         Petownernotification petownernotification = modelMapper.map(notificationDTO,Petownernotification.class);
-        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(),petownernotification.getStatus().getStatus());
+        Schedulestatus schedulestatus  = statusRepository.getById(4);
+        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(), schedulestatus.getStatus());
         notificationService.sendIncareNotification(checkOwner.getEmail().getId().toString(),responseMessage);
 
 
@@ -296,7 +304,8 @@ public class AppointmentService {
         notificationDTO.setDateStart(ZonedDateTime.now());
         Petownernotification petownernotification = modelMapper.map(notificationDTO,Petownernotification.class);
         petownernotification.setPetOwner(appointmentschedule.getPetOwner());
-        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(),petownernotification.getStatus().getStatus());
+        Schedulestatus schedulestatus  = statusRepository.getById(5);
+        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(), schedulestatus.getStatus());
         notificationService.sendKeeperCompleteNotification(checkOwner.getEmail().getId().toString(),responseMessage);
 
 
@@ -323,7 +332,8 @@ public class AppointmentService {
                 notificationDTO.setMessage(response);
                 notificationDTO.setPetkeeperId(appointmentschedule.getPetKeeper().getId());
                 Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO,Petkeepernotification.class);
-                ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetOwner().toString(), petkeepernotification.getStatus().getStatus());
+                Schedulestatus schedulestatus  = statusRepository.getById(6);
+                ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetOwner().toString(), schedulestatus.getStatus());
                 notificationService.sendOwnerCompleteNotification(appointmentschedule.getPetOwner().getId().toString(),responseMessage);
 
 
