@@ -1,6 +1,7 @@
 package com.example.furryfriendkeeper.services;
 
 
+import com.example.furryfriendkeeper.dtos.NotificationUserDTO;
 import com.example.furryfriendkeeper.dtos.ResponseMessage;
 import com.example.furryfriendkeeper.entities.Petkeepernotification;
 import com.example.furryfriendkeeper.entities.Petownernotification;
@@ -117,24 +118,34 @@ public class NotificationService {
         }else throw new ResponseStatusException(HttpStatus.NOT_FOUND,"there is no notification found");
     }
 
-    public List<ResponseMessage> getKeeperNoti(Integer keeperId,String token){
+    public List<NotificationUserDTO> getKeeperNoti(Integer keeperId,String token){
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         Integer checkKeeper = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         if(checkKeeper == keeperId) {
             List<Petkeepernotification> petkeepernotifications = petkeeperNotificationRepository.getAllNotiByKeeperId(keeperId);
-            List<ResponseMessage> responseNoti = listMapper.mapList(petkeepernotifications, ResponseMessage.class,modelMapper);
+            List<NotificationUserDTO> responseNoti = listMapper.mapList(petkeepernotifications, NotificationUserDTO.class,modelMapper);
+            for (int i=0;i<petkeepernotifications.size();i++){
+                responseNoti.get(i).setName(petkeepernotifications.get(i).getPetKeeper().getName());
+            }
+
             return responseNoti;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission");
     }
 
-    public List<ResponseMessage> getOwnerNoti(Integer ownerId,String token){
+    public List<NotificationUserDTO> getOwnerNoti(Integer ownerId,String token){
         token = token.replace("Bearer " , "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         Integer checkOwner = ownerRepository.getPetownerIdByEmail(emailCheck);
         if(checkOwner == ownerId) {
             List<Petownernotification> petownernotifications = petownerNotificationRepository.getAllNotiByOwnerId(ownerId);
-            List<ResponseMessage> responseNoti = listMapper.mapList(petownernotifications,ResponseMessage.class,modelMapper);
+            List<NotificationUserDTO> responseNoti = listMapper.mapList(petownernotifications,NotificationUserDTO.class,modelMapper);
+            for (int i = 0;i<petownernotifications.size();i++){
+                String ownerName = petownernotifications.get(i).getPetOwner().getFirstname() + " " + petownernotifications.get(i).getPetOwner().getLastname();
+                responseNoti.get(i).setName(ownerName);
+
+            }
+
             return responseNoti;
         }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission");
     }

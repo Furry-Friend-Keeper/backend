@@ -15,7 +15,10 @@ public interface PetownerNotificationRepository extends JpaRepository<Petownerno
     @Query(value = "Update petownernotification p set ReadStatus = 1 where p.PetOwnerNotiId = :notiId",nativeQuery = true)
     void updatePetownerRead(@Param("notiId")Integer notiId);
 
-    @Query(value = "Select * from petownernotification p where p.PetOwnerId = :ownerId",nativeQuery = true)
+    @Query(value = "Select p from Petownernotification p" +
+            " join fetch p.status s" +
+            " join fetch p.petOwner po" +
+            " where po.id = :ownerId")
     List<Petownernotification> getAllNotiByOwnerId(@Param("ownerId")Integer ownerId);
 
     @Query(value = "Select * from petkeepernotification p where p.PetOwnerId = :ownerId And p.PetOwnerNotiId = :notiId",nativeQuery = true)

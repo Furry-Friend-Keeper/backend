@@ -30,4 +30,8 @@ public class Schedulestatus {
     private Set<Appointmentschedule> appointmentschedules = new LinkedHashSet<>();
 
 
+    @Override
+    public String toString() {
+        return status;
+    }
 }
