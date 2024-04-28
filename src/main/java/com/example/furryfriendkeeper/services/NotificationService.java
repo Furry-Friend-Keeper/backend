@@ -35,11 +35,11 @@ public class NotificationService {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-
+    @Autowired
     private PetkeeperRepository petkeeperRepository;
-
+    @Autowired
     private OwnerRepository ownerRepository;
-
+    @Autowired
     private ListMapper listMapper;
 
     @Autowired
