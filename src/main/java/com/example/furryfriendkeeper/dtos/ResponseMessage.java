@@ -19,7 +19,7 @@ public class ResponseMessage {
     private ZonedDateTime date;
     private Integer readStatus;
     private String name;
-    private Schedulestatus status;
+    private String status;
 
 
 }

@@ -20,11 +20,5 @@ public class NotificationUserDTO {
     private String name;
     private String status;
 
-    public NotificationUserDTO(String message, ZonedDateTime date, Integer readStatus, String name, String status) {
-        this.message = message;
-        this.date = date;
-        this.readStatus = readStatus;
-        this.name = name;
-        this.status = status;
-    }
+
 }
