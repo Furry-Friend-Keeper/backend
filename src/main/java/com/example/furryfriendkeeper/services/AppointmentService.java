@@ -173,6 +173,9 @@ public class AppointmentService {
         String role = userRepository.findRole(emailCheck);
         Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
+        if(appointmentschedule == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        }
         Petowner checkOwner = ownerRepository.getById(appointmentschedule.getPetOwner().getId());
         if(appointmentschedule.getStatus().getId() == 1) {
             if (role.equals("PetKeeper") && keeperId == appointmentschedule.getPetKeeper().getId()) {
@@ -204,6 +207,9 @@ public class AppointmentService {
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
+        if(appointmentschedule == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        }
         Petkeepers checkKeeper = petkeeperRepository.getById(appointmentschedule.getPetKeeper().getId());
         Petowner checkOwner = ownerRepository.getById(appointmentschedule.getPetOwner().getId());
         if(appointmentschedule.getStatus().getId() != 4 && appointmentschedule.getStatus().getId() != 5 && appointmentschedule.getStatus().getId() != 6) {
@@ -259,7 +265,9 @@ public class AppointmentService {
         Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
         Petowner checkOwner = ownerRepository.getById(appointmentschedule.getPetOwner().getId());
-
+        if(appointmentschedule == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        }
         if(appointmentschedule.getStatus().getId() == 2){
             if(role.equals("PetKeeper") && keeperId == appointmentschedule.getPetKeeper().getId()){
                 appointmentScheduleRepository.updateStatus(4, appointmentId);
@@ -292,7 +300,9 @@ public class AppointmentService {
         Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
         Petowner checkOwner = ownerRepository.getById(appointmentschedule.getPetOwner().getId());
-        System.out.println(appointmentschedule.getStatus().getId());
+        if(appointmentschedule == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        }
         if(appointmentschedule.getStatus().getId() == 4){
             if(role.equals("PetKeeper") && keeperId == appointmentschedule.getPetKeeper().getId()){
                 appointmentScheduleRepository.updateStatus(5, appointmentId);
@@ -323,6 +333,9 @@ public class AppointmentService {
         String role = userRepository.findRole(emailCheck);
         Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
+        if(appointmentschedule == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        }
         if(appointmentschedule.getStatus().getId() == 5){
             if(role.equals("Owner") && ownerId == appointmentschedule.getPetOwner().getId()){
                 appointmentScheduleRepository.updateStatus(6, appointmentId);
