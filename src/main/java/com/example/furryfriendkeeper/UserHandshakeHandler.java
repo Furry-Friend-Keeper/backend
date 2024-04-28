@@ -35,26 +35,19 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
 
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-//        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
-//        String userId = request.getHeaders().getFirst("userId-for-handshake");
+
         MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUri(request.getURI()).build().getQueryParams();
         String userId = queryParams.getFirst("userId");
 
         if (userId != null) {
-            // Perform any necessary operations with the email
-            LOG.info("User guest id: {}", userId);
+            LOG.info("User id: {}", userId);
             return new UserPrincipal(userId);
-        }
-        String email = "test4@example.com";
-        LOG.info("User guest id: {}", email);
-        return new UserPrincipal(email);
+        }else return new UserPrincipal(null);
 
 
 
 
-//            String email = jwtTokenUtil.getUsernameFromToken(token);
-//            LOG.info("User email: {}", emailCheck);
-//            return new UserPrincipal(email);
+
 
     }
 }
