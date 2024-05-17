@@ -60,8 +60,6 @@ public class Petkeepers {
     @OneToMany(mappedBy = "petKeeper")
     private Set<Favorite> favorites = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "petKeeper")
-    private Set<Reportsdetail> reportsdetails = new LinkedHashSet<>();
 
     @Column(name = "ClosedDay",length = 200)
     private String closedDay;
