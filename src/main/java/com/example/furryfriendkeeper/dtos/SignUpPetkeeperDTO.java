@@ -1,14 +1,13 @@
 package com.example.furryfriendkeeper.dtos;
 
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
-import java.util.List;
+
 import java.util.Set;
 
 @Getter
@@ -26,7 +25,7 @@ public class SignUpPetkeeperDTO {
     @Size(max = 200, message = "Contact length cannot exceed 200 characters!!")
     private String contact;
     @NotNull(message = "Please fill this field")
-    @Pattern(regexp = "\\d{10}",message = "Phone numbers must be 10 digits(0-9) only.")
+    @Pattern(regexp = "\\d{10}", message = "Phone numbers must be 10 digits(0-9) only.")
     private String phone;
     @NotEmpty(message = "Please fill this field")
     private Set<Integer> categoryId;
@@ -35,7 +34,7 @@ public class SignUpPetkeeperDTO {
     @Size(max = 200, message = "Email length cannot exceed 100 characters!!")
     private String email;
     @NotEmpty(message = "Please fill this field")
-    @Size(max = 200,message = "Password cannot exceed 200 characters!!")
+    @Size(max = 200, message = "Password cannot exceed 200 characters!!")
     private String password;
     @NotNull(message = "Please fill this field")
     @Positive(message = "Invalid role Id")

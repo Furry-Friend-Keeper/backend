@@ -11,18 +11,16 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AppointmentScheduleRepository extends JpaRepository<Appointmentschedule,Integer> {
+public interface AppointmentScheduleRepository extends JpaRepository<Appointmentschedule, Integer> {
 
 
     @Query("SELECT a FROM Appointmentschedule a " +
-        "JOIN FETCH a.petKeeper pk " +
-        "JOIN FETCH a.petOwner po " +
-        "JOIN FETCH a.category c " +
-        "JOIN FETCH a.status s " +
-        "WHERE pk.id = :petkeeperId")
+            "JOIN FETCH a.petKeeper pk " +
+            "JOIN FETCH a.petOwner po " +
+            "JOIN FETCH a.category c " +
+            "JOIN FETCH a.status s " +
+            "WHERE pk.id = :petkeeperId")
     List<Appointmentschedule> getAppointmentByPetkeeper(@Param("petkeeperId") Integer petkeeperId);
-
-
 
 
     @Query("SELECT a FROM Appointmentschedule a " +
@@ -34,13 +32,13 @@ public interface AppointmentScheduleRepository extends JpaRepository<Appointment
     List<Appointmentschedule> getAppointmentByPetOwner(@Param("petownerId") Integer petownerId);
 
     @Modifying
-    @Query(value = "update appointmentschedule set StatusId = :status where AppointmentId = :appointmentId",nativeQuery = true)
-    void updateStatus(@Param("status")Integer status,@Param("appointmentId")Integer Id);
+    @Query(value = "update appointmentschedule set StatusId = :status where AppointmentId = :appointmentId", nativeQuery = true)
+    void updateStatus(@Param("status") Integer status, @Param("appointmentId") Integer Id);
 
-    @Query(value = "select * from appointmentschedule a where a.AppointmentId = ?1",nativeQuery = true)
+    @Query(value = "select * from appointmentschedule a where a.AppointmentId = ?1", nativeQuery = true)
     Appointmentschedule getAppointmentscheduleById(Integer appointmentId);
 
     @Modifying
-    @Query(value = "update appointmentschedule set Message = :message where AppointmentId = :appointmentId",nativeQuery = true)
-    void updateMessage(@Param("message")String message,@Param("appointmentId")Integer appointmentId);
+    @Query(value = "update appointmentschedule set Message = :message where AppointmentId = :appointmentId", nativeQuery = true)
+    void updateMessage(@Param("message") String message, @Param("appointmentId") Integer appointmentId);
 }

@@ -3,7 +3,7 @@ package com.example.furryfriendkeeper.controllers;
 import com.example.furryfriendkeeper.dtos.FavoriteDTO;
 import com.example.furryfriendkeeper.dtos.OwnerDetailDTO;
 import com.example.furryfriendkeeper.dtos.OwnerEditDTO;
-import com.example.furryfriendkeeper.entities.Petowner;
+
 import com.example.furryfriendkeeper.services.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

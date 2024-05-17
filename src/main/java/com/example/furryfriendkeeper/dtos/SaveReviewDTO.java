@@ -1,7 +1,6 @@
 package com.example.furryfriendkeeper.dtos;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +22,7 @@ public class SaveReviewDTO {
     @NotNull(message = "Please fill in date & time")
     private ZonedDateTime date;
     @NotNull(message = "Invalid rating star ,please try again!")
-    @Size(min = 1,max = 5,message = "Invalid Stars amount,please try again!")
+    @Size(min = 1, max = 5, message = "Invalid Stars amount,please try again!")
     private Integer star;
     @NotNull(message = "filt his field")
     private Integer petownerId;

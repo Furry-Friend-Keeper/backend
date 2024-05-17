@@ -19,7 +19,7 @@ public class AppointmentDTO {
 
     private Integer appointmentId;
     @NotEmpty(message = "Please fill this field")
-    @Pattern(regexp = "\\d{10}",message = "Phone numbers must be 10 digits(0-9) only.")
+    @Pattern(regexp = "\\d{10}", message = "Phone numbers must be 10 digits(0-9) only.")
     private String ownerPhone;
     @NotEmpty(message = "Please fill this field")
     @Size(max = 200, message = "Email length cannot exceed 100 characters!!")

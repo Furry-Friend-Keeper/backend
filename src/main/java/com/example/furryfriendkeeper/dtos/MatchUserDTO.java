@@ -19,7 +19,7 @@ public class MatchUserDTO {
     @Size(max = 50)
     private String email;
     @NotNull
-    @Size(min = 8,max = 14)
+    @Size(min = 8, max = 14)
     private String password;
 
     public String getEmail() {
@@ -30,6 +30,11 @@ public class MatchUserDTO {
         this.email = email.trim();
     }
 
-    public String getPassword(){return password;}
-    public void setPassword(String password){ this.password = password.trim(); }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password.trim();
+    }
 }

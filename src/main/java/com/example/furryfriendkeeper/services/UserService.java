@@ -60,25 +60,25 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password not match >:(");
         }
         String userRole = user1.getRole().getRole();
-        Integer id =null;
+        Integer id = null;
         String name = "";
         Integer userId = null;
         String img = "";
-        if(userRole.equals("PetKeeper")){
+        if (userRole.equals("PetKeeper")) {
             id = petkeeperRepository.getPetkeepersIdByEmail(user.getEmail());
             Petkeepers keeper = petkeeperRepository.getById(id);
             name = keeper.getName();
             img = keeper.getImg();
             userId = keeper.getEmail().getId();
 
-        }else if(userRole.equals("Owner")) {
+        } else if (userRole.equals("Owner")) {
             id = ownerRepository.getPetownerIdByEmail(user.getEmail());
             Petowner owner = ownerRepository.getById(id);
             name = owner.getFirstname();
             img = owner.getImg();
             userId = owner.getEmail().getId();
         }
-        JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole,id, name, userId,img);
+        JwtDTO jwtDTO = new JwtDTO(generateToken(user), generateRefreshToken(user), userRole, id, name, userId, img);
         return ResponseEntity.ok(jwtDTO);
     }
 
@@ -88,7 +88,6 @@ public class UserService {
         if (match == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Email does not exist");
         }
-//        match.setPassword(passwordEncoder.encode(match.getPassword()));
         return passwordEncoder.matches(user1.getPassword(), match.getPassword());
 
     }
@@ -107,40 +106,40 @@ public class UserService {
         return jwtTokenUtil.generateRefreshToken(userDetail);
     }
 
-    public JwtDTO generateNewToken(String refreshToken){
+    public JwtDTO generateNewToken(String refreshToken) {
         UserDetails userDetail = userDetailsService.loadUserByUsername(jwtTokenUtil.getUsernameFromToken(refreshToken));
         User user = userRepository.findEmail(userDetail.getUsername());
         String userRole = user.getRole().getRole();
-        if(user == null){
+        if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token is from email that does not exist!!");
         }
-        if(!jwtTokenUtil.tokenExpired(refreshToken)){
-            return new JwtDTO(jwtTokenUtil.generateToken(userDetail),refreshToken, userRole,null,null,null,null);
-        }else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token has expired");
+        if (!jwtTokenUtil.tokenExpired(refreshToken)) {
+            return new JwtDTO(jwtTokenUtil.generateToken(userDetail), refreshToken, userRole, null, null, null, null);
+        } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token has expired");
     }
 
 
-    public List<Role> AllRole(){
+    public List<Role> AllRole() {
         return roleRepository.findAll();
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public SignUpPetkeeperDTO signUpPetkeeper(SignUpPetkeeperDTO signUpPetkeeperDTO){
+    public SignUpPetkeeperDTO signUpPetkeeper(SignUpPetkeeperDTO signUpPetkeeperDTO) {
 
-            User user = modelMapper.map(signUpPetkeeperDTO, User.class);
-            user.setEmail(signUpPetkeeperDTO.getEmail().trim());
-            user.setPassword(passwordEncoder.encode(signUpPetkeeperDTO.getPassword()));
-            Role role = roleRepository.findById(signUpPetkeeperDTO.getRole())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
+        User user = modelMapper.map(signUpPetkeeperDTO, User.class);
+        user.setEmail(signUpPetkeeperDTO.getEmail().trim());
+        user.setPassword(passwordEncoder.encode(signUpPetkeeperDTO.getPassword()));
+        Role role = roleRepository.findById(signUpPetkeeperDTO.getRole())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
 
-            user.setRole(role);
-            List<User> email = userRepository.uniqueUserEmail(signUpPetkeeperDTO.getEmail().trim().toLowerCase());
-            for (User user1 : email) {
-                System.out.println("User{id=" + user1.getId() + ", email='" + user1.getEmail() );
-            }
-            if (email.size() != 0) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
-            }
+        user.setRole(role);
+        List<User> email = userRepository.uniqueUserEmail(signUpPetkeeperDTO.getEmail().trim().toLowerCase());
+        for (User user1 : email) {
+            System.out.println("User{id=" + user1.getId() + ", email='" + user1.getEmail());
+        }
+        if (email.size() != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
+        }
         try {
 
             User savedUser = userRepository.saveAndFlush(user);
@@ -165,29 +164,29 @@ public class UserService {
 
             signUpPetkeeperDTO.setPassword("Protected Field");
             return signUpPetkeeperDTO;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Cannot Sign Up, Please Try again!", e);
         }
 
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public OwnerDTO sighUpPetOwner(OwnerDTO newOwner){
-            User user = modelMapper.map(newOwner, User.class);
-            user.setEmail(newOwner.getEmail().trim());
-            user.setPassword(passwordEncoder.encode(newOwner.getPassword()));
-            Role role = roleRepository.findById(newOwner.getRole())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
+    public OwnerDTO sighUpPetOwner(OwnerDTO newOwner) {
+        User user = modelMapper.map(newOwner, User.class);
+        user.setEmail(newOwner.getEmail().trim());
+        user.setPassword(passwordEncoder.encode(newOwner.getPassword()));
+        Role role = roleRepository.findById(newOwner.getRole())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Role Exist"));
 
-            user.setRole(role);
-            List<User> email = userRepository.uniqueUserEmail(newOwner.getEmail().trim().toLowerCase());
-            for (User user1 : email) {
-                System.out.println("User{id=" + user1.getId() + ", email='" + user1.getEmail());
-            }
-            if (email.size() != 0) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
-            }
-            try{
+        user.setRole(role);
+        List<User> email = userRepository.uniqueUserEmail(newOwner.getEmail().trim().toLowerCase());
+        for (User user1 : email) {
+            System.out.println("User{id=" + user1.getId() + ", email='" + user1.getEmail());
+        }
+        if (email.size() != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already used!.");
+        }
+        try {
             User savedUser = userRepository.saveAndFlush(user);
 
             Petowner petowner = modelMapper.map(newOwner, Petowner.class);
@@ -197,7 +196,7 @@ public class UserService {
             newOwner.setPassword("Protected Field");
 
             return newOwner;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Cannot Sign Up, Please Try again!", e);
         }
     }

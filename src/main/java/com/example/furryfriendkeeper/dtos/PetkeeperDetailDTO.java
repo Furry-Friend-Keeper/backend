@@ -1,18 +1,14 @@
 package com.example.furryfriendkeeper.dtos;
-import com.example.furryfriendkeeper.entities.Address;
-import com.example.furryfriendkeeper.entities.Review;
-import com.example.furryfriendkeeper.repositories.AddressRepository;
-import com.example.furryfriendkeeper.repositories.GalleryRepository;
-import com.example.furryfriendkeeper.repositories.ReviewRepository;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-import org.hibernate.annotations.Type;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.Email;
+
+import com.example.furryfriendkeeper.repositories.AddressRepository;
+
+import com.example.furryfriendkeeper.repositories.ReviewRepository;
+
+import lombok.*;
+
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-import java.time.LocalDate;
+
 import java.util.List;
 
 @Getter
@@ -44,10 +40,11 @@ public class PetkeeperDetailDTO {
 
     private List<DisableDateDTO> disableAppointment;
 
-    public void setReviewFromPetkeeperId(Integer id, ReviewRepository repository){
+    public void setReviewFromPetkeeperId(Integer id, ReviewRepository repository) {
         this.reviews = repository.findReviewsByPetkeeperId(id);
     }
-    public void setAddressFromPetkeeperId(Integer id, AddressRepository repository){
+
+    public void setAddressFromPetkeeperId(Integer id, AddressRepository repository) {
         this.address = repository.findAddressesByPetkeeperId(id);
     }
 
