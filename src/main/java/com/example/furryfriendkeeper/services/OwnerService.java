@@ -46,33 +46,33 @@ public class OwnerService {
 
     private final PetkeeperRepository petkeeperRepository;
 
-    public List<Petowner> getAllOwners(){
+    public List<Petowner> getAllOwners() {
         return ownerRepository.findAll();
     }
 
-    public OwnerDetailDTO getOwnerDetail(Integer petOwnerId,String token){
-        token = token.replace("Bearer " , "");
+    public OwnerDetailDTO getOwnerDetail(Integer petOwnerId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer petOwner = ownerRepository.getPetownerIdByEmail(emailCheck);
 
         List<Favorite> favoriteList = favoriteRepository.findAllByPetOwnerId(petOwnerId);
-        List<FavoriteDTO> favoriteDTOList = listMapper.mapList(favoriteList,FavoriteDTO.class,modelMapper);
-        if(role.equals("Owner") && petOwner == petOwnerId) {
+        List<FavoriteDTO> favoriteDTOList = listMapper.mapList(favoriteList, FavoriteDTO.class, modelMapper);
+        if (role.equals("Owner") && petOwner == petOwnerId) {
             Petowner owner = ownerRepository.getOwnerDetail(petOwnerId);
-            OwnerDetailDTO ownerDetail = modelMapper.map(owner,OwnerDetailDTO.class);
+            OwnerDetailDTO ownerDetail = modelMapper.map(owner, OwnerDetailDTO.class);
             ownerDetail.setPetOwnerId(owner.getId());
             ownerDetail.setFavorites(favoriteDTOList);
             return ownerDetail;
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission.");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
     }
 
-    public String editOwner(OwnerEditDTO newPetOwner , Integer ownerId, String token){
-        token = token.replace("Bearer " , "");
+    public String editOwner(OwnerEditDTO newPetOwner, Integer ownerId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer editOwnerId = ownerRepository.getPetownerIdByEmail(emailCheck);
-        if(role.equals("Owner") && editOwnerId == ownerId) {
+        if (role.equals("Owner") && editOwnerId == ownerId) {
             Petowner petownerDetail = modelMapper.map(newPetOwner, Petowner.class);
             Petowner petowner = ownerRepository.findById(ownerId).map(oldDetail -> mapPetowner(oldDetail, petownerDetail)).orElseGet(() ->
             {
@@ -80,16 +80,16 @@ public class OwnerService {
                 return petownerDetail;
             });
             ownerRepository.saveAndFlush(petowner);
-        return "Updated Successfully";
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission!");
+            return "Updated Successfully";
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
 
     }
 
-    private Petowner mapPetowner(Petowner oldDetail, Petowner newDetail){
-        if(newDetail.getFirstname() != null) {
+    private Petowner mapPetowner(Petowner oldDetail, Petowner newDetail) {
+        if (newDetail.getFirstname() != null) {
             oldDetail.setFirstname(newDetail.getFirstname());
         }
-        if(newDetail.getLastname() != null) {
+        if (newDetail.getLastname() != null) {
             oldDetail.setLastname(newDetail.getLastname());
         }
         if (newDetail.getPetname() != null) {
@@ -103,19 +103,19 @@ public class OwnerService {
     }
 
     @Transactional(rollbackOn = RuntimeException.class)
-    public String uploadProfile(Integer ownerId, MultipartFile file, String token){
+    public String uploadProfile(Integer ownerId, MultipartFile file, String token) {
         Petowner petowner = ownerRepository.getById(ownerId);
-        token = token.replace("Bearer " , "");
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer owner = ownerRepository.getPetownerIdByEmail(emailCheck);
-        if(role.equals("Owner") && owner == ownerId) {
-            if(fileService.isSupportedContentType(file.getContentType())) {
+        if (role.equals("Owner") && owner == ownerId) {
+            if (fileService.isSupportedContentType(file.getContentType())) {
                 try {
                     if (petowner.getImg() != null && file != null) {
-                        boolean isImageExist = fileService.doesImageExist(petowner.getImg(),ownerId,role);
+                        boolean isImageExist = fileService.doesImageExist(petowner.getImg(), ownerId, role);
                         if (isImageExist) {
-                            fileService.deleteProfileImg(petowner.getImg(),ownerId,role);
+                            fileService.deleteProfileImg(petowner.getImg(), ownerId, role);
                         }
                     }
                     if (file == null || file.isEmpty()) {
@@ -123,7 +123,7 @@ public class OwnerService {
                         ownerRepository.saveAndFlush(petowner);
                     } else {
                         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-                        fileService.store(file, ownerId,role);
+                        fileService.store(file, ownerId, role);
                         petowner.setImg(fileName);
                         ownerRepository.saveAndFlush(petowner);
                     }
@@ -132,21 +132,22 @@ public class OwnerService {
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
-            }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file type(jpg,png and jpeg only),please try again");
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
+            } else
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file type(jpg,png and jpeg only),please try again");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission!");
     }
 
 
     @Transactional
-    public String updateFavorite(Integer ownerId, FavoriteDTO favorite, String token){
-        token = token.replace("Bearer " , "");
+    public String updateFavorite(Integer ownerId, FavoriteDTO favorite, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer checkId = ownerRepository.getPetownerIdByEmail(emailCheck);
         Favorite checkFavorite = favoriteRepository.findFavorite(favorite.getPetOwnerId(), favorite.getPetKeeperId());
 
-        if(role.equals("Owner") && checkId == ownerId && checkId == favorite.getPetOwnerId()){
-            if(checkFavorite == null){
+        if (role.equals("Owner") && checkId == ownerId && checkId == favorite.getPetOwnerId()) {
+            if (checkFavorite == null) {
                 Petkeepers petkeeper = petkeeperRepository.getById(favorite.getPetKeeperId());
                 Petowner owner = ownerRepository.getById(favorite.getPetOwnerId());
                 Favorite saveFavorite = modelMapper.map(favorite, Favorite.class);
@@ -154,11 +155,11 @@ public class OwnerService {
                 saveFavorite.setPetKeeper(petkeeper);
                 favoriteRepository.saveAndFlush(saveFavorite);
                 return "Update favorite successfully.";
-            }else {
+            } else {
                 favoriteRepository.deleteFavorite(favorite.getPetOwnerId(), favorite.getPetKeeperId());
                 return "Update favorite successfully.(Delete)";
 
             }
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission!");
     }
 }

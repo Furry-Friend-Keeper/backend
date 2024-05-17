@@ -50,88 +50,88 @@ public class FileService {
 
     }
 
-    public String store(MultipartFile file,Integer userId,String role) {
+    public String store(MultipartFile file, Integer userId, String role) {
 
-          String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-          String contentType = file.getContentType();
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String contentType = file.getContentType();
 
-          if(isSupportedContentType(contentType)){
-        try {
-            if (fileName.contains("..")) {
-                throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
+        if (isSupportedContentType(contentType)) {
+            try {
+                if (fileName.contains("..")) {
+                    throw new RuntimeException("Sorry! Filename contains invalid path sequence " + fileName);
+                }
+                if (role.equals("PetKeeper")) {
+                    Path targetLocation = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName);
+                    Files.createDirectories(targetLocation.getParent());
+                    Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                }
+                if (role.equals("Owner")) {
+                    Path targetLocation = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName);
+                    Files.createDirectories(targetLocation.getParent());
+                    Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                }
+                return fileName;
+            } catch (IOException ex) {
+                throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
             }
-            if(role.equals("PetKeeper")) {
-                Path targetLocation = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName);
-                Files.createDirectories(targetLocation.getParent());
-                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            }
-            if(role.equals("Owner")){
-                Path targetLocation = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName);
-                Files.createDirectories(targetLocation.getParent());
-                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            }
-            return fileName;
-        } catch (IOException ex) {
-            throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
-        }
-          }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file typeInvalid file type(jpg,png and jpeg only),please try again");
+        } else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file typeInvalid file type(jpg,png and jpeg only),please try again");
 
     }
 
 
-
-    public Resource loadFileAsResource(String fileName,Integer userId) {
+    public Resource loadFileAsResource(String fileName, Integer userId) {
         try {
-               Path filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName).normalize();
-               Resource resource = new UrlResource(filePath.toUri());
+            Path filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found " + fileName);
         }
     }
 
-    public Resource loadProfileOwner(String fileName,Integer userId) {
+    public Resource loadProfileOwner(String fileName, Integer userId) {
         try {
             Path filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists()) {
-            return resource;
+                return resource;
             } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
-        }
-    } catch (MalformedURLException ex) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found " + fileName);
+            }
+        } catch (MalformedURLException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found " + fileName);
         }
     }
-        public Resource loadFileGallery(String fileName,Integer keeperId) {
+
+    public Resource loadFileGallery(String fileName, Integer keeperId) {
         try {
             Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"File not found " + fileName);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found " + fileName);
         }
     }
 
 
-
-    public void deleteProfileImg(String fileName,Integer userId,String role) {
+    public void deleteProfileImg(String fileName, Integer userId, String role) {
         try {
-            if(role.equals("PetKeeper")) {
+            if (role.equals("PetKeeper")) {
                 Path filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName);
                 Files.delete(filePath);
             }
-            if(role.equals("Owner")){
+            if (role.equals("Owner")) {
                 Path filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName);
                 Files.delete(filePath);
             }
@@ -139,7 +139,8 @@ public class FileService {
             throw new RuntimeException("Could not delete file " + fileName + ". Please try again!", ex);
         }
     }
-    public void deleteGallery(List<String> fileNames,Integer keeperId) {
+
+    public void deleteGallery(List<String> fileNames, Integer keeperId) {
         try {
             for (String fileName : fileNames) {
                 Path filePath = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(fileName);
@@ -149,46 +150,49 @@ public class FileService {
             throw new RuntimeException("Could not delete files. Please try again!", ex);
         }
     }
-    public List<String> storeMultiple(List<MultipartFile> files,Integer keeperId) {
+
+    public List<String> storeMultiple(List<MultipartFile> files, Integer keeperId) {
         List<String> fileNames = new ArrayList<>();
-        Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId),Petkeepers.class);
+        Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
 
-            for (MultipartFile file : files) {
-                String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
-                String fileExtension = StringUtils.getFilenameExtension(originalFileName);
-                String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
-                String contentType = file.getContentType();
-                if(isSupportedContentType(contentType)) {
-                    try {
-                        Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
-                        Files.createDirectories(targetLocation.getParent());
+        for (MultipartFile file : files) {
+            String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String fileExtension = StringUtils.getFilenameExtension(originalFileName);
+            String newFileName = UUID.randomUUID().toString() + "." + fileExtension;
+            String contentType = file.getContentType();
+            if (isSupportedContentType(contentType)) {
+                try {
+                    Path targetLocation = this.fileStorageLocation.resolve(keeperId.toString()).resolve("gallery").resolve(newFileName);
+                    Files.createDirectories(targetLocation.getParent());
 
-                        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
 
-                        Gallery gallery = new Gallery();
-                        gallery.setPetKeeper(petkeeper);
-                        gallery.setGallery(newFileName);
-                        galleryRepository.saveAndFlush(gallery);
+                    Gallery gallery = new Gallery();
+                    gallery.setPetKeeper(petkeeper);
+                    gallery.setGallery(newFileName);
+                    galleryRepository.saveAndFlush(gallery);
 
-                        fileNames.add(newFileName);
+                    fileNames.add(newFileName);
 
-                    } catch (IOException ex) {
-                        throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
-                    }
-                }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file type(jpg,png and jpeg only),please try again");
-            }
+                } catch (IOException ex) {
+                    throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
+                }
+            } else
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file type(jpg,png and jpeg only),please try again");
+        }
 
         return fileNames;
     }
+
     public boolean doesImageExist(String fileName, Integer userId, String role) {
         try {
             Path filePath = null;
             if (role.equals("PetKeeper")) {
-               filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName).normalize();
+                filePath = this.fileStorageLocation.resolve(userId.toString()).resolve(fileName).normalize();
             }
-            if(role.equals("Owner")){
-               filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName).normalize();
+            if (role.equals("Owner")) {
+                filePath = this.fileStorageLocation.resolve("Owner").resolve(userId.toString()).resolve(fileName).normalize();
             }
             return Files.exists(filePath) && Files.isRegularFile(filePath);
         } catch (Exception ex) {

@@ -14,6 +14,7 @@ import java.time.ZonedDateTime;
 
 public class NotificationUserDTO {
 
+    private Integer id;
     private String message;
     private ZonedDateTime date;
     private Integer readStatus;

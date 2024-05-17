@@ -22,7 +22,7 @@ public class OwnerDTO {
     @Size(max = 200, message = "Lastname length cannot exceed 200 characters!!")
     private String lastname;
     @NotNull(message = "Please fill this field")
-    @Pattern(regexp = "\\d{10}",message = "Phone numbers must be 10 digits(0-9) only.")
+    @Pattern(regexp = "\\d{10}", message = "Phone numbers must be 10 digits(0-9) only.")
     private String phone;
     private String petname;
     @NotEmpty(message = "Please fill this field")

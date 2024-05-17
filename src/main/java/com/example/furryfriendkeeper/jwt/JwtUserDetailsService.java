@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
@@ -31,7 +30,8 @@ public class JwtUserDetailsService implements UserDetailsService {
         user.getRole().getRole();
         return new User(user.getEmail(), user.getPassword(), getAuthority(user));
     }
-    private List<GrantedAuthority> getAuthority(com.example.furryfriendkeeper.entities.User user){
+
+    private List<GrantedAuthority> getAuthority(com.example.furryfriendkeeper.entities.User user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRole()));
         return authorities;

@@ -32,7 +32,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<JwtDTO> match(@Valid @RequestBody MatchUserDTO user){
 
-//        System.out.println(user.getEmail() + " " + user.getPassword());
         return service.match(user);
     }
 

@@ -4,7 +4,6 @@ package com.example.furryfriendkeeper.controllers;
 
 import com.example.furryfriendkeeper.dtos.ReviewDTO;
 import com.example.furryfriendkeeper.dtos.SaveReviewDTO;
-import com.example.furryfriendkeeper.entities.Review;
 import com.example.furryfriendkeeper.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

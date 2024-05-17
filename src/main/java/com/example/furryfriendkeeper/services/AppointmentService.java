@@ -53,69 +53,69 @@ public class AppointmentService {
 
     private final StatusRepository statusRepository;
 
-    public List<Appointmentschedule> getAllSchedule(){
+    public List<Appointmentschedule> getAllSchedule() {
         List<Appointmentschedule> appointmentschedule = appointmentScheduleRepository.findAll();
         return appointmentschedule;
     }
 
-    public List<AppointmentScheduleDTO> getAllScheduleByPetkeeper(Integer petkeeperId,String token){
-        token = token.replace("Bearer " , "");
+    public List<AppointmentScheduleDTO> getAllScheduleByPetkeeper(Integer petkeeperId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer petkeeper = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
-        if(role.equals("PetKeeper") && petkeeper == petkeeperId) {
+        if (role.equals("PetKeeper") && petkeeper == petkeeperId) {
             List<Appointmentschedule> listAppointment = appointmentScheduleRepository.getAppointmentByPetkeeper(petkeeperId);
-            List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment,AppointmentScheduleDTO.class,modelMapper);
+            List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment, AppointmentScheduleDTO.class, modelMapper);
             return listDto;
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
     }
 
-    public List<AppointmentScheduleDTO> getAllScheduleByPetOwner(Integer petownerId,String token){
-        token = token.replace("Bearer " , "");
+    public List<AppointmentScheduleDTO> getAllScheduleByPetOwner(Integer petownerId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer petowner = ownerRepository.getPetownerIdByEmail(emailCheck);
 
-        if(role.equals("Owner") && petowner ==  petownerId) {
+        if (role.equals("Owner") && petowner == petownerId) {
             List<Appointmentschedule> listAppointment = appointmentScheduleRepository.getAppointmentByPetOwner(petownerId);
-            if(!listAppointment.isEmpty()) {
+            if (!listAppointment.isEmpty()) {
                 List<AppointmentScheduleDTO> listDto = listMapper.mapList(listAppointment, AppointmentScheduleDTO.class, modelMapper);
-                for (int i = 0 ; i < listAppointment.size(); i++) {
+                for (int i = 0; i < listAppointment.size(); i++) {
                     listDto.get(i).setKeeperImg(listAppointment.get(i).getPetKeeper().getImg());
                     listDto.get(i).setKeeperId(listAppointment.get(i).getPetKeeper().getId());
                     listDto.get(i).setKeeperPhone(listAppointment.get(i).getPetKeeper().getPhone());
                 }
                 return listDto;
-            }else throw  new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found!");
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
+            } else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found!");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
 
     }
 
     @Transactional
-    public AppointmentDTO createRequest(AppointmentDTO newAppointment,String token){
-        token = token.replace("Bearer " , "");
+    public AppointmentDTO createRequest(AppointmentDTO newAppointment, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
         List<Integer> checkCategories = categoriesRepository.FindKeeperCategories(newAppointment.getPetKeeperId());
         Petkeepers checkKeeper = petkeeperRepository.getById(newAppointment.getPetKeeperId());
         Petowner checkOwner = ownerRepository.getById(newAppointment.getPetOwnerId());
-        if(checkKeeper == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"There is no Petkeeper.");
+        if (checkKeeper == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no Petkeeper.");
         }
-        if(checkOwner == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"There is no Petowner.");
+        if (checkOwner == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no Petowner.");
         }
-        if(newAppointment.getEndDate().isBefore(newAppointment.getStartDate())){
+        if (newAppointment.getEndDate().isBefore(newAppointment.getStartDate())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End Date Cannot be before Start Date.");
         }
-        if(newAppointment.getStartDate().isBefore(ZonedDateTime.now()) || !(newAppointment.getStartDate().toLocalDate().isAfter(ZonedDateTime.now().plusDays(3).toLocalDate()))){
+        if (newAppointment.getStartDate().isBefore(ZonedDateTime.now()) || !(newAppointment.getStartDate().toLocalDate().isAfter(ZonedDateTime.now().plusDays(3).toLocalDate()))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date input.");
         }
-        if(!checkCategories.contains(newAppointment.getCategoryId())){
+        if (!checkCategories.contains(newAppointment.getCategoryId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Category,Please try again.");
         }
-        if(checkKeeper.getClosedDay() != null && !checkKeeper.getClosedDay().isEmpty()) {
+        if (checkKeeper.getClosedDay() != null && !checkKeeper.getClosedDay().isEmpty()) {
             String[] days = checkKeeper.getClosedDay().toLowerCase().split(",\\s*");
             List<String> closedList = Arrays.asList(days);
             String startDay = newAppointment.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
@@ -125,28 +125,29 @@ public class AppointmentService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Day.(Petkeeper closed!)");
             }
         }
-        if(role.equals("Owner") && ownerId == newAppointment.getPetOwnerId()) {
+        if (role.equals("Owner") && ownerId == newAppointment.getPetOwnerId()) {
             List<Disableappointmentschedule> checkDate = disableScheduleRepository.getDisableScheduleByPetkeeper(newAppointment.getPetKeeperId());
             LocalDate startDateAppointment = newAppointment.getStartDate().toLocalDate();
             LocalDate endDateAppointment = newAppointment.getEndDate().toLocalDate();
-            for (Disableappointmentschedule checkDate1: checkDate) {
-                if((startDateAppointment.isBefore(checkDate1.getStartDate()) && endDateAppointment.isBefore(checkDate1.getStartDate()))
-                        || startDateAppointment.isAfter(checkDate1.getEndDate())){
+            for (Disableappointmentschedule checkDate1 : checkDate) {
+                if ((startDateAppointment.isBefore(checkDate1.getStartDate()) && endDateAppointment.isBefore(checkDate1.getStartDate()))
+                        || startDateAppointment.isAfter(checkDate1.getEndDate())) {
 //                        || (startDateAppointment.isBefore(checkDate1.getStartDate()) && endDateAppointment.isAfter(checkDate1.getEndDate()))) {
                     //No Overlap
-                }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot make appointment at these period.");
-            }         
+                } else
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot make appointment at these period.");
+            }
 
-                try {
-                    newAppointment.setStatusId(1);
-                    modelMapper.getConfiguration().setAmbiguityIgnored(true);
-                    Appointmentschedule appointmentschedule = modelMapper.map(newAppointment, Appointmentschedule.class);
-                    appointmentScheduleRepository.saveAndFlush(appointmentschedule);
-                } catch (Exception e) {
-                    throw e;
-                }
+            try {
+                newAppointment.setStatusId(1);
+                modelMapper.getConfiguration().setAmbiguityIgnored(true);
+                Appointmentschedule appointmentschedule = modelMapper.map(newAppointment, Appointmentschedule.class);
+                appointmentScheduleRepository.saveAndFlush(appointmentschedule);
+            } catch (Exception e) {
+                throw e;
+            }
 
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission.");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission.");
 
         NotificationDTO notificationDTO = new NotificationDTO();
         notificationDTO.setDateStart(ZonedDateTime.now());
@@ -154,29 +155,29 @@ public class AppointmentService {
         notificationDTO.setStatusId(1);
         notificationDTO.setPetkeeperId(newAppointment.getPetKeeperId());
         notificationDTO.setReadStatus(0);
-        Schedulestatus schedulestatus  = statusRepository.getById(1);
-        Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO,Petkeepernotification.class);
-        ResponseMessage message = new ResponseMessage("You got new request from " + checkOwner.toString(),ZonedDateTime.now(),0,checkOwner.toString(), schedulestatus.getStatus());
+        Schedulestatus schedulestatus = statusRepository.getById(1);
+        Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO, Petkeepernotification.class);
+        ResponseMessage message = new ResponseMessage("You got new request from " + checkOwner.toString(), ZonedDateTime.now(), 0, checkOwner.toString(), schedulestatus.getStatus());
 
 
         petkeeperNotificationRepository.saveAndFlush(petkeepernotification);
-        notificationService.sendRequestNotification(checkKeeper.getEmail().getId().toString(),message);
+        notificationService.sendRequestNotification(checkKeeper.getEmail().getId().toString(), message);
         return newAppointment;
 
     }
 
     @Transactional
-    public String confirmAppointment(Integer appointmentId,String token){
-        token = token.replace("Bearer " , "");
+    public String confirmAppointment(Integer appointmentId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
-        if(appointmentschedule == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        if (appointmentschedule == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found");
         }
         Petowner checkOwner = ownerRepository.getById(appointmentschedule.getPetOwner().getId());
-        if(appointmentschedule.getStatus().getId() == 1) {
+        if (appointmentschedule.getStatus().getId() == 1) {
             if (role.equals("PetKeeper") && keeperId == appointmentschedule.getPetKeeper().getId()) {
                 appointmentScheduleRepository.updateStatus(2, appointmentId);
             } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
@@ -188,43 +189,44 @@ public class AppointmentService {
         notificationDTO.setDateStart(ZonedDateTime.now());
         notificationDTO.setReadStatus(0);
         notificationDTO.setStatusId(2);
-        Schedulestatus schedulestatus  = statusRepository.getById(2);
+        Schedulestatus schedulestatus = statusRepository.getById(2);
 
-        Petownernotification petownernotification = modelMapper.map(notificationDTO,Petownernotification.class);
+        Petownernotification petownernotification = modelMapper.map(notificationDTO, Petownernotification.class);
         petownernotification.setPetOwner(checkOwner);
-        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(),schedulestatus.getStatus());
+        ResponseMessage responseMessage = new ResponseMessage(response, ZonedDateTime.now(), 0, appointmentschedule.getPetKeeper().getName(), schedulestatus.getStatus());
 
-        notificationService.sendConfirmNotification(checkOwner.getEmail().getId().toString(),responseMessage);
+        notificationService.sendConfirmNotification(checkOwner.getEmail().getId().toString(), responseMessage);
         petownerNotificationRepository.saveAndFlush(petownernotification);
-        return keeperId +  " has confirm Appointment from "+ appointmentschedule.getPetOwner().getId() + " Successfully!";
+        return keeperId + " has confirm Appointment from " + appointmentschedule.getPetOwner().getId() + " Successfully!";
+
     }
 
     @Transactional
-    public String cancelAppointment(Integer appointmentId,String message, String token){
-        token = token.replace("Bearer " , "");
+    public String cancelAppointment(Integer appointmentId, String message, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
-        if(appointmentschedule == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        if (appointmentschedule == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found");
         }
         Petkeepers checkKeeper = petkeeperRepository.getById(appointmentschedule.getPetKeeper().getId());
         Petowner checkOwner = ownerRepository.getById(appointmentschedule.getPetOwner().getId());
-        if(appointmentschedule.getStatus().getId() != 4 && appointmentschedule.getStatus().getId() != 5 && appointmentschedule.getStatus().getId() != 6) {
+        if (appointmentschedule.getStatus().getId() != 4 && appointmentschedule.getStatus().getId() != 5 && appointmentschedule.getStatus().getId() != 6) {
             if (role.equals("PetKeeper")) {
                 Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
                 if (keeperId == appointmentschedule.getPetKeeper().getId()) {
-                    appointmentScheduleRepository.updateMessage(message,appointmentId);
+                    appointmentScheduleRepository.updateMessage(message, appointmentId);
                     appointmentScheduleRepository.updateStatus(3, appointmentId);
                 } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
             } else if (role.equals("Owner")) {
                 Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
                 if (ownerId == appointmentschedule.getPetOwner().getId()) {
-                    appointmentScheduleRepository.updateMessage(message,appointmentId);
+                    appointmentScheduleRepository.updateMessage(message, appointmentId);
                     appointmentScheduleRepository.updateStatus(3, appointmentId);
                 } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
             }
-        }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Appointment Status.");
 
         String response1 = "Appointment : " + checkKeeper.getName() + " - Cancelled";
         String response2 = "Appointment : " + checkOwner.toString() + " - Cancelled";
@@ -234,7 +236,7 @@ public class AppointmentService {
         notificationDTO1.setDateStart(ZonedDateTime.now());
         notificationDTO1.setStatusId(3);
         notificationDTO1.setMessage(response1);
-        Petownernotification petownernotification = modelMapper.map(notificationDTO1,Petownernotification.class);
+        Petownernotification petownernotification = modelMapper.map(notificationDTO1, Petownernotification.class);
         petownernotification.setPetOwner(checkOwner);
         petownerNotificationRepository.saveAndFlush(petownernotification);
 
@@ -245,42 +247,42 @@ public class AppointmentService {
         notificationDTO2.setMessage(response2);
         notificationDTO2.setPetkeeperId(checkKeeper.getId());
 
-        Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO2,Petkeepernotification.class);
+        Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO2, Petkeepernotification.class);
         petkeeperNotificationRepository.saveAndFlush(petkeepernotification);
-        Schedulestatus schedulestatus  = statusRepository.getById(3);
-        ResponseMessage responseMessage1 = new ResponseMessage(response1,ZonedDateTime.now(),0,checkKeeper.getName(), schedulestatus.getStatus());
-        ResponseMessage responseMessage2 = new ResponseMessage(response2,ZonedDateTime.now(),0,checkOwner.toString(), schedulestatus.getStatus());
-        notificationService.sendRequestCancelNotification(checkKeeper.getEmail().getId().toString(),responseMessage2);
-        notificationService.sendRequestCancelNotification(checkOwner.getEmail().getId().toString(),responseMessage1);
+        Schedulestatus schedulestatus = statusRepository.getById(3);
+        ResponseMessage responseMessage1 = new ResponseMessage(response1, ZonedDateTime.now(), 0, checkKeeper.getName(), schedulestatus.getStatus());
+        ResponseMessage responseMessage2 = new ResponseMessage(response2, ZonedDateTime.now(), 0, checkOwner.toString(), schedulestatus.getStatus());
+        notificationService.sendRequestCancelNotification(checkKeeper.getEmail().getId().toString(), responseMessage2);
+        notificationService.sendRequestCancelNotification(checkOwner.getEmail().getId().toString(), responseMessage1);
         return "Appointment : " + appointmentId + " - Cancelled";
     }
 
     @Transactional
-    public String inCareAppointment(Integer appointmentId, String token){
-        token = token.replace("Bearer " , "");
+    public String inCareAppointment(Integer appointmentId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
         Petowner checkOwner = ownerRepository.getById(appointmentschedule.getPetOwner().getId());
-        if(appointmentschedule == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        if (appointmentschedule == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found");
         }
-        if(appointmentschedule.getStatus().getId() == 2){
-            if(role.equals("PetKeeper") && keeperId == appointmentschedule.getPetKeeper().getId()){
+        if (appointmentschedule.getStatus().getId() == 2) {
+            if (role.equals("PetKeeper") && keeperId == appointmentschedule.getPetKeeper().getId()) {
                 appointmentScheduleRepository.updateStatus(4, appointmentId);
             }
-        }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Appointment Status.");
         String response = "Appointment : " + appointmentschedule.getPetKeeper().getName() + " - In care";
         NotificationDTO notificationDTO = new NotificationDTO();
         notificationDTO.setMessage(response);
         notificationDTO.setReadStatus(0);
         notificationDTO.setStatusId(4);
         notificationDTO.setDateStart(ZonedDateTime.now());
-        Petownernotification petownernotification = modelMapper.map(notificationDTO,Petownernotification.class);
-        Schedulestatus schedulestatus  = statusRepository.getById(4);
-        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(), schedulestatus.getStatus());
-        notificationService.sendIncareNotification(checkOwner.getEmail().getId().toString(),responseMessage);
+        Petownernotification petownernotification = modelMapper.map(notificationDTO, Petownernotification.class);
+        Schedulestatus schedulestatus = statusRepository.getById(4);
+        ResponseMessage responseMessage = new ResponseMessage(response, ZonedDateTime.now(), 0, appointmentschedule.getPetKeeper().getName(), schedulestatus.getStatus());
+        notificationService.sendIncareNotification(checkOwner.getEmail().getId().toString(), responseMessage);
 
 
         petownernotification.setPetOwner(checkOwner);
@@ -291,33 +293,32 @@ public class AppointmentService {
     }
 
     @Transactional
-    public String keeperCompletedAppointment(Integer appointmentId, String token){
-        token = token.replace("Bearer " , "");
+    public String keeperCompletedAppointment(Integer appointmentId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
         Petowner checkOwner = ownerRepository.getById(appointmentschedule.getPetOwner().getId());
-        if(appointmentschedule == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        if (appointmentschedule == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found");
         }
-        if(appointmentschedule.getStatus().getId() == 4){
-            if(role.equals("PetKeeper") && keeperId == appointmentschedule.getPetKeeper().getId()){
+        if (appointmentschedule.getStatus().getId() == 4) {
+            if (role.equals("PetKeeper") && keeperId == appointmentschedule.getPetKeeper().getId()) {
                 appointmentScheduleRepository.updateStatus(5, appointmentId);
-            }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
-        }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status." );
+            } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Appointment Status.");
         String response = "Appointment :" + appointmentschedule.getPetKeeper().getName() + " - Keeper Completed";
         NotificationDTO notificationDTO = new NotificationDTO();
         notificationDTO.setMessage(response);
         notificationDTO.setReadStatus(0);
         notificationDTO.setStatusId(5);
         notificationDTO.setDateStart(ZonedDateTime.now());
-        Petownernotification petownernotification = modelMapper.map(notificationDTO,Petownernotification.class);
+        Petownernotification petownernotification = modelMapper.map(notificationDTO, Petownernotification.class);
         petownernotification.setPetOwner(appointmentschedule.getPetOwner());
-        Schedulestatus schedulestatus  = statusRepository.getById(5);
-        ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetKeeper().getName(), schedulestatus.getStatus());
-        notificationService.sendKeeperCompleteNotification(checkOwner.getEmail().getId().toString(),responseMessage);
-
+        Schedulestatus schedulestatus = statusRepository.getById(5);
+        ResponseMessage responseMessage = new ResponseMessage(response, ZonedDateTime.now(), 0, appointmentschedule.getPetKeeper().getName(), schedulestatus.getStatus());
+        notificationService.sendKeeperCompleteNotification(checkOwner.getEmail().getId().toString(), responseMessage);
 
 
         petownerNotificationRepository.saveAndFlush(petownernotification);
@@ -325,17 +326,17 @@ public class AppointmentService {
     }
 
     @Transactional
-    public ReviewDTO ownerCompletedAppointment(Integer appointmentId, String token){
-        token = token.replace("Bearer " , "");
+    public ReviewDTO ownerCompletedAppointment(Integer appointmentId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer ownerId = ownerRepository.getPetownerIdByEmail(emailCheck);
         Appointmentschedule appointmentschedule = appointmentScheduleRepository.getAppointmentscheduleById(appointmentId);
-        if(appointmentschedule == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Schedule not found");
+        if (appointmentschedule == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found");
         }
-        if(appointmentschedule.getStatus().getId() == 5){
-            if(role.equals("Owner") && ownerId == appointmentschedule.getPetOwner().getId()){
+        if (appointmentschedule.getStatus().getId() == 5) {
+            if (role.equals("Owner") && ownerId == appointmentschedule.getPetOwner().getId()) {
                 appointmentScheduleRepository.updateStatus(6, appointmentId);
                 String response = "Appointment :" + appointmentschedule.getPetOwner().toString() + " - Owner Completed";
                 NotificationDTO notificationDTO = new NotificationDTO();
@@ -344,44 +345,42 @@ public class AppointmentService {
                 notificationDTO.setDateStart(ZonedDateTime.now());
                 notificationDTO.setMessage(response);
                 notificationDTO.setPetkeeperId(appointmentschedule.getPetKeeper().getId());
-                Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO,Petkeepernotification.class);
-                Schedulestatus schedulestatus  = statusRepository.getById(6);
-                ResponseMessage responseMessage = new ResponseMessage(response,ZonedDateTime.now(),0,appointmentschedule.getPetOwner().toString(), schedulestatus.getStatus());
-                notificationService.sendOwnerCompleteNotification(appointmentschedule.getPetOwner().getId().toString(),responseMessage);
+                Petkeepernotification petkeepernotification = modelMapper.map(notificationDTO, Petkeepernotification.class);
+                Schedulestatus schedulestatus = statusRepository.getById(6);
+                ResponseMessage responseMessage = new ResponseMessage(response, ZonedDateTime.now(), 0, appointmentschedule.getPetOwner().toString(), schedulestatus.getStatus());
+                notificationService.sendOwnerCompleteNotification(appointmentschedule.getPetOwner().getId().toString(), responseMessage);
 
 
                 petkeeperNotificationRepository.saveAndFlush(petkeepernotification);
 
-            }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
-        }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid Appointment Status.");
+            } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Appointment Status.");
 
-        Review review = reviewRepository.findReviewByPetowner(appointmentschedule.getPetKeeper().getId(),appointmentschedule.getPetOwner().getId());
-        if(review != null) {
+        Review review = reviewRepository.findReviewByPetowner(appointmentschedule.getPetKeeper().getId(), appointmentschedule.getPetOwner().getId());
+        if (review != null) {
             ReviewDTO reviewDTO = modelMapper.map(review, ReviewDTO.class);
             return reviewDTO;
-        }else return null;
-
-
+        } else return null;
 
 
     }
 
-    public DisableAppointmentDTO addDisableAppointment(Integer petkeeperId, DisableAppointmentDTO disableAppointment,String token){
-        token = token.replace("Bearer " , "");
+    public DisableAppointmentDTO addDisableAppointment(Integer petkeeperId, DisableAppointmentDTO disableAppointment, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer keeperId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
-        if(role.equals("PetKeeper") && petkeeperId == keeperId) {
+        if (role.equals("PetKeeper") && petkeeperId == keeperId) {
             Disableappointmentschedule disableSchedule = modelMapper.map(disableAppointment, Disableappointmentschedule.class);
             Petkeepers petkeeper = petkeeperRepository.getById(petkeeperId);
             disableSchedule.setPetKeeper(petkeeper);
             disableScheduleRepository.saveAndFlush(disableSchedule);
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission.");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission.");
         return disableAppointment;
     }
 
-    public String deleteDisableAppointment(Integer disableScheduleId,String token) {
-        Disableappointmentschedule disableappointmentscheduleCheck = disableScheduleRepository.findById(disableScheduleId).orElseThrow(()-> new ResponseStatusException
+    public String deleteDisableAppointment(Integer disableScheduleId, String token) {
+        Disableappointmentschedule disableappointmentscheduleCheck = disableScheduleRepository.findById(disableScheduleId).orElseThrow(() -> new ResponseStatusException
                 (HttpStatus.NOT_FOUND, "This disableschedule does not exist!"));
         token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
@@ -393,8 +392,6 @@ public class AppointmentService {
         } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission");
         return "Delete Successfully";
     }
-
-
 
 
 }

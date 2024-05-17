@@ -4,6 +4,7 @@ package com.example.furryfriendkeeper.repositories;
 import com.example.furryfriendkeeper.entities.Petkeepernotification;
 import com.example.furryfriendkeeper.entities.Petkeepers;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import java.util.List;
 @Repository
 public interface PetkeeperNotificationRepository extends JpaRepository<Petkeepernotification,Integer> {
 
+    @Modifying
     @Query(value = "Update petkeepernotification p set ReadStatus = 1 where p.PetKeeperNotiId = :notiId",nativeQuery = true)
     void updatePetkeeperRead(@Param("notiId")Integer notiId);
 

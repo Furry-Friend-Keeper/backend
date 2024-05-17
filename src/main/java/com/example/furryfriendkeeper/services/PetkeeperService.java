@@ -52,21 +52,21 @@ public class PetkeeperService {
 
     private final DisableScheduleRepository disableScheduleRepository;
 
-    public List<PetkeeperDTO> getPetkeeperList(){
+    public List<PetkeeperDTO> getPetkeeperList() {
         List<Petkeepers> petkeepersList = petkeeperRepository.findAll();
         List<PetkeeperDTO> keepers = listMapper.mapList(petkeepersList, PetkeeperDTO.class, modelMapper);
 
-        for(int i = 0; i < petkeepersList.size(); i++){
+        for (int i = 0; i < petkeepersList.size(); i++) {
             Set<String> categories = new LinkedHashSet<>();
             List<Integer> petcats = categoriesRepository.FindKeeperCategories(petkeepersList.get(i).getId());
             Double avgStars = reviewRepository.avgStars(petkeepersList.get(i).getId());
             List<String> map = addressRepository.getMapByPetkeeperId(petkeepersList.get(i).getId());
-            if(avgStars == null){
+            if (avgStars == null) {
                 avgStars = 0.0;
             }
             keepers.get(i).setReviewStars(avgStars);
             keepers.get(i).setMap(map);
-            for(int a = 0; a < petcats.size(); a++){
+            for (int a = 0; a < petcats.size(); a++) {
                 String name = petRepository.CateName(petcats.get(a));
                 categories.add(name);
                 keepers.get(i).setCategories(categories);
@@ -79,27 +79,27 @@ public class PetkeeperService {
 
     }
 
-    public PetkeeperDetailDTO getPetkeeperDetails(Integer petkeepersId){
+    public PetkeeperDetailDTO getPetkeeperDetails(Integer petkeepersId) {
         Optional<Petkeepers> petkeeperDetails = petkeeperRepository.findById(petkeepersId);
         List<String> galleries = galleryRepository.findGalleriesByPetkeeperId(petkeepersId);
         PetkeeperDetailDTO petkeeperDetailDTO = modelMapper.map(petkeeperDetails, PetkeeperDetailDTO.class);
         List<Disableappointmentschedule> disableappointmentschedule = disableScheduleRepository.getDisableScheduleByPetkeeper(petkeepersId);
-        List<DisableDateDTO> disableDto = listMapper.mapList(disableappointmentschedule,DisableDateDTO.class,modelMapper);
-        if(petkeeperDetailDTO == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Petkeeper Not Found");
+        List<DisableDateDTO> disableDto = listMapper.mapList(disableappointmentschedule, DisableDateDTO.class, modelMapper);
+        if (petkeeperDetailDTO == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Petkeeper Not Found");
         }
         Double avgReviewStar = reviewRepository.avgStars(petkeepersId);
         List<String> categories = categoriesRepository.FindCategoriesByPetkeeperId(petkeepersId);
-        if(avgReviewStar == null){
+        if (avgReviewStar == null) {
             avgReviewStar = 0.0;
         }
 
-        String formatStar = String.format("%.1f",avgReviewStar);
+        String formatStar = String.format("%.1f", avgReviewStar);
         Double avgStar = Double.parseDouble(formatStar);
         petkeeperDetailDTO.setGallery(galleries);
         petkeeperDetailDTO.setReviewStars(avgStar);
         petkeeperDetailDTO.setCategories(categories);
-        for(int i = 0; i < disableDto.size() ; i++){
+        for (int i = 0; i < disableDto.size(); i++) {
             ZonedDateTime a = disableappointmentschedule.get(i).getStartDate().atStartOfDay(ZoneId.systemDefault());
             ZonedDateTime b = disableappointmentschedule.get(i).getEndDate().atStartOfDay(ZoneId.systemDefault());
             disableDto.get(i).setStartDate(a);
@@ -109,18 +109,19 @@ public class PetkeeperService {
         return petkeeperDetailDTO;
 
     }
-    public Petkeepers save(PetkeeperDetailDTO newPetkeeper){
+
+    public Petkeepers save(PetkeeperDetailDTO newPetkeeper) {
         return petkeeperRepository.saveAndFlush(modelMapper.map(newPetkeeper, Petkeepers.class));
     }
 
-    public List<CategoriesDTO> AllCategories(){
+    public List<CategoriesDTO> AllCategories() {
         List<Pet> pet = petRepository.findAll();
         return listMapper.mapList(pet, CategoriesDTO.class, modelMapper);
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Petkeepers updatePetkeeper(PetKeeperEditDTO updatePetkeepers, Integer petkeeperId,String token){
-        token = token.replace("Bearer " , "");
+    public Petkeepers updatePetkeeper(PetKeeperEditDTO updatePetkeepers, Integer petkeeperId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         String keeperEmail = petkeeperRepository.getPetkeeperEmailById(petkeeperId);
@@ -136,7 +137,7 @@ public class PetkeeperService {
         }
 
 
-        if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
+        if (role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
             try {
                 Petkeepers petkeeperDetail = modelMapper.map(updatePetkeepers, Petkeepers.class);
                 Petkeepers petkeepers = petkeeperRepository.findById(petkeeperId).map(oldDetail -> mapPetkeeper(oldDetail, petkeeperDetail)).orElseGet(() ->
@@ -156,15 +157,15 @@ public class PetkeeperService {
             } catch (Exception e) {
                 throw e;
             }
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission!");
     }
 
 
-    private Petkeepers mapPetkeeper(Petkeepers oldDetail, Petkeepers newDetail){
-        if(newDetail.getName() != null) {
+    private Petkeepers mapPetkeeper(Petkeepers oldDetail, Petkeepers newDetail) {
+        if (newDetail.getName() != null) {
             oldDetail.setName(newDetail.getName());
         }
-        if(newDetail.getContact() != null) {
+        if (newDetail.getContact() != null) {
             oldDetail.setContact(newDetail.getContact());
         }
         if (newDetail.getDetail() != null) {
@@ -178,22 +179,23 @@ public class PetkeeperService {
         }
         return oldDetail;
     }
-    public Address mapAddress(Address oldAddress, PetKeeperEditDTO newDetail){
+
+    public Address mapAddress(Address oldAddress, PetKeeperEditDTO newDetail) {
 
 
-        if(newDetail.getAddress().getAddress() != null){
+        if (newDetail.getAddress().getAddress() != null) {
             oldAddress.setAddress(newDetail.getAddress().getAddress());
         }
-        if (newDetail.getAddress().getDistrict() != null){
+        if (newDetail.getAddress().getDistrict() != null) {
             oldAddress.setDistrict(newDetail.getAddress().getDistrict());
         }
-        if(newDetail.getAddress().getProvince() != null){
+        if (newDetail.getAddress().getProvince() != null) {
             oldAddress.setProvince(newDetail.getAddress().getProvince());
         }
-        if(newDetail.getAddress().getPostalCode() != null){
+        if (newDetail.getAddress().getPostalCode() != null) {
             oldAddress.setPostalCode(newDetail.getAddress().getPostalCode());
         }
-        if(newDetail.getAddress().getMap() != null){
+        if (newDetail.getAddress().getMap() != null) {
             oldAddress.setMap(newDetail.getAddress().getMap());
         }
         return oldAddress;
@@ -201,20 +203,20 @@ public class PetkeeperService {
 
 
     @Transactional(rollbackOn = RuntimeException.class)
-    public String uploadProfile(Integer keeperId, MultipartFile file, String token){
+    public String uploadProfile(Integer keeperId, MultipartFile file, String token) {
 
         Petkeepers petkeeper = modelMapper.map(petkeeperRepository.findById(keeperId), Petkeepers.class);
-        token = token.replace("Bearer " , "");
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         String keeperEmail = petkeeperRepository.getPetkeeperEmailById(keeperId);
-        if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
-            if(fileService.isSupportedContentType(file.getContentType())) {
+        if (role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
+            if (fileService.isSupportedContentType(file.getContentType())) {
                 try {
                     if (petkeeper.getImg() != null && file != null) {
-                        boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId,role);
+                        boolean isImageExist = fileService.doesImageExist(petkeeper.getImg(), keeperId, role);
                         if (isImageExist) {
-                            fileService.deleteProfileImg(petkeeper.getImg(), keeperId,role);
+                            fileService.deleteProfileImg(petkeeper.getImg(), keeperId, role);
                         }
                     }
                     if (file == null || file.isEmpty()) {
@@ -231,37 +233,38 @@ public class PetkeeperService {
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
-            }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid file type(jpg,png and jpeg only),please try again");
-        }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
+            } else
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file type(jpg,png and jpeg only),please try again");
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission!");
     }
 
 
     @Transactional(rollbackOn = Exception.class)
-    public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files, String token){
-        token = token.replace("Bearer " , "");
+    public ResponseEntity<List<String>> uploadGallery(Integer keeperId, List<MultipartFile> files, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         String keeperEmail = petkeeperRepository.getPetkeeperEmailById(keeperId);
 
         try {
-            if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
+            if (role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
                 return new ResponseEntity<>(fileService.storeMultiple(files, keeperId), HttpStatus.OK);
-            }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
-        } catch (Exception e){
-            throw new RuntimeException("There is error",e);
+            } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission!");
+        } catch (Exception e) {
+            throw new RuntimeException("There is error", e);
         }
 
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public String deleteGalley(Integer keeperId,List<String> delete, String token) {
+    public String deleteGalley(Integer keeperId, List<String> delete, String token) {
         List<String> deletedList = new ArrayList<>();
-        token = token.replace("Bearer " , "");
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         String keeperEmail = petkeeperRepository.getPetkeeperEmailById(keeperId);
         try {
-            if(role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
+            if (role.equals("PetKeeper") && emailCheck.equals(keeperEmail)) {
                 if (delete != null) {
                     for (String name : delete) {
                         galleryRepository.deleteGalleryByName(keeperId, name);
@@ -272,34 +275,34 @@ public class PetkeeperService {
 
                     return "Deleted Successfully!" + deletedList;
                 } else return "No images deleted!";
-            }else throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission!");
-        }catch (Exception ex){
-            throw new RuntimeException("There is error!",ex);
+            } else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission!");
+        } catch (Exception ex) {
+            throw new RuntimeException("There is error!", ex);
         }
     }
 
     @Transactional
-    public String updateClosedDay(Integer keeperId,List<String> closedDay,String token){
-        token = token.replace("Bearer " , "");
+    public String updateClosedDay(Integer keeperId, List<String> closedDay, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer keeper = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
         String closedDays = "";
-        if(!(role.equals("PetKeeper") && keeper == keeperId)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You dont have permission!");
+        if (!(role.equals("PetKeeper") && keeper == keeperId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You dont have permission!");
         }
-        for (int i = 0; i < closedDay.size(); i++){
-            if(i != closedDay.size()-1) {
+        for (int i = 0; i < closedDay.size(); i++) {
+            if (i != closedDay.size() - 1) {
                 closedDays = closedDays + closedDay.get(i) + ", ";
-            }else closedDays = closedDays + closedDay.get(i);
+            } else closedDays = closedDays + closedDay.get(i);
         }
-        petkeeperRepository.updateClosedDay(closedDays,keeperId);
+        petkeeperRepository.updateClosedDay(closedDays, keeperId);
         return "update " + keeperId + ": " + closedDays;
     }
 
-    @Scheduled(cron = "0 0 0 * * *",zone ="Asia/Bangkok")
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Bangkok")
     @Transactional
-    public String updateAvailableDay(){
+    public String updateAvailableDay() {
         List<Petkeepers> petkeepers = petkeeperRepository.findAll();
         String today = ZonedDateTime.now(ZoneId.of("Asia/Bangkok")).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toLowerCase();
         System.out.println("start");
@@ -329,8 +332,8 @@ public class PetkeeperService {
     }
 
     @Transactional
-    public String closedPetkeeper(Integer keeperId,String token){
-        token = token.replace("Bearer " , "");
+    public String closedPetkeeper(Integer keeperId, String token) {
+        token = token.replace("Bearer ", "");
         String emailCheck = jwtTokenUtil.getUsernameFromToken(token);
         String role = userRepository.findRole(emailCheck);
         Integer checkId = petkeeperRepository.getPetkeepersIdByEmail(emailCheck);
@@ -343,11 +346,13 @@ public class PetkeeperService {
             if (role.equals("PetKeeper") && keeperId == checkId) {
                 if (keeper.getAvailable() == 0 && !closedList.contains(today)) {
                     petkeeperRepository.updateAvailable(1, keeperId);
-                } else if(keeper.getAvailable() == 1 && closedList.contains(today)) {
+                } else if (keeper.getAvailable() == 1 && closedList.contains(today)) {
                     petkeeperRepository.updateAvailable(0, keeperId);
-                    }
+                }
             }
         }
         return "Availability updated successfully.";
     }
+
+
 }

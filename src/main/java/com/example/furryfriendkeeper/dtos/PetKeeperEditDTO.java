@@ -24,7 +24,7 @@ public class PetKeeperEditDTO {
     private String contact;
     @Size(max = 200, message = "Detail length cannot exceed 200 characters!!")
     private String detail;
-    @Pattern(regexp = "\\d{10}",message = "Phone numbers must be 10 digits(0-9) only.")
+    @Pattern(regexp = "\\d{10}", message = "Phone numbers must be 10 digits(0-9) only.")
     private String phone;
     private AddressDTO address;
     @NotNull

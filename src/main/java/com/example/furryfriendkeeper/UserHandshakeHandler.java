@@ -30,7 +30,7 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
 
     private UserRepository userRepository;
 
-    private final Logger LOG =  LoggerFactory.getLogger(UserHandshakeHandler.class);
+    private final Logger LOG = LoggerFactory.getLogger(UserHandshakeHandler.class);
 
 
     @Override
@@ -42,11 +42,7 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
         if (userId != null) {
             LOG.info("User id: {}", userId);
             return new UserPrincipal(userId);
-        }else return new UserPrincipal(null);
-
-
-
-
+        } else return new UserPrincipal(null);
 
 
     }
