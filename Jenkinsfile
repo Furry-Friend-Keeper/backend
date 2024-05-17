@@ -38,7 +38,7 @@ pipeline {
                     echo "INFO: Deploy backend container"
                     sh """
                     docker run -d --name backend \
-                      --network FFK-network \
+                      --network FFK-networks \
                       -p 5000:8080 \
                       --restart on-failure \
                       -v /home/sysadmin/imageStorage:/home/sysadmin/imageStorage \
